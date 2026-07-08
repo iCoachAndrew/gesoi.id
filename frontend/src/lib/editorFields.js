@@ -236,8 +236,6 @@ function ObjectField({ value, onChange, path }) {
 }
 
 function ArrayField({ value, onChange, path }) {
-  const supportsImage = IMAGE_ITEM_PATHS.test(path);
-  const withImage = (item) => (supportsImage && typeof item === "object" && !("image" in item) ? { ...item, image: "" } : item);
   const withInjected = (item) => {
     if (typeof item !== "object" || item === null) return item;
     let out = item;
@@ -253,7 +251,7 @@ function ArrayField({ value, onChange, path }) {
     let template = value.length
       ? (typeof value[0] === "string" ? "" : Object.fromEntries(Object.keys(value[0]).map((key) => [key, ""])))
       : "";
-    template = withImage(template);
+    template = withInjected(template);
     onChange([...value, template]);
   };
 

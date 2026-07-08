@@ -110,3 +110,13 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - server.py: admin_analytics() dipecah ke helper kecil (_daily_pageviews, _unique_visitors, _group_count, _top_referrers) — respons API identik
 - test_analytics.py: 'is True' → equality; test agregasi besar dipecah jadi 6 delta test kecil dengan fixture agg (class-scoped); SEMUA test analitik disatukan dalam satu kelas TestAnalytics agar xdist loadscope memakukannya di satu worker (memperbaiki race paralel antar-worker yang ditemukan saat refactor — JANGAN pecah kelas ini)
 - Verifikasi: iteration_9.json — pytest 51/51 dua kali berturut (tanpa flakiness)
+
+## Implemented (Iteration 13 — Juni 2026): Halaman Detail Berita
+- Rute /berita/{index}-{slug} (pages/NewsDetail.js): header navy sticky (logo→home, toggle ID/EN, Kembali→/#news), hero image, kartu artikel (kategori, tanggal, judul serif, isi), "Berita Lainnya" (3 kartu), Footer, document.title dinamis, state not-found
+- Format isi markdown-lite: baris kosong=paragraf, "## "=heading, **tebal**, URL gambar di baris sendiri=gambar inline (renderer di NewsDetail ArticleBody)
+- Kartu berita landing: link eksternal terisi → <a target=_blank>; kosong → Link internal ke detail (lib/slug.js: slugify/newsUrl/newsIndexFromSlug)
+- CMS: item berita punya field date+body (default id/en terisi artikel lengkap); editorFields ITEM_KEY_INJECTIONS menyuntik date/body utk konten lama; textarea body rows=6; label baru (Tanggal, dll)
+- Fix: duplikasi withImage/withInjected di ArrayField dirapikan (testing agent menemukan withInjected hilang saat edit tidak tersimpan, lalu di-clean up); guard anti pageview ganda StrictMode di analytics.js (throttle 800ms)
+- Catatan: hash scroll /#news di Landing (scrollIntoView 400ms)
+- Tested: iteration_10.json — frontend 100%, pytest 51/51
+- DIBATALKAN oleh user: pemecahan server.py ke routers

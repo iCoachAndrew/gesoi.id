@@ -37,5 +37,13 @@ const send = (type, name, lang) => {
     .catch(() => {});
 };
 
-export const trackPageview = (lang) => send("pageview", null, lang);
+let lastPageview = 0;
+
+export const trackPageview = (lang) => {
+  const now = Date.now();
+  if (now - lastPageview < 800) return;
+  lastPageview = now;
+  send("pageview", null, lang);
+};
+
 export const trackEvent = (name, lang) => send("event", name, lang);
