@@ -56,6 +56,13 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Note: recursive editor fields use createElement (babel visual-edits plugin crashes on recursive JSX — do not convert back)
 - Tested: iteration_3.json — backend 24/24, frontend 100%
 
+## Implemented (Iteration 5 — June 2026)
+- News section (GBHI-style mosaic, 4 cards, category chips, first card large) with #news nav link "Kabar"
+- Scientific Publications section: 3 paid publications, price + Beli Akses → PROTOTYPE checkout modal (payment INTENTIONALLY MOCKED per user — toast note, no Stripe)
+- Video section: autoplay when ≥50% in viewport (IntersectionObserver, muted loop), emerald quote panel with "Tonton Video" (unmute) + mute toggle; default pexels mp4 + poster. Note: headless test browsers lack H.264 codec — plays fine in real browsers
+- Cookie consent banner (Terima/Tolak, localStorage gesoi_cookie_consent) + Privacy Policy modal; policy text (and all new sections) editable via CMS editor (new sidebar entries 07 Kabar, 08 Video, 09 Publikasi, Privasi & Cookie); join kicker renumbered to 10
+- Tested: iteration_4.json — frontend 100% (backend unchanged, skipped)
+
 ## Deferred
 - Email notification on new registrant via Resend (user has no API key yet). Recipient: gesoigerakansehatotaknasional@gmail.com
 - Real GESOI logo & photos (user will upload)
