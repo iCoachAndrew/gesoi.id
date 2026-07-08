@@ -15,19 +15,19 @@ ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
 
 
 @pytest.fixture(scope="session")
-def api():
+def api() -> requests.Session:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     return s
 
 
 @pytest.fixture(scope="session")
-def admin_token(api):
+def admin_token(api: requests.Session) -> str:
     r = api.post(f"{BASE_URL}/api/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert r.status_code == 200, f"Admin login failed: {r.status_code} {r.text}"
     return r.json()["access_token"]
 
 
 @pytest.fixture(scope="session")
-def auth_headers(admin_token):
+def auth_headers(admin_token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {admin_token}"}

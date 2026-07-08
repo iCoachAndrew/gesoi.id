@@ -10,7 +10,7 @@ from conftest import BASE_URL
 def _tiny_png_bytes() -> bytes:
     # 1x1 red PNG
     sig = b"\x89PNG\r\n\x1a\n"
-    def chunk(t, d):
+    def chunk(t: bytes, d: bytes) -> bytes:
         return struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff)
     ihdr = struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0)
     raw = b"\x00" + bytes([255, 0, 0])
@@ -19,20 +19,20 @@ def _tiny_png_bytes() -> bytes:
 
 
 class TestContentAPI:
-    def test_put_requires_auth(self):
+    def test_put_requires_auth(self) -> None:
         r = requests.put(f"{BASE_URL}/api/admin/content", json={"foo": "bar"}, timeout=10)
         assert r.status_code == 401
 
-    def test_delete_requires_auth(self):
+    def test_delete_requires_auth(self) -> None:
         r = requests.delete(f"{BASE_URL}/api/admin/content", timeout=10)
         assert r.status_code == 401
 
-    def test_get_public(self):
+    def test_get_public(self) -> None:
         r = requests.get(f"{BASE_URL}/api/content", timeout=10)
         assert r.status_code == 200
         assert isinstance(r.json(), dict)
 
-    def test_put_then_get_then_reset(self, auth_headers):
+    def test_put_then_get_then_reset(self, auth_headers: dict[str, str]) -> None:
         payload = {"id": {"hero": {"badge": "TEST_CMS_BADGE_XYZ"}}}
         r = requests.put(f"{BASE_URL}/api/admin/content", json=payload, headers=auth_headers, timeout=10)
         assert r.status_code == 200
@@ -53,17 +53,17 @@ class TestContentAPI:
 
 
 class TestUpload:
-    def test_upload_requires_auth(self):
+    def test_upload_requires_auth(self) -> None:
         files = {"file": ("t.png", _tiny_png_bytes(), "image/png")}
         r = requests.post(f"{BASE_URL}/api/admin/upload", files=files, timeout=15)
         assert r.status_code == 401
 
-    def test_upload_rejects_txt(self, auth_headers):
+    def test_upload_rejects_txt(self, auth_headers: dict[str, str]) -> None:
         files = {"file": ("t.txt", b"hello", "text/plain")}
         r = requests.post(f"{BASE_URL}/api/admin/upload", files=files, headers=auth_headers, timeout=15)
         assert r.status_code == 400
 
-    def test_upload_png_and_serve(self, auth_headers):
+    def test_upload_png_and_serve(self, auth_headers: dict[str, str]) -> None:
         png = _tiny_png_bytes()
         files = {"file": ("test.png", png, "image/png")}
         r = requests.post(f"{BASE_URL}/api/admin/upload", files=files, headers=auth_headers, timeout=30)

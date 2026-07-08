@@ -1,10 +1,11 @@
 import pytest
+import requests
 
 from conftest import BASE_URL
 
 
 @pytest.fixture(scope="module")
-def created_contact(api):
+def created_contact(api: requests.Session) -> tuple[dict, dict]:
     payload = {
         "name": "TEST_User",
         "email": "test_user@example.com",
@@ -17,13 +18,13 @@ def created_contact(api):
     return payload, r.json()
 
 
-def test_root(api):
+def test_root(api: requests.Session) -> None:
     r = api.get(f"{BASE_URL}/api/")
     assert r.status_code == 200
     assert r.json().get("message") == "GESOI API"
 
 
-def test_create_contact_returns_fields(created_contact):
+def test_create_contact_returns_fields(created_contact: tuple[dict, dict]) -> None:
     payload, data = created_contact
     assert data["name"] == payload["name"]
     assert data["email"] == payload["email"]
@@ -31,20 +32,20 @@ def test_create_contact_returns_fields(created_contact):
     assert data["interest"] == payload["interest"]
 
 
-def test_create_contact_has_id_and_timestamp(created_contact):
+def test_create_contact_has_id_and_timestamp(created_contact: tuple[dict, dict]) -> None:
     _, data = created_contact
     assert len(data.get("id", "")) > 0
     assert "created_at" in data
 
 
-def test_created_contact_visible_to_admin(api, created_contact, auth_headers):
+def test_created_contact_visible_to_admin(api: requests.Session, created_contact: tuple[dict, dict], auth_headers: dict[str, str]) -> None:
     _, data = created_contact
     r = api.get(f"{BASE_URL}/api/contact", headers=auth_headers)
     assert r.status_code == 200
     assert any(it["id"] == data["id"] for it in r.json())
 
 
-def test_create_contact_minimal(api):
+def test_create_contact_minimal(api: requests.Session) -> None:
     payload = {"name": "TEST_Min", "email": "min@example.com", "interest": "volunteer"}
     r = api.post(f"{BASE_URL}/api/contact", json=payload)
     assert r.status_code == 200, r.text
@@ -52,19 +53,19 @@ def test_create_contact_minimal(api):
     assert (d["organization"], d["message"]) == (None, None)
 
 
-def test_invalid_email_returns_422(api):
+def test_invalid_email_returns_422(api: requests.Session) -> None:
     payload = {"name": "TEST_X", "email": "not-an-email", "interest": "partner"}
     r = api.post(f"{BASE_URL}/api/contact", json=payload)
     assert r.status_code == 422
 
 
-def test_missing_required_field(api):
+def test_missing_required_field(api: requests.Session) -> None:
     payload = {"email": "a@b.com", "interest": "partner"}
     r = api.post(f"{BASE_URL}/api/contact", json=payload)
     assert r.status_code == 422
 
 
-def test_list_contacts(api, auth_headers):
+def test_list_contacts(api: requests.Session, auth_headers: dict[str, str]) -> None:
     r = api.get(f"{BASE_URL}/api/contact", headers=auth_headers)
     assert r.status_code == 200
     assert isinstance(r.json(), list)

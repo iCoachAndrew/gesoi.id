@@ -6,6 +6,7 @@ other tests that insert analytics docs.
 """
 import os
 import uuid
+from typing import Iterator
 
 import pytest
 import requests
@@ -41,9 +42,9 @@ SEEDS = [
 
 
 @pytest.fixture(scope="class")
-def agg(api, auth_headers):
+def agg(api: requests.Session, auth_headers: dict[str, str]) -> tuple[dict, dict]:
     """Snapshot analytics, seed tracked docs (3 new visitors), snapshot again."""
-    def snap():
+    def snap() -> dict:
         return api.get(f"{BASE_URL}/api/admin/analytics?days=1", headers=auth_headers).json()
 
     base = snap()
@@ -56,7 +57,7 @@ def agg(api, auth_headers):
 class TestAnalytics:
     # ---------- POST /api/track (public) ----------
 
-    def test_pageview_ok(self, api):
+    def test_pageview_ok(self, api: requests.Session) -> None:
         r = api.post(f"{BASE_URL}/api/track", json={
             "type": "pageview", "visitor_id": _vid("v1"), "lang": "id",
             "device": "desktop", "referrer": "direct",
@@ -64,7 +65,7 @@ class TestAnalytics:
         assert r.status_code == 200, r.text
         assert r.json() == {"ok": True}
 
-    def test_event_ok(self, api):
+    def test_event_ok(self, api: requests.Session) -> None:
         r = api.post(f"{BASE_URL}/api/track", json={
             "type": "event", "name": "join_click", "visitor_id": _vid("v1"),
             "lang": "id", "device": "desktop",
@@ -72,17 +73,17 @@ class TestAnalytics:
         assert r.status_code == 200
         assert r.json() == {"ok": True}
 
-    def test_invalid_type_rejected(self, api):
+    def test_invalid_type_rejected(self, api: requests.Session) -> None:
         r = api.post(f"{BASE_URL}/api/track", json={
             "type": "click", "visitor_id": _vid("bad"),
         })
         assert r.status_code == 400
 
-    def test_missing_visitor_id_422(self, api):
+    def test_missing_visitor_id_422(self, api: requests.Session) -> None:
         r = api.post(f"{BASE_URL}/api/track", json={"type": "pageview"})
         assert r.status_code == 422
 
-    def test_no_auth_required(self, api):
+    def test_no_auth_required(self, api: requests.Session) -> None:
         # public endpoint — no auth header sent
         r = api.post(f"{BASE_URL}/api/track", json={
             "type": "pageview", "visitor_id": _vid("public"),
@@ -91,25 +92,25 @@ class TestAnalytics:
 
     # ---------- GET /api/admin/analytics (protected + shape) ----------
 
-    def test_requires_auth(self):
+    def test_requires_auth(self) -> None:
         r = requests.get(f"{BASE_URL}/api/admin/analytics")
         assert r.status_code == 401
 
-    def test_days_clamp_high(self, api, auth_headers):
+    def test_days_clamp_high(self, api: requests.Session, auth_headers: dict[str, str]) -> None:
         r = api.get(f"{BASE_URL}/api/admin/analytics?days=500", headers=auth_headers)
         assert r.status_code == 200
         data = r.json()
         assert data["days"] == 90
         assert len(data["daily"]) == 90
 
-    def test_days_clamp_zero(self, api, auth_headers):
+    def test_days_clamp_zero(self, api: requests.Session, auth_headers: dict[str, str]) -> None:
         r = api.get(f"{BASE_URL}/api/admin/analytics?days=0", headers=auth_headers)
         assert r.status_code == 200
         data = r.json()
         assert data["days"] == 1
         assert len(data["daily"]) == 1
 
-    def test_default_days_shape(self, api, auth_headers):
+    def test_default_days_shape(self, api: requests.Session, auth_headers: dict[str, str]) -> None:
         r = api.get(f"{BASE_URL}/api/admin/analytics", headers=auth_headers)
         assert r.status_code == 200
         d = r.json()
@@ -120,32 +121,32 @@ class TestAnalytics:
 
     # ---------- Aggregation deltas after seeded tracks ----------
 
-    def test_views_delta(self, agg):
+    def test_views_delta(self, agg: tuple[dict, dict]) -> None:
         base, after = agg
         assert after["totals"]["views"] - base["totals"]["views"] == 4
 
-    def test_uniques_delta(self, agg):
+    def test_uniques_delta(self, agg: tuple[dict, dict]) -> None:
         # RUN_TAG guarantees the 3 seeded visitor_ids are brand-new today
         base, after = agg
         assert after["totals"]["uniques"] - base["totals"]["uniques"] == 3
 
-    def test_devices_delta_pageviews_only(self, agg):
+    def test_devices_delta_pageviews_only(self, agg: tuple[dict, dict]) -> None:
         base, after = agg
         assert _dd(base["devices"], after["devices"], "mobile") == 2
         assert _dd(base["devices"], after["devices"], "desktop") == 2
 
-    def test_langs_delta_includes_events(self, agg):
+    def test_langs_delta_includes_events(self, agg: tuple[dict, dict]) -> None:
         # langs match ignores type by design: id = 3 pv + 3 events, en = 1 pv + 1 event
         base, after = agg
         assert _dd(base["langs"], after["langs"], "id") == 6
         assert _dd(base["langs"], after["langs"], "en") == 2
 
-    def test_referrers_delta_pageviews_only(self, agg):
+    def test_referrers_delta_pageviews_only(self, agg: tuple[dict, dict]) -> None:
         base, after = agg
         assert _dd(_ref_map(base), _ref_map(after), "instagram.com") == 3
         assert _dd(_ref_map(base), _ref_map(after), "direct") == 1
 
-    def test_events_delta(self, agg):
+    def test_events_delta(self, agg: tuple[dict, dict]) -> None:
         base, after = agg
         assert _dd(base["events"], after["events"], "join_click") == 2
         assert _dd(base["events"], after["events"], "form_submit") == 1
@@ -153,7 +154,7 @@ class TestAnalytics:
 
 
 @pytest.fixture(scope="module", autouse=True)
-def _cleanup():
+def _cleanup() -> Iterator[None]:
     """Best-effort cleanup of analytics docs created by this test run."""
     yield
     try:
@@ -163,10 +164,11 @@ def _cleanup():
         db_name = os.environ.get("DB_NAME")
         if not (mongo_url and db_name):
             return
-        async def _wipe():
+        async def _wipe() -> None:
             cli = AsyncIOMotorClient(mongo_url)
             await cli[db_name].analytics.delete_many({"visitor_id": {"$regex": f"^{RUN_TAG}"}})
             cli.close()
         asyncio.run(_wipe())
     except Exception:
         pass
+

@@ -1,6 +1,8 @@
 """Auth + admin endpoint tests for GESOI"""
 import time
 
+import requests
+
 from conftest import BASE_URL, ADMIN_EMAIL, ADMIN_PASSWORD
 
 AUTH_COOKIE = "access_token"
@@ -8,7 +10,7 @@ AUTH_COOKIE = "access_token"
 
 # --- /api/auth/login ---
 
-def test_login_success_returns_token_and_cookie(api):
+def test_login_success_returns_token_and_cookie(api: requests.Session) -> None:
     r = api.post(f"{BASE_URL}/api/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert r.status_code == 200, r.text
     data = r.json()
@@ -20,12 +22,12 @@ def test_login_success_returns_token_and_cookie(api):
     assert "httponly" in cookies_hdr.lower()
 
 
-def test_login_wrong_password_401(api):
+def test_login_wrong_password_401(api: requests.Session) -> None:
     r = api.post(f"{BASE_URL}/api/auth/login", json={"email": ADMIN_EMAIL, "password": "WrongPass!123"})
     assert r.status_code == 401
 
 
-def test_login_lockout_after_5_attempts(api):
+def test_login_lockout_after_5_attempts(api: requests.Session) -> None:
     fake = "lockout-test@example.com"
     codes = []
     for _ in range(5):
@@ -38,13 +40,12 @@ def test_login_lockout_after_5_attempts(api):
 
 # --- /api/auth/me ---
 
-def test_me_requires_auth():
-    import requests
+def test_me_requires_auth() -> None:
     r = requests.get(f"{BASE_URL}/api/auth/me")
     assert r.status_code == 401
 
 
-def test_me_with_bearer_token(api, auth_headers):
+def test_me_with_bearer_token(api: requests.Session, auth_headers: dict[str, str]) -> None:
     r = api.get(f"{BASE_URL}/api/auth/me", headers=auth_headers)
     assert r.status_code == 200
     assert r.json()["email"] == ADMIN_EMAIL
@@ -52,13 +53,12 @@ def test_me_with_bearer_token(api, auth_headers):
 
 # --- /api/admin/contacts ---
 
-def test_admin_contacts_requires_auth():
-    import requests
+def test_admin_contacts_requires_auth() -> None:
     r = requests.get(f"{BASE_URL}/api/admin/contacts")
     assert r.status_code == 401
 
 
-def test_admin_contacts_with_token(api, auth_headers):
+def test_admin_contacts_with_token(api: requests.Session, auth_headers: dict[str, str]) -> None:
     r = api.get(f"{BASE_URL}/api/admin/contacts", headers=auth_headers)
     assert r.status_code == 200
     assert isinstance(r.json(), list)
@@ -66,13 +66,12 @@ def test_admin_contacts_with_token(api, auth_headers):
 
 # --- /api/contact protected GET ---
 
-def test_get_contact_requires_auth():
-    import requests
+def test_get_contact_requires_auth() -> None:
     r = requests.get(f"{BASE_URL}/api/contact")
     assert r.status_code == 401
 
 
-def test_get_contact_with_token(api, auth_headers):
+def test_get_contact_with_token(api: requests.Session, auth_headers: dict[str, str]) -> None:
     r = api.get(f"{BASE_URL}/api/contact", headers=auth_headers)
     assert r.status_code == 200
     assert isinstance(r.json(), list)
@@ -80,7 +79,7 @@ def test_get_contact_with_token(api, auth_headers):
 
 # --- Public POST /api/contact still open + regression via admin list ---
 
-def test_post_contact_public_and_visible_in_admin(api, auth_headers):
+def test_post_contact_public_and_visible_in_admin(api: requests.Session, auth_headers: dict[str, str]) -> None:
     payload = {
         "name": "TEST_AdminSeen",
         "email": f"test_seen_{int(time.time())}@example.com",
@@ -98,6 +97,6 @@ def test_post_contact_public_and_visible_in_admin(api, auth_headers):
 
 # --- Logout ---
 
-def test_logout(api):
+def test_logout(api: requests.Session) -> None:
     r = api.post(f"{BASE_URL}/api/auth/logout")
     assert r.status_code == 200
