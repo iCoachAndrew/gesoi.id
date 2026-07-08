@@ -1,0 +1,92 @@
+{
+  "theme": "Elegant Organic & Premium Impact",
+  "archetype": "Organic & Earthy mixed with Luxury (Godly website level, elegant green)",
+  "colors": {
+    "background": "#F9F9F7",
+    "background_dark": "#0A2E20",
+    "primary": "#059669",
+    "primary_hover": "#047857",
+    "accent_gold": "#D4AF37",
+    "text_main": "#1C1C1C",
+    "text_muted": "#4B5563",
+    "text_inverse": "#FFFFFF",
+    "surface": "#FFFFFF",
+    "surface_glass": "rgba(255, 255, 255, 0.7)",
+    "surface_glass_dark": "rgba(10, 46, 32, 0.8)"
+  },
+  "typography": {
+    "heading": {
+      "font": "Cormorant Garamond",
+      "style": "Elegant, serif, refined. Use tracking-tight for large text.",
+      "weights": ["400", "600"]
+    },
+    "body": {
+      "font": "Outfit",
+      "style": "Clean, modern sans-serif. Excellent legibility.",
+      "weights": ["300", "400", "500"]
+    }
+  },
+  "visual_enhancers": {
+    "shadows": "Ambient diffuse shadows. E.g. shadow-[0_8px_32px_rgba(0,0,0,0.08)]",
+    "borders": "1px solid rgba(10, 46, 32, 0.1) on light mode surfaces",
+    "glassmorphism": "backdrop-blur-xl bg-white/70 for sticky headers and overlays. NO fully transparent headers."
+  },
+  "layouts": {
+    "spacing": "Generous spacing. p-8, p-12, p-24 for sections. High breathing room.",
+    "grid_strategy": "Bento Grid (Mode A). Asymmetrical. col-span-full md:col-span-8 for hero cards, col-span-4 for supporting."
+  },
+  "motion": {
+    "scroll": "Lenis smooth scrolling (MANDATORY).",
+    "hero": "Framer-motion masked line-by-line text reveal. Kinetic and elegant.",
+    "marquee": "react-fast-marquee. Slow, elegant editorial ribbon. Spacing gap-24.",
+    "parallax": "Subtle parallax on hero image and background elements using framer-motion useScroll."
+  },
+  "images": [
+    {
+      "category": "Youth/Education (Early Education Pillar)",
+      "url": "https://images.pexels.com/photos/18772861/pexels-photo-18772861.jpeg",
+      "description": "Indonesian youth smiling."
+    },
+    {
+      "category": "Footer/Jakarta Background",
+      "url": "https://images.unsplash.com/photo-1736296982588-d7cbc2941977",
+      "description": "Jakarta skyline evening."
+    },
+    {
+      "category": "Hero/Ecosystem Abstract (Brain Energy)",
+      "url": "https://images.unsplash.com/photo-1616072775440-ca2ea7c7ce13",
+      "description": "Green glowing nodes - Abstract brain connections."
+    },
+    {
+      "category": "Community/Collective Awareness",
+      "url": "https://images.unsplash.com/photo-1611087802810-046bb671e644",
+      "description": "Indonesian community smiling."
+    }
+  ],
+  "accessibility": {
+    "contrast": "Ensure APCA contrast ratio. Text on dark backgrounds must be high contrast.",
+    "testing": "All interactive elements MUST have data-testid attributes."
+  },
+  "instructions_to_main_agent": [
+    "Use raw HTML/Tailwind for the asymmetric main page layouts (Bento grids).",
+    "Use Shadcn only for form components in the CTA/Footer (Input, Textarea, Button).",
+    "Implement a language toggle (ID/EN) using a simple React state or Context in the navigation.",
+    "Hero section must use Framer Motion for line-by-line text reveal ('Brain Energy menuju Indonesia Emas 2045').",
+    "Implement the Grand Narrative ecosystem flow (PERDOSNI -> GESOI -> otaQku -> ICC) as an overlapping glassmorphism card stack or horizontal timeline, not a boring flowchart.",
+    "Number the manifesto chapters (4 mission pillars).",
+    "Roadmap timeline 3-7-10 years should be vertical or horizontal but visually distinct.",
+    "DO NOT center align the entire app container (.App { text-align: center }).",
+    "Ensure the header uses glassmorphism and is never fully transparent over the hero.",
+    "Install and use lenis for smooth scrolling.",
+    "Install and use react-fast-marquee for the editorial slow marquee."
+  ],
+  "universal_guidelines": [
+    "No generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "Never apply universal transition: all.",
+    "Always add 'data-testid' to interactive/informational elements.",
+    "Use lucide-react for icons.",
+    "Ensure files are .js (React), not .tsx."
+  ]
+}
