@@ -1,14 +1,18 @@
-"""Backend tests for internal visitor analytics: POST /api/track + GET /api/admin/analytics."""
+"""Backend tests for internal visitor analytics: POST /api/track + GET /api/admin/analytics.
+
+All tests live in ONE class so xdist loadscope pins them to a single worker —
+the aggregation delta tests snapshot shared state and must not interleave with
+other tests that insert analytics docs.
+"""
 import os
 import uuid
-from datetime import datetime, timezone
 
 import pytest
 import requests
 
 from conftest import BASE_URL
 
-# Unique per-run prefix to identify docs we insert (for optional cleanup)
+# Unique per-run prefix to identify docs we insert (for cleanup)
 RUN_TAG = f"pytest-{uuid.uuid4().hex[:8]}"
 
 
@@ -16,9 +20,42 @@ def _vid(suffix: str) -> str:
     return f"{RUN_TAG}-{suffix}"
 
 
-# ---------- POST /api/track (public) ----------
+def _dd(base: dict, after: dict, key: str) -> int:
+    return after.get(key, 0) - base.get(key, 0)
 
-class TestTrackPublic:
+
+def _ref_map(snapshot: dict) -> dict:
+    return {r["source"]: r["count"] for r in snapshot["referrers"]}
+
+
+SEEDS = [
+    {"type": "pageview", "visitor_id": _vid("a"), "lang": "id", "device": "mobile", "referrer": "instagram.com"},
+    {"type": "pageview", "visitor_id": _vid("a"), "lang": "id", "device": "mobile", "referrer": "instagram.com"},
+    {"type": "pageview", "visitor_id": _vid("b"), "lang": "en", "device": "desktop", "referrer": "direct"},
+    {"type": "pageview", "visitor_id": _vid("c"), "lang": "id", "device": "desktop", "referrer": "instagram.com"},
+    {"type": "event", "name": "join_click", "visitor_id": _vid("a"), "lang": "id", "device": "mobile"},
+    {"type": "event", "name": "join_click", "visitor_id": _vid("b"), "lang": "en", "device": "desktop"},
+    {"type": "event", "name": "form_submit", "visitor_id": _vid("a"), "lang": "id", "device": "mobile"},
+    {"type": "event", "name": "buy_click", "visitor_id": _vid("c"), "lang": "id", "device": "desktop"},
+]
+
+
+@pytest.fixture(scope="class")
+def agg(api, auth_headers):
+    """Snapshot analytics, seed tracked docs (3 new visitors), snapshot again."""
+    def snap():
+        return api.get(f"{BASE_URL}/api/admin/analytics?days=1", headers=auth_headers).json()
+
+    base = snap()
+    for s in SEEDS:
+        r = api.post(f"{BASE_URL}/api/track", json=s)
+        assert r.status_code == 200
+    return base, snap()
+
+
+class TestAnalytics:
+    # ---------- POST /api/track (public) ----------
+
     def test_pageview_ok(self, api):
         r = api.post(f"{BASE_URL}/api/track", json={
             "type": "pageview", "visitor_id": _vid("v1"), "lang": "id",
@@ -33,7 +70,7 @@ class TestTrackPublic:
             "lang": "id", "device": "desktop",
         })
         assert r.status_code == 200
-        assert r.json()["ok"] is True
+        assert r.json() == {"ok": True}
 
     def test_invalid_type_rejected(self, api):
         r = api.post(f"{BASE_URL}/api/track", json={
@@ -52,12 +89,9 @@ class TestTrackPublic:
         })
         assert r.status_code == 200
 
+    # ---------- GET /api/admin/analytics (protected + shape) ----------
 
-# ---------- GET /api/admin/analytics (protected + aggregation) ----------
-
-class TestAdminAnalytics:
-    def test_requires_auth(self, api):
-        # ensure no leftover Authorization header on the session
+    def test_requires_auth(self):
         r = requests.get(f"{BASE_URL}/api/admin/analytics")
         assert r.status_code == 401
 
@@ -79,62 +113,43 @@ class TestAdminAnalytics:
         r = api.get(f"{BASE_URL}/api/admin/analytics", headers=auth_headers)
         assert r.status_code == 200
         d = r.json()
-        # Shape checks
         for k in ("days", "totals", "daily", "devices", "langs", "referrers", "events"):
             assert k in d
         assert "views" in d["totals"] and "uniques" in d["totals"]
         assert len(d["daily"]) == d["days"]
 
-    def test_aggregation_after_seeded_tracks(self, api, auth_headers):
-        # Seed: 3 unique visitors, mixed devices/langs, events + pageviews with referrers.
-        seeds = [
-            {"type": "pageview", "visitor_id": _vid("a"), "lang": "id", "device": "mobile",  "referrer": "instagram.com"},
-            {"type": "pageview", "visitor_id": _vid("a"), "lang": "id", "device": "mobile",  "referrer": "instagram.com"},  # dup visitor -> uniques unchanged
-            {"type": "pageview", "visitor_id": _vid("b"), "lang": "en", "device": "desktop", "referrer": "direct"},
-            {"type": "pageview", "visitor_id": _vid("c"), "lang": "id", "device": "desktop", "referrer": "instagram.com"},
-            {"type": "event", "name": "join_click",  "visitor_id": _vid("a"), "lang": "id", "device": "mobile"},
-            {"type": "event", "name": "join_click",  "visitor_id": _vid("b"), "lang": "en", "device": "desktop"},
-            {"type": "event", "name": "form_submit", "visitor_id": _vid("a"), "lang": "id", "device": "mobile"},
-            {"type": "event", "name": "buy_click",   "visitor_id": _vid("c"), "lang": "id", "device": "desktop"},
-        ]
+    # ---------- Aggregation deltas after seeded tracks ----------
 
-        # baseline
-        base = api.get(f"{BASE_URL}/api/admin/analytics?days=1", headers=auth_headers).json()
-        base_views = base["totals"]["views"]
-        base_devices = base["devices"]
-        base_langs = base["langs"]
-        base_events = base["events"]
-        base_refs = {r["source"]: r["count"] for r in base["referrers"]}
+    def test_views_delta(self, agg):
+        base, after = agg
+        assert after["totals"]["views"] - base["totals"]["views"] == 4
 
-        for s in seeds:
-            rr = api.post(f"{BASE_URL}/api/track", json=s)
-            assert rr.status_code == 200
-
-        after = api.get(f"{BASE_URL}/api/admin/analytics?days=1", headers=auth_headers).json()
-
-        # 4 pageview inserts
-        assert after["totals"]["views"] - base_views == 4
-        # Uniques increases by 3 new visitor_ids (a,b,c) — but only if they weren't present in today's baseline
-        # We rely on unique RUN_TAG so these visitor_ids are guaranteed brand-new.
+    def test_uniques_delta(self, agg):
+        # RUN_TAG guarantees the 3 seeded visitor_ids are brand-new today
+        base, after = agg
         assert after["totals"]["uniques"] - base["totals"]["uniques"] == 3
 
-        # devices delta: mobile +2, desktop +2 (only pageviews count in devices per implementation)
-        assert (after["devices"].get("mobile", 0) - base_devices.get("mobile", 0)) == 2
-        assert (after["devices"].get("desktop", 0) - base_devices.get("desktop", 0)) == 2
+    def test_devices_delta_pageviews_only(self, agg):
+        base, after = agg
+        assert _dd(base["devices"], after["devices"], "mobile") == 2
+        assert _dd(base["devices"], after["devices"], "desktop") == 2
 
-        # langs include events (per implementation match ignores type) — id: 3 pv + 3 events = 6, en: 1 pv + 1 event = 2
-        assert (after["langs"].get("id", 0) - base_langs.get("id", 0)) == 6
-        assert (after["langs"].get("en", 0) - base_langs.get("en", 0)) == 2
+    def test_langs_delta_includes_events(self, agg):
+        # langs match ignores type by design: id = 3 pv + 3 events, en = 1 pv + 1 event
+        base, after = agg
+        assert _dd(base["langs"], after["langs"], "id") == 6
+        assert _dd(base["langs"], after["langs"], "en") == 2
 
-        # referrers only counted for pageviews with non-null referrer
-        after_refs = {r["source"]: r["count"] for r in after["referrers"]}
-        assert (after_refs.get("instagram.com", 0) - base_refs.get("instagram.com", 0)) == 3
-        assert (after_refs.get("direct", 0) - base_refs.get("direct", 0)) == 1
+    def test_referrers_delta_pageviews_only(self, agg):
+        base, after = agg
+        assert _dd(_ref_map(base), _ref_map(after), "instagram.com") == 3
+        assert _dd(_ref_map(base), _ref_map(after), "direct") == 1
 
-        # events
-        assert (after["events"].get("join_click", 0) - base_events.get("join_click", 0)) == 2
-        assert (after["events"].get("form_submit", 0) - base_events.get("form_submit", 0)) == 1
-        assert (after["events"].get("buy_click", 0) - base_events.get("buy_click", 0)) == 1
+    def test_events_delta(self, agg):
+        base, after = agg
+        assert _dd(base["events"], after["events"], "join_click") == 2
+        assert _dd(base["events"], after["events"], "form_submit") == 1
+        assert _dd(base["events"], after["events"], "buy_click") == 1
 
 
 @pytest.fixture(scope="module", autouse=True)

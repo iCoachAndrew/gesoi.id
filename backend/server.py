@@ -347,65 +347,68 @@ async def track_event(input: TrackEvent):
     return {"ok": True}
 
 
-@api_router.get("/admin/analytics")
-async def admin_analytics(days: int = 30, admin: dict = Depends(get_current_admin)):
-    days = max(1, min(days, 90))
-    now = datetime.now(timezone.utc)
-    start = (now - timedelta(days=days - 1)).strftime("%Y-%m-%d")
-    pv = {"date": {"$gte": start}, "type": "pageview"}
-
-    daily_raw = await db.analytics.aggregate([
-        {"$match": pv},
+async def _daily_pageviews(pv_match: dict, now: datetime, days: int) -> list:
+    raw = await db.analytics.aggregate([
+        {"$match": pv_match},
         {"$group": {"_id": "$date", "views": {"$sum": 1}, "visitors": {"$addToSet": "$visitor_id"}}},
         {"$project": {"_id": 0, "date": "$_id", "views": 1, "uniques": {"$size": "$visitors"}}},
     ]).to_list(200)
-    by_date = {d["date"]: d for d in daily_raw}
+    by_date = {d["date"]: d for d in raw}
     daily = []
     for i in range(days):
         key = (now - timedelta(days=days - 1 - i)).strftime("%Y-%m-%d")
         row = by_date.get(key, {"views": 0, "uniques": 0})
         daily.append({"date": key, "views": row["views"], "uniques": row["uniques"]})
+    return daily
 
-    uniques_total = await db.analytics.aggregate([
-        {"$match": pv},
+
+async def _unique_visitors(match: dict) -> int:
+    res = await db.analytics.aggregate([
+        {"$match": match},
         {"$group": {"_id": "$visitor_id"}},
         {"$count": "n"},
     ]).to_list(1)
+    return res[0]["n"] if res else 0
 
-    devices_raw = await db.analytics.aggregate([
-        {"$match": {**pv, "device": {"$ne": None}}},
-        {"$group": {"_id": "$device", "count": {"$sum": 1}}},
-    ]).to_list(10)
 
-    langs_raw = await db.analytics.aggregate([
-        {"$match": {"date": {"$gte": start}, "lang": {"$ne": None}}},
-        {"$group": {"_id": "$lang", "count": {"$sum": 1}}},
-    ]).to_list(10)
+async def _group_count(match: dict, field: str) -> dict:
+    raw = await db.analytics.aggregate([
+        {"$match": match},
+        {"$group": {"_id": f"${field}", "count": {"$sum": 1}}},
+    ]).to_list(50)
+    return {d["_id"]: d["count"] for d in raw}
 
-    referrers = await db.analytics.aggregate([
-        {"$match": {**pv, "referrer": {"$ne": None}}},
+
+async def _top_referrers(pv_match: dict) -> list:
+    return await db.analytics.aggregate([
+        {"$match": {**pv_match, "referrer": {"$ne": None}}},
         {"$group": {"_id": "$referrer", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}},
         {"$limit": 10},
         {"$project": {"_id": 0, "source": "$_id", "count": 1}},
     ]).to_list(10)
 
-    events_raw = await db.analytics.aggregate([
-        {"$match": {"date": {"$gte": start}, "type": "event", "name": {"$ne": None}}},
-        {"$group": {"_id": "$name", "count": {"$sum": 1}}},
-    ]).to_list(50)
 
+@api_router.get("/admin/analytics")
+async def admin_analytics(days: int = 30, admin: dict = Depends(get_current_admin)):
+    days = max(1, min(days, 90))
+    now = datetime.now(timezone.utc)
+    start = (now - timedelta(days=days - 1)).strftime("%Y-%m-%d")
+    in_range = {"date": {"$gte": start}}
+    pv = {**in_range, "type": "pageview"}
+
+    daily = await _daily_pageviews(pv, now, days)
     return {
         "days": days,
         "totals": {
             "views": sum(d["views"] for d in daily),
-            "uniques": uniques_total[0]["n"] if uniques_total else 0,
+            "uniques": await _unique_visitors(pv),
         },
         "daily": daily,
-        "devices": {d["_id"]: d["count"] for d in devices_raw},
-        "langs": {d["_id"]: d["count"] for d in langs_raw},
-        "referrers": referrers,
-        "events": {d["_id"]: d["count"] for d in events_raw},
+        "devices": await _group_count({**pv, "device": {"$ne": None}}, "device"),
+        "langs": await _group_count({**in_range, "lang": {"$ne": None}}, "lang"),
+        "referrers": await _top_referrers(pv),
+        "events": await _group_count({**in_range, "type": "event", "name": {"$ne": None}}, "name"),
     }
 
 
