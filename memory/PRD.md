@@ -63,6 +63,13 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Cookie consent banner (Terima/Tolak, localStorage gesoi_cookie_consent) + Privacy Policy modal; policy text (and all new sections) editable via CMS editor (new sidebar entries 07 Kabar, 08 Video, 09 Publikasi, Privasi & Cookie); join kicker renumbered to 10
 - Tested: iteration_4.json — frontend 100% (backend unchanged, skipped)
 
+## Implemented (Iteration 6 — June 2026)
+- Publication order management: checkout modal collects buyer data → POST /api/orders; admin tab "Pembelian Publikasi" (stats, status workflow Baru/Dihubungi/Selesai via PATCH, Export CSV). Payment still intentional prototype
+- Ecosystem "Narasi Besar" redesigned: interactive ORBIT layout (GESOI center, floating satellites, hover tooltips, SVG connectors) with CMS "Tata Letak" dropdown (orbit/grid); mobile falls back to responsive grid
+- Docs created: /app/docs/ARSITEKTUR.md, /app/docs/PRD.md, /app/docs/CATATAN_PENGEMBANGAN.md (Indonesian)
+- Awaiting from user: official GESOI video URL (can be set via Editor → 08 — Video)
+- Tested: iteration_5.json — backend 10/10, frontend 100%
+
 ## Deferred
 - Email notification on new registrant via Resend (user has no API key yet). Recipient: gesoigerakansehatotaknasional@gmail.com
 - Real GESOI logo & photos (user will upload)
