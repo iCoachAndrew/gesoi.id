@@ -92,6 +92,7 @@ export const content = {
       title: "Kabar & kegiatan terbaru",
       backLabel: "Kembali",
       moreLabel: "Berita Lainnya",
+      shareLabel: "Bagikan ke WhatsApp",
       notFound: "Berita tidak ditemukan.",
       items: [
         {
@@ -293,6 +294,7 @@ export const content = {
       title: "Latest news & activities",
       backLabel: "Back",
       moreLabel: "More News",
+      shareLabel: "Share on WhatsApp",
       notFound: "Article not found.",
       items: [
         {

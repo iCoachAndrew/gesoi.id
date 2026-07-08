@@ -43,7 +43,7 @@ export const LABELS = {
   policyText: "Teks Kebijakan Privasi", video: "Video", publications: "Publikasi",
   privacy: "Privasi", layout: "Tata Letak / Template", phone: "Telepon/WhatsApp",
   date: "Tanggal", backLabel: "Label Tombol Kembali", moreLabel: "Label Berita Lainnya",
-  notFound: "Teks Berita Tidak Ditemukan",
+  notFound: "Teks Berita Tidak Ditemukan", shareLabel: "Label Tombol Bagikan",
 };
 
 export const label = (k) => LABELS[k] || k;

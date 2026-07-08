@@ -125,3 +125,8 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Type hints lengkap di seluruh file test backend (conftest fixtures: api→requests.Session, admin_token→str, auth_headers→dict[str,str]; semua test → None; agg→tuple[dict,dict]; _cleanup→Iterator[None])
 - Fix: korupsi file test_analytics.py (baris 'pass' nyasar + import typing hilang) ditemukan & diperbaiki
 - Verifikasi: iteration_11.json — pytest 51/51, grep bersih (tidak ada def tanpa anotasi)
+
+## Implemented (Iteration 15 — Juni 2026): Tombol Bagikan ke WhatsApp
+- Halaman detail berita: tombol hijau WhatsApp (ikon SVG brand) di bawah artikel → https://wa.me/?text={judul}%0A%0A{url}, target _blank, data-testid news-share-whatsapp
+- Dwibahasa via t.news.shareLabel (dapat diedit di CMS: "Label Tombol Bagikan"); klik terekam sebagai event analitik share_click
+- Self-tested: screenshot + verifikasi href/target/label ID & EN
