@@ -105,3 +105,8 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Tracking frontend (lib/analytics.js) HANYA aktif setelah consent cookie "Terima" (event gesoi-consent-accepted); visitor id anonim di localStorage (gesoi_vid); event: pageview, join_click (hero+navbar), form_submit, buy_click, lang_switch
 - Catatan desain: agregasi bahasa mencakup event lang_switch (bukan hanya pageview) — disengaja
 - Tested: iteration_8.json — pytest 46/46 (incl. test_analytics.py baru), frontend 100%
+
+## Implemented (Iteration 12 — Juni 2026, code quality)
+- server.py: admin_analytics() dipecah ke helper kecil (_daily_pageviews, _unique_visitors, _group_count, _top_referrers) — respons API identik
+- test_analytics.py: 'is True' → equality; test agregasi besar dipecah jadi 6 delta test kecil dengan fixture agg (class-scoped); SEMUA test analitik disatukan dalam satu kelas TestAnalytics agar xdist loadscope memakukannya di satu worker (memperbaiki race paralel antar-worker yang ditemukan saat refactor — JANGAN pecah kelas ini)
+- Verifikasi: iteration_9.json — pytest 51/51 dua kali berturut (tanpa flakiness)
