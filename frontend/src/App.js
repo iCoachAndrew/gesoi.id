@@ -1,55 +1,60 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import Lenis from "lenis";
+import { Toaster } from "sonner";
+import { content } from "@/i18n";
+import { Navbar } from "@/components/gesoi/Navbar";
+import { Hero } from "@/components/gesoi/Hero";
+import { MarqueeStrip } from "@/components/gesoi/MarqueeStrip";
+import { Problem } from "@/components/gesoi/Problem";
+import { Ecosystem } from "@/components/gesoi/Ecosystem";
+import { Pillars } from "@/components/gesoi/Pillars";
+import { Programs } from "@/components/gesoi/Programs";
+import { Roadmap } from "@/components/gesoi/Roadmap";
+import { Governance } from "@/components/gesoi/Governance";
+import { JoinCTA } from "@/components/gesoi/JoinCTA";
+import { Footer } from "@/components/gesoi/Footer";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+const Landing = () => {
+  const [lang, setLang] = useState("id");
+  const t = content[lang];
 
   useEffect(() => {
-    helloWorldApi();
+    const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
   }, []);
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
+    <div className="App bg-[#F9F9F7]">
+      <Navbar t={t} lang={lang} setLang={setLang} />
+      <Hero t={t} />
+      <MarqueeStrip items={t.marquee} />
+      <Problem t={t.problem} />
+      <Ecosystem t={t.ecosystem} />
+      <Pillars t={t.pillars} />
+      <Programs t={t.programs} />
+      <Roadmap t={t.roadmap} />
+      <Governance t={t.governance} />
+      <JoinCTA t={t.join} />
+      <Footer t={t} />
+      <Toaster position="bottom-right" richColors />
     </div>
   );
 };
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

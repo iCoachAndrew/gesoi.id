@@ -1,0 +1,77 @@
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Brain } from "lucide-react";
+
+const links = (t) => [
+  { href: "#problem", label: t.nav.problem },
+  { href: "#ecosystem", label: t.nav.ecosystem },
+  { href: "#pillars", label: t.nav.pillars },
+  { href: "#programs", label: t.nav.programs },
+  { href: "#roadmap", label: t.nav.roadmap },
+];
+
+export const Navbar = ({ t, lang, setLang }) => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <motion.header
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 ${
+        scrolled ? "bg-[#0A2E20]/85 backdrop-blur-xl border-b border-white/10" : "bg-[#0A2E20]/40 backdrop-blur-md"
+      }`}
+      data-testid="main-navbar"
+    >
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+        <a href="#top" className="flex items-center gap-2.5" data-testid="navbar-logo">
+          <span className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
+            <Brain className="w-4.5 h-4.5 text-emerald-300" size={18} />
+          </span>
+          <span className="text-white font-medium tracking-[0.2em] text-sm">GESOI</span>
+        </a>
+        <nav className="hidden md:flex items-center gap-8">
+          {links(t).map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              data-testid={`nav-link-${l.href.slice(1)}`}
+              className="text-white/70 hover:text-white text-xs uppercase tracking-[0.15em] transition-colors duration-300"
+            >
+              {l.label}
+            </a>
+          ))}
+        </nav>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center rounded-full border border-white/20 overflow-hidden text-xs" data-testid="language-toggle">
+            {["id", "en"].map((l) => (
+              <button
+                key={l}
+                data-testid={`lang-btn-${l}`}
+                onClick={() => setLang(l)}
+                className={`px-3 py-1.5 uppercase tracking-wider transition-colors duration-300 ${
+                  lang === l ? "bg-emerald-500 text-white" : "text-white/60 hover:text-white"
+                }`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+          <a
+            href="#join"
+            data-testid="navbar-join-btn"
+            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-white text-[#0A2E20] text-xs uppercase tracking-[0.15em] font-medium hover:bg-emerald-300 transition-colors duration-300"
+          >
+            {t.nav.join}
+          </a>
+        </div>
+      </div>
+    </motion.header>
+  );
+};
