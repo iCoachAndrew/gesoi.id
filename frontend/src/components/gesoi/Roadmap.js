@@ -17,7 +17,7 @@ export const Roadmap = ({ t }) => (
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
-            className={`relative grid grid-cols-1 lg:grid-cols-2 gap-6 pb-16 last:pb-0 ${i % 2 === 0 ? "" : ""}`}
+            className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 pb-16 last:pb-0"
             data-testid={`roadmap-item-${i}`}
           >
             <span className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full bg-[#0B1F3A] border-2 border-emerald-400" />
@@ -26,6 +26,17 @@ export const Roadmap = ({ t }) => (
               <h3 className="text-white text-xl font-medium mb-3">{item.title}</h3>
               <p className="text-white/60 font-light leading-relaxed max-w-md inline-block">{item.desc}</p>
             </div>
+            {t.layout === "photos" && item.image && (
+              <div className={`pl-16 lg:pl-0 ${i % 2 === 0 ? "lg:col-start-2 lg:pl-16" : "lg:col-start-1 lg:row-start-1 lg:pr-16 lg:text-right"}`}>
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  loading="lazy"
+                  className="inline-block w-full max-w-md h-52 object-cover rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
+                  data-testid={`roadmap-image-${i}`}
+                />
+              </div>
+            )}
           </motion.div>
         ))}
       </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Copy, Trash2, Film, ImageIcon } from "lucide-react";
+import { Copy, Trash2, Film, ImageIcon, Upload } from "lucide-react";
 import { authConfig } from "../lib/editorFields";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -12,10 +12,31 @@ const fmtSize = (b) => (b >= 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` 
 export default function AdminMedia() {
   const [files, setFiles] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
+  const fetchFiles = () => {
     axios.get(`${API}/admin/files`, authConfig()).then((r) => setFiles(r.data)).catch(() => setFiles([]));
-  }, []);
+  };
+
+  useEffect(fetchFiles, []);
+
+  const upload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      await axios.post(`${API}/admin/upload`, fd, authConfig());
+      toast.success("File berhasil diunggah!");
+      fetchFiles();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Gagal mengunggah file");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
 
   const copyUrl = (f) => {
     const url = `${BACKEND_URL}/api/files/${f.storage_path}`;
@@ -50,25 +71,41 @@ export default function AdminMedia() {
             Semua file yang pernah diunggah. Salin URL untuk dipakai ulang di Editor Website.
           </p>
         </div>
-        <div className="flex gap-2">
-          {[["all", "Semua"], ["image", "Gambar"], ["video", "Video"]].map(([key, lbl]) => (
-            <button
-              key={key}
-              onClick={() => setFilter(key)}
-              data-testid={`media-filter-${key}`}
-              className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider border transition-colors duration-200 ${
-                filter === key ? "bg-[#0B1F3A] border-[#0B1F3A] text-white" : "border-[#0B1F3A]/20 text-[#4B5563] hover:border-[#0B1F3A]"
-              }`}
-            >
-              {lbl}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-3">
+          <label
+            data-testid="media-upload-btn"
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 text-white text-xs uppercase tracking-wider font-semibold hover:bg-emerald-500 transition-colors duration-200 cursor-pointer ${uploading ? "opacity-60 pointer-events-none" : ""}`}
+          >
+            <Upload size={14} /> {uploading ? "Mengunggah..." : "Unggah File"}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime"
+              className="hidden"
+              onChange={upload}
+              disabled={uploading}
+              data-testid="media-upload-input"
+            />
+          </label>
+          <div className="flex gap-2">
+            {[["all", "Semua"], ["image", "Gambar"], ["video", "Video"]].map(([key, lbl]) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key)}
+                data-testid={`media-filter-${key}`}
+                className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider border transition-colors duration-200 ${
+                  filter === key ? "bg-[#0B1F3A] border-[#0B1F3A] text-white" : "border-[#0B1F3A]/20 text-[#4B5563] hover:border-[#0B1F3A]"
+                }`}
+              >
+                {lbl}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {filtered.length === 0 ? (
         <div className="rounded-2xl bg-white border border-[#0B1F3A]/10 p-16 text-center text-[#9CA3AF]" data-testid="media-empty">
-          Belum ada file. Unggah gambar/video lewat tab Editor Website.
+          Belum ada file. Klik tombol "Unggah File" di atas untuk menambahkan gambar atau video.
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">

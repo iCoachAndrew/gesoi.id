@@ -1,0 +1,25 @@
+{
+  "summary": "Iteration 7 covered the 3 session changes end-to-end. (1) Hero perf: landing renders with img src='/hero-bg.webp', network response 200 with content-length=39762 bytes (~39KB, down from ~1.2MB PNG). Hero badge/title/CTAs/launch badge all visible; parallax + fetchPriority='high' applied; visual identity intact (navy bg, blueprint map, italic emerald 'Brain Energy' line, gold 'Emas 2045'). All 10 landing sections (problem, ecosystem, pillars, programs, roadmap, governance, news, video, publications, join) + footer render without console errors. (2) Media Gallery: admin login OK (admin@gesoi.or.id), admin-media tab renders, new media-upload-btn + hidden media-upload-input present; PNG upload via input triggered success toast 'File berhasil diunggah!' and file appeared in grid immediately (media-cards count went to 3) without navigation. (3) Adaptive Editor: pillars/programs/roadmap all show 'Tata Letak / Template' select with correct options — pillars=['list:Baris Editorial...', 'cards:Grid Kartu dengan Gambar'], programs=['grid:Kartu Ikon (klasik)','media:Kartu dengan Gambar (foto per program)'], roadmap=['timeline:Garis Waktu (teks)','photos:Garis Waktu dengan Foto']. Per-item image fields present: field-pillars-items-0-image, field-programs-items-0-image, field-roadmap-items-0-image. Ecosystem layout regression OK ['orbit','grid']. End-to-end CMS flow: set pillars.layout='cards' + pillars.items[0].image=unsplash URL → Simpan → toast 'Perubahan tersimpan!' → landing shows pillar-card-01 with image (pillar-item-01 absent). Reset pillars.layout='list' + clear image → Simpan → landing shows pillar-item-01 (pillar-card-01 absent). Backend regression: pytest 24/24 passed (auth, cms, contact). Contact POST /api/contact returned 200. After full CMS test, clicked editor-reset-btn (Konten dikembalikan ke bawaan) to restore defaults; TEST_ contacts + test upload deleted from Mongo.",
+  "backend_issues": {"critical": [], "minor": [
+    {"endpoint": "backend/tests/test_orders.py", "issue": "Collection-time KeyError: reads os.environ['REACT_APP_BACKEND_URL'] without fallback; fails when env var not exported to pytest. Pre-existing from iter6, unrelated to this session but blocks CI regression run without env export."}
+  ]},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/test_reports/pytest/iter7.xml", "/app/backend/tests/test_cms.py", "/app/backend/tests/test_auth_admin.py", "/app/backend/tests/test_contact.py"],
+  "action_items": [
+    "Non-blocking: harden backend/tests/test_orders.py by using os.environ.get('REACT_APP_BACKEND_URL','...') or reading from frontend/.env at collection time so pytest doesn't error at import."
+  ],
+  "critical_code_review_comments": [
+    "Hero.js line 26 uses React prop 'fetchPriority' (camelCase). React <18 warned about unknown DOM attribute; on React 18+ this is passed through as 'fetchpriority' correctly. package.json shows React 19 — OK, no warning observed in console.",
+    "editorFields.js LAYOUT_OPTIONS keys 'pillars'/'programs'/'roadmap' work because Field looks up LAYOUT_OPTIONS[path.split('-')[0]]. If path prefix ever changes (e.g. nested layout key inside items), the fallback to LAYOUT_OPTIONS.ecosystem would silently render wrong options — worth an explicit warn/whitelist.",
+    "AdminMedia.js upload button label is inside a <label> wrapping hidden <input type='file'>. Works but 'disabled' state is applied only to input, not preventing rapid double-clicks on the label; class 'pointer-events-none' during uploading mitigates this — acceptable.",
+    "IMAGE_ITEM_PATHS regex only injects an empty 'image' key for pillars-items/programs-items/roadmap-items. If backend stored content has other item arrays that should also support images later (e.g. news-items), this list has to be manually extended — consider a schema-driven approach."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (24/24 in-scope)", "frontend": "100%"},
+  "test_credentials": "admin@gesoi.or.id / GesoiAdmin#2045 — verified.",
+  "seed_data_creation": "Created 1 tiny PNG upload (testupload_tiny.png) + 1 TEST_Regression_Iter7 contact. Both cleaned from Mongo. Pillars layout was toggled to 'cards' with unsplash image, then reset to 'list' and cleared; final content restored to defaults via editor-reset-btn (toast 'Konten dikembalikan ke bawaan').",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 3 session changes verified. Hero /hero-bg.webp is 39.7KB. Media upload button + hidden input work. Editor pillars/programs/roadmap have per-section layout select + per-item ImageField. Landing conditionally renders pillar-card-XX (layout=cards) vs pillar-item-XX (layout=list); programs uses showImage=t.layout==='media'&&item.image; roadmap uses t.layout==='photos'&&item.image with data-testid roadmap-image-{i}. site_content restored to defaults post-test.",
+  "rca of the issue": "N/A — no issues."
+}

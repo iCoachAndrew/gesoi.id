@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ArrowDown, Sparkles } from "lucide-react";
 
 const lineVariants = {
@@ -12,22 +12,25 @@ const lineVariants = {
 
 export const Hero = ({ t, bg }) => {
   const ref = useRef(null);
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
 
   return (
     <section id="top" ref={ref} className="relative min-h-screen bg-[#0B1F3A] overflow-hidden grain-overlay" data-testid="hero-section">
-      <motion.div style={{ y: bgY }} className="absolute inset-0">
+      <motion.div style={{ y: reduceMotion ? 0 : bgY }} className="absolute inset-0 will-change-transform">
         <img
           src={bg}
           alt="Blueprint peta Indonesia"
+          fetchPriority="high"
+          decoding="async"
           className="w-full h-[120%] object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F3A]/70 via-[#0B1F3A]/40 to-[#0B1F3A]" />
       </motion.div>
 
-      <motion.div style={{ y: textY }} className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-24 flex flex-col min-h-screen justify-center">
+      <motion.div style={{ y: reduceMotion ? 0 : textY }} className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-24 flex flex-col min-h-screen justify-center will-change-transform">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

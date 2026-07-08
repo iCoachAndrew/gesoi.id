@@ -41,10 +41,31 @@ export const LABELS = {
   accept: "Tombol Terima", decline: "Tombol Tolak",
   policyLink: "Label Tautan Kebijakan", policyTitle: "Judul Kebijakan Privasi",
   policyText: "Teks Kebijakan Privasi", video: "Video", publications: "Publikasi",
-  privacy: "Privasi", layout: "Tata Letak", phone: "Telepon/WhatsApp",
+  privacy: "Privasi", layout: "Tata Letak / Template", phone: "Telepon/WhatsApp",
 };
 
 export const label = (k) => LABELS[k] || k;
+
+export const LAYOUT_OPTIONS = {
+  ecosystem: [
+    ["orbit", "Orbit (interaktif, GESOI di tengah)"],
+    ["grid", "Grid Kartu (klasik)"],
+  ],
+  pillars: [
+    ["list", "Baris Editorial (teks saja / thumbnail kecil)"],
+    ["cards", "Grid Kartu dengan Gambar"],
+  ],
+  programs: [
+    ["grid", "Kartu Ikon (klasik)"],
+    ["media", "Kartu dengan Gambar (foto per program)"],
+  ],
+  roadmap: [
+    ["timeline", "Garis Waktu (teks)"],
+    ["photos", "Garis Waktu dengan Foto"],
+  ],
+};
+
+const IMAGE_ITEM_PATHS = /^(pillars-items|programs-items|roadmap-items)/;
 const isLong = (k, v) => ["body", "desc", "sub", "note", "message", "quote", "banner", "policyText"].includes(k) || (typeof v === "string" && v.length > 90);
 const isImage = (k) => /photo|image|bg|poster/i.test(k);
 
@@ -209,10 +230,14 @@ function ObjectField({ value, onChange, path }) {
 }
 
 function ArrayField({ value, onChange, path }) {
+  const supportsImage = IMAGE_ITEM_PATHS.test(path);
+  const withImage = (item) => (supportsImage && typeof item === "object" && !("image" in item) ? { ...item, image: "" } : item);
+
   const addItem = () => {
-    const template = value.length
+    let template = value.length
       ? (typeof value[0] === "string" ? "" : Object.fromEntries(Object.keys(value[0]).map((key) => [key, ""])))
       : "";
+    template = withImage(template);
     onChange([...value, template]);
   };
 
@@ -237,7 +262,7 @@ function ArrayField({ value, onChange, path }) {
             />
           ) : (
             <div className="space-y-3 pr-6">
-              {Object.entries(item).map(([ck, cv]) => (
+              {Object.entries(withImage(item)).map(([ck, cv]) => (
                 <div key={ck}>
                   <p className="text-[11px] uppercase tracking-wider text-[#6B7280] mb-1">{label(ck)}</p>
                   {subField({
@@ -264,13 +289,16 @@ export function Field({ k, value, onChange, path }) {
     if (isImage(k)) return <ImageField value={value} onChange={onChange} testId={`field-${path}`} />;
     if (k === "icon") return <IconField value={value} onChange={onChange} />;
     if (k === "url") return <VideoField value={value} onChange={onChange} testId={`field-${path}`} />;
-    if (k === "layout")
+    if (k === "layout") {
+      const opts = LAYOUT_OPTIONS[path.split("-")[0]] || LAYOUT_OPTIONS.ecosystem;
       return (
         <select value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`}>
-          <option value="orbit">Orbit (interaktif, GESOI di tengah)</option>
-          <option value="grid">Grid Kartu (klasik)</option>
+          {opts.map(([v, l]) => (
+            <option key={v} value={v}>{l}</option>
+          ))}
         </select>
       );
+    }
     if (isLong(k, value))
       return <textarea rows={k === "policyText" ? 12 : 3} value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
     return <input value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;

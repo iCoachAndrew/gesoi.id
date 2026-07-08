@@ -27,6 +27,7 @@ export const Programs = ({ t, image }) => (
         </div>
         <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
           {t.items.map((item, i) => {
+            const showImage = t.layout === "media" && item.image;
             return (
               <motion.div
                 key={item.title}
@@ -35,14 +36,23 @@ export const Programs = ({ t, image }) => (
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-40px" }}
-                className="rounded-2xl border border-[#0B1F3A]/10 bg-[#F9F9F7] p-8 hover:bg-[#0B1F3A] group transition-colors duration-500"
+                className="rounded-2xl border border-[#0B1F3A]/10 bg-[#F9F9F7] overflow-hidden hover:bg-[#0B1F3A] group transition-colors duration-500"
                 data-testid={`program-card-${i}`}
               >
-                <span className="inline-flex w-11 h-11 rounded-full bg-emerald-100 group-hover:bg-emerald-500/20 items-center justify-center mb-5 transition-colors duration-500">
-                  <SectionIcon icon={item.icon} size={18} className="text-emerald-700 group-hover:text-emerald-300 transition-colors duration-500" />
-                </span>
-                <h3 className="text-lg font-medium text-[#0B1F3A] group-hover:text-white transition-colors duration-500 mb-2">{item.title}</h3>
-                <p className="text-sm text-[#4B5563] group-hover:text-white/60 font-light leading-relaxed transition-colors duration-500">{item.desc}</p>
+                {showImage && (
+                  <div className="h-36 overflow-hidden">
+                    <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  </div>
+                )}
+                <div className="p-8">
+                  {!showImage && (
+                    <span className="inline-flex w-11 h-11 rounded-full bg-emerald-100 group-hover:bg-emerald-500/20 items-center justify-center mb-5 transition-colors duration-500">
+                      <SectionIcon icon={item.icon} size={18} className="text-emerald-700 group-hover:text-emerald-300 transition-colors duration-500" />
+                    </span>
+                  )}
+                  <h3 className="text-lg font-medium text-[#0B1F3A] group-hover:text-white transition-colors duration-500 mb-2">{item.title}</h3>
+                  <p className="text-sm text-[#4B5563] group-hover:text-white/60 font-light leading-relaxed transition-colors duration-500">{item.desc}</p>
+                </div>
               </motion.div>
             );
           })}

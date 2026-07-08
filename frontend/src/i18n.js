@@ -49,6 +49,7 @@ export const content = {
     pillars: {
       kicker: "03 — Manifesto",
       title: "Empat pilar misi",
+      layout: "list",
       items: [
         { num: "01", title: "Edukasi Dini", desc: "Membangun literasi kesehatan neuro sejak usia muda, dari ruang kelas hingga ruang keluarga." },
         { num: "02", title: "Kesadaran Kolektif", desc: "Menormalisasi gaya hidup otak sehat sebagai kebiasaan harian seluruh lapisan masyarakat." },
@@ -60,6 +61,7 @@ export const content = {
       kicker: "04 — Program & Dampak",
       title: "Mesin penggerak perubahan",
       body: "GESOI tidak menjual teknologi. GESOI menghadirkan dampak sosial — dari sekolah hingga tempat kerja, dari kampanye publik hingga kebijakan nasional.",
+      layout: "grid",
       items: [
         { title: "GESOI Goes to School", desc: "Edukasi interaktif Neuro-Hygiene di sekolah: pola tidur, adiksi gawai, dan nutrisi otak.", icon: "school" },
         { title: "Kelas 1000 Hari Otak", desc: "Penyuluhan gratis bagi ibu hamil & menyusui di Posyandu: stimulasi kognitif dan gizi anti-stunting.", icon: "baby" },
@@ -72,6 +74,7 @@ export const content = {
     roadmap: {
       kicker: "05 — Peta Jalan",
       title: "Sepuluh tahun menuju 2045",
+      layout: "timeline",
       items: [
         { year: "3 Tahun", title: "Literasi & Pilot", desc: "Literasi publik, pengurangan stigma, dan proyek percontohan di sekolah serta komunitas." },
         { year: "7 Tahun", title: "Integrasi Sistemik", desc: "SDM berbasis otak di sektor pemerintah & swasta; skrining otak menjadi prosedur standar di Puskesmas." },
@@ -216,6 +219,7 @@ export const content = {
     pillars: {
       kicker: "03 — Manifesto",
       title: "Four pillars of mission",
+      layout: "list",
       items: [
         { num: "01", title: "Early Education", desc: "Building neuro-health literacy from a young age, from classrooms to living rooms." },
         { num: "02", title: "Collective Awareness", desc: "Normalizing a healthy brain lifestyle as a daily habit across all of society." },
@@ -227,6 +231,7 @@ export const content = {
       kicker: "04 — Programs & Impact",
       title: "The engine of change",
       body: "GESOI does not sell technology. GESOI delivers social impact — from schools to workplaces, from public campaigns to national policy.",
+      layout: "grid",
       items: [
         { title: "GESOI Goes to School", desc: "Interactive Neuro-Hygiene education in schools: sleep, gadget addiction, and brain nutrition.", icon: "school" },
         { title: "1000 Days of the Brain Class", desc: "Free counseling for pregnant & nursing mothers at community health posts: cognitive stimulation and anti-stunting nutrition.", icon: "baby" },
@@ -239,6 +244,7 @@ export const content = {
     roadmap: {
       kicker: "05 — Roadmap",
       title: "Ten years toward 2045",
+      layout: "timeline",
       items: [
         { year: "3 Years", title: "Literacy & Pilots", desc: "Public literacy, stigma reduction, and pilot projects in schools and communities." },
         { year: "7 Years", title: "Systemic Integration", desc: "Brain-based HR in government & private sectors; brain screenings as standard practice in public health clinics." },
@@ -336,7 +342,7 @@ export const content = {
 };
 
 export const sharedDefaults = {
-  heroBg: "https://static.prod-images.emergentagent.com/jobs/78977f7c-f3ba-400c-a818-65b9fa51f8ca/images/510166fe8058f53a8ce9c5a8d3c2545b9488d0c85b5a0789a955e9d169ca2101.png",
+  heroBg: "/hero-bg.webp",
   programsImage: "https://images.unsplash.com/photo-1611087802810-046bb671e644?q=80&w=1200",
   joinBg: "https://images.pexels.com/photos/18772861/pexels-photo-18772861.jpeg",
   people: [
