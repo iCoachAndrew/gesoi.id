@@ -6,7 +6,7 @@ import { SectionHeader, fadeUp } from "./SectionHeader";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-export const JoinCTA = ({ t }) => {
+export const JoinCTA = ({ t, bg }) => {
   const [form, setForm] = useState({ name: "", email: "", organization: "", interest: "volunteer", message: "" });
   const [sending, setSending] = useState(false);
 
@@ -36,7 +36,7 @@ export const JoinCTA = ({ t }) => {
   return (
     <section id="join" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="join-section">
       <div className="absolute inset-0 opacity-15">
-        <img src="https://images.pexels.com/photos/18772861/pexels-photo-18772861.jpeg" alt="" className="w-full h-full object-cover" />
+        <img src={bg} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-[#0B1F3A]/80" />
       </div>
       <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">

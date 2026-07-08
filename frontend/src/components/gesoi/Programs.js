@@ -1,10 +1,8 @@
 import { motion } from "framer-motion";
-import { School, Baby, CalendarCheck, Users, PartyPopper, BookOpen } from "lucide-react";
+import { getIcon } from "../../lib/icons";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 
-const icons = [School, Baby, CalendarCheck, Users, PartyPopper, BookOpen];
-
-export const Programs = ({ t }) => (
+export const Programs = ({ t, image }) => (
   <section id="programs" className="py-24 lg:py-36 bg-white" data-testid="programs-section">
     <div className="max-w-7xl mx-auto px-6 lg:px-10">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -20,7 +18,7 @@ export const Programs = ({ t }) => (
               className="mt-10 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.1)]"
             >
               <img
-                src="https://images.unsplash.com/photo-1611087802810-046bb671e644?q=80&w=1200"
+                src={image}
                 alt="Indonesian community"
                 className="w-full h-72 object-cover hover:scale-105 transition-transform duration-700"
               />
@@ -29,7 +27,7 @@ export const Programs = ({ t }) => (
         </div>
         <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
           {t.items.map((item, i) => {
-            const Icon = icons[i];
+            const Icon = getIcon(item.icon);
             return (
               <motion.div
                 key={item.title}

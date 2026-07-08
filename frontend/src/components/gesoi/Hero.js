@@ -10,7 +10,7 @@ const lineVariants = {
   }),
 };
 
-export const Hero = ({ t }) => {
+export const Hero = ({ t, bg }) => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
@@ -20,7 +20,7 @@ export const Hero = ({ t }) => {
     <section id="top" ref={ref} className="relative min-h-screen bg-[#0B1F3A] overflow-hidden grain-overlay" data-testid="hero-section">
       <motion.div style={{ y: bgY }} className="absolute inset-0">
         <img
-          src="https://static.prod-images.emergentagent.com/jobs/78977f7c-f3ba-400c-a818-65b9fa51f8ca/images/510166fe8058f53a8ce9c5a8d3c2545b9488d0c85b5a0789a955e9d169ca2101.png"
+          src={bg}
           alt="Blueprint peta Indonesia"
           className="w-full h-[120%] object-cover opacity-60"
         />

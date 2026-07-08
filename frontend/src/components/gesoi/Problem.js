@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, X, Check } from "lucide-react";
+import { MoveRight } from "lucide-react";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 
 export const Problem = ({ t }) => (
@@ -25,52 +25,67 @@ export const Problem = ({ t }) => (
         ))}
       </div>
 
-      <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="rounded-2xl border border-[#0B1F3A]/10 bg-white/60 p-10"
-          data-testid="paradigm-old"
-        >
-          <div className="flex items-center gap-3 mb-8">
-            <span className="w-8 h-8 rounded-full bg-red-50 border border-red-200 flex items-center justify-center"><X size={14} className="text-red-500" /></span>
-            <h3 className="text-lg text-[#0B1F3A] font-medium">{t.paradigmOld.title}</h3>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-60px" }}
+        className="mt-16 rounded-3xl bg-[#0B1F3A] relative overflow-hidden grain-overlay p-10 lg:p-16"
+        data-testid="paradigm-shift"
+      >
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#D4AF37]/5 blur-3xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1.3fr] gap-12 lg:gap-16 items-center relative z-10">
+          <div data-testid="paradigm-old">
+            <p className="text-xs uppercase tracking-[0.3em] text-white/40 mb-8">{t.paradigmOld.title}</p>
             {t.paradigmOld.steps.map((step, i) => (
-              <span key={step} className="flex items-center gap-3">
-                <span className="px-5 py-2.5 rounded-full bg-[#F1F1EC] text-[#4B5563] text-sm line-through decoration-red-400/60">{step}</span>
-                {i < t.paradigmOld.steps.length - 1 && <ArrowRight size={14} className="text-[#9CA3AF]" />}
-              </span>
+              <motion.p
+                key={step}
+                variants={fadeUp}
+                custom={i * 0.6}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="font-serif-display italic text-3xl lg:text-4xl text-white/30 line-through decoration-white/20 decoration-1 mb-4"
+                style={{ marginLeft: `${i * 20}px` }}
+              >
+                {step}
+              </motion.p>
             ))}
           </div>
-        </motion.div>
 
-        <motion.div
-          variants={fadeUp}
-          custom={1}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="rounded-2xl bg-[#0B1F3A] p-10 relative overflow-hidden grain-overlay"
-          data-testid="paradigm-new"
-        >
-          <div className="flex items-center gap-3 mb-8 relative z-10">
-            <span className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center"><Check size={14} className="text-emerald-300" /></span>
-            <h3 className="text-lg text-white font-medium">{t.paradigmNew.title}</h3>
+          <div className="flex lg:flex-col items-center gap-4 text-[#D4AF37]" data-testid="paradigm-shift-label">
+            <span className="hidden lg:block h-20 w-px bg-gradient-to-b from-transparent via-[#D4AF37]/60 to-transparent" />
+            <span className="lg:hidden h-px w-16 bg-gradient-to-r from-transparent via-[#D4AF37]/60 to-transparent" />
+            <MoveRight size={20} className="shrink-0" />
+            <span className="text-[10px] uppercase tracking-[0.3em] whitespace-nowrap">{t.shiftLabel}</span>
+            <span className="hidden lg:block h-20 w-px bg-gradient-to-b from-transparent via-[#D4AF37]/60 to-transparent" />
+            <span className="lg:hidden h-px w-16 bg-gradient-to-r from-transparent via-[#D4AF37]/60 to-transparent" />
           </div>
-          <div className="flex flex-wrap items-center gap-3 relative z-10">
+
+          <div data-testid="paradigm-new">
+            <p className="text-xs uppercase tracking-[0.3em] text-emerald-300 mb-8">{t.paradigmNew.title}</p>
             {t.paradigmNew.steps.map((step, i) => (
-              <span key={step} className="flex items-center gap-3">
-                <span className="px-5 py-2.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-200 text-sm">{step}</span>
-                {i < t.paradigmNew.steps.length - 1 && <ArrowRight size={14} className="text-emerald-400/60" />}
-              </span>
+              <motion.div
+                key={step}
+                variants={fadeUp}
+                custom={i * 0.6 + 1}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="flex items-baseline gap-5 mb-5 group"
+              >
+                <span className="font-serif-display italic text-[#D4AF37] text-lg shrink-0 w-8">0{i + 1}</span>
+                <div className="flex-1">
+                  <p className="font-serif-display text-3xl lg:text-5xl text-white group-hover:text-emerald-300 transition-colors duration-500">{step}</p>
+                  {i < t.paradigmNew.steps.length - 1 && (
+                    <span className="block mt-5 h-px w-full bg-gradient-to-r from-emerald-400/30 to-transparent" />
+                  )}
+                </div>
+              </motion.div>
             ))}
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </div>
   </section>
 );

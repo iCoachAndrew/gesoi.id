@@ -50,7 +50,16 @@ export const Footer = ({ t }) => (
         </div>
       </div>
       <div className="pt-8 flex flex-col sm:flex-row justify-between gap-4 text-xs text-white/40 font-light">
-        <p data-testid="footer-copyright">© {new Date().getFullYear()} {t.footer.rights}</p>
+        <p data-testid="footer-copyright">
+          © {new Date().getFullYear()} {t.footer.rights}
+          <a
+            href="/admin/login"
+            data-testid="footer-admin-link"
+            className="ml-3 underline decoration-white/30 underline-offset-4 hover:text-[#D4AF37] transition-colors duration-300"
+          >
+            Portal Admin
+          </a>
+        </p>
         <p className="tracking-[0.15em] uppercase">Salam Otak Sehat, Indonesia Cerdas</p>
       </div>
     </div>

@@ -1,0 +1,175 @@
+import { useState, createElement } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { Upload, Plus, Trash2 } from "lucide-react";
+import { ICONS, getIcon } from "./icons";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+export const authConfig = () => ({
+  withCredentials: true,
+  headers: { Authorization: `Bearer ${localStorage.getItem("gesoi_token") || ""}` },
+});
+
+export const LABELS = {
+  title: "Judul", body: "Deskripsi", kicker: "Label Kecil", desc: "Deskripsi",
+  name: "Nama", role: "Peran", sub: "Subjudul", lines: "Baris Judul Hero",
+  badge: "Badge", cta1: "Tombol Utama", cta2: "Tombol Kedua", scroll: "Teks Scroll",
+  launch: "Badge Launching", items: "Daftar Item", steps: "Langkah-langkah",
+  stats: "Statistik", value: "Angka", label: "Keterangan", nodes: "Kartu Ekosistem",
+  icon: "Ikon", photo: "Foto", num: "Nomor", year: "Tahun",
+  heroBg: "Gambar Latar Hero", programsImage: "Gambar Bagian Program",
+  joinBg: "Gambar Latar Ajakan", people: "Tokoh & Pengurus",
+  role_id: "Peran (Indonesia)", role_en: "Peran (English)", note: "Catatan",
+  coopLabel: "Label Pilar Kerja Sama", cooperation: "Pilar Kerja Sama",
+  paradigmOld: "Paradigma Lama", paradigmNew: "Paradigma Baru", shiftLabel: "Teks Transisi",
+  interests: "Pilihan Minat", form: "Form Pendaftaran", tagline: "Tagline",
+  address: "Alamat", contact: "Kontak", rights: "Hak Cipta", email: "Email",
+  message: "Pesan", submit: "Tombol Kirim", sending: "Teks Mengirim",
+  success: "Pesan Sukses", error: "Pesan Gagal", interest: "Label Minat",
+  organization: "Organisasi", nav: "Navigasi", problem: "Urgensi",
+  ecosystem: "Ekosistem", pillars: "Pilar", programs: "Program",
+  roadmap: "Peta Jalan", join: "Bergabung",
+};
+
+export const label = (k) => LABELS[k] || k;
+const isLong = (k, v) => ["body", "desc", "sub", "note", "message"].includes(k) || (typeof v === "string" && v.length > 90);
+const isImage = (k) => /photo|image|bg/i.test(k);
+
+export const inputCls =
+  "w-full rounded-lg border border-[#0B1F3A]/15 bg-white px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors duration-200";
+
+export const ImageField = ({ value, onChange, testId }) => {
+  const [uploading, setUploading] = useState(false);
+
+  const upload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const { data } = await axios.post(`${API}/admin/upload`, fd, authConfig());
+      onChange(`${BACKEND_URL}${data.url}`);
+      toast.success("Foto berhasil diunggah");
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Gagal mengunggah foto");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-20 h-20 rounded-lg overflow-hidden bg-[#F1F1EC] border border-[#0B1F3A]/10 shrink-0 flex items-center justify-center">
+        {value ? <img src={value} alt="" className="w-full h-full object-cover" /> : <span className="text-[10px] text-[#9CA3AF]">Kosong</span>}
+      </div>
+      <div className="flex-1 space-y-2">
+        <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="URL gambar" className={inputCls} data-testid={testId} />
+        <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B1F3A] text-white text-xs cursor-pointer hover:bg-[#1B3A63] transition-colors duration-200">
+          <Upload size={12} /> {uploading ? "Mengunggah..." : "Unggah Foto"}
+          <input type="file" accept="image/*" className="hidden" onChange={upload} disabled={uploading} />
+        </label>
+        {value && (
+          <button type="button" onClick={() => onChange("")} className="ml-2 text-xs text-red-500 hover:underline">Hapus</button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const IconField = ({ value, onChange }) => {
+  const Icon = getIcon(value);
+  return (
+    <div className="flex items-center gap-3">
+      <span className="w-9 h-9 rounded-lg bg-[#0B1F3A] flex items-center justify-center shrink-0">
+        <Icon size={16} className="text-[#D4AF37]" />
+      </span>
+      <select value={value || "brain"} onChange={(e) => onChange(e.target.value)} className={inputCls}>
+        {Object.keys(ICONS).map((k) => <option key={k} value={k}>{k}</option>)}
+      </select>
+    </div>
+  );
+};
+
+// Note: recursive fields use createElement (not JSX) to avoid a babel plugin recursion bug
+const subField = (props) => createElement(Field, props);
+
+function ObjectField({ value, onChange, path }) {
+  return (
+    <div className="space-y-4 rounded-xl border border-[#0B1F3A]/10 p-4 bg-white">
+      {Object.entries(value).map(([ck, cv]) => (
+        <div key={ck}>
+          <p className="text-[11px] uppercase tracking-wider text-[#6B7280] mb-1">{label(ck)}</p>
+          {subField({ k: ck, value: cv, path: `${path}-${ck}`, onChange: (nv) => onChange({ ...value, [ck]: nv }) })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ArrayField({ value, onChange, path }) {
+  const addItem = () => {
+    const template = value.length
+      ? (typeof value[0] === "string" ? "" : Object.fromEntries(Object.keys(value[0]).map((key) => [key, ""])))
+      : "";
+    onChange([...value, template]);
+  };
+
+  return (
+    <div className="space-y-3">
+      {value.map((item, i) => (
+        <div key={i} className="rounded-xl border border-[#0B1F3A]/10 bg-[#F9F9F7] p-4 relative">
+          <button
+            type="button"
+            onClick={() => onChange(value.filter((_, j) => j !== i))}
+            className="absolute top-3 right-3 text-red-400 hover:text-red-600"
+            title="Hapus item"
+            data-testid={`remove-${path}-${i}`}
+          >
+            <Trash2 size={14} />
+          </button>
+          {typeof item === "string" ? (
+            <input
+              value={item}
+              onChange={(e) => onChange(value.map((v, j) => (j === i ? e.target.value : v)))}
+              className={`${inputCls} pr-8`}
+            />
+          ) : (
+            <div className="space-y-3 pr-6">
+              {Object.entries(item).map(([ck, cv]) => (
+                <div key={ck}>
+                  <p className="text-[11px] uppercase tracking-wider text-[#6B7280] mb-1">{label(ck)}</p>
+                  {subField({
+                    k: ck,
+                    value: cv,
+                    path: `${path}-${i}-${ck}`,
+                    onChange: (nv) => onChange(value.map((v, j) => (j === i ? { ...v, [ck]: nv } : v))),
+                  })}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+      <button type="button" onClick={addItem} className="flex items-center gap-2 text-xs text-emerald-700 hover:text-emerald-900 font-medium" data-testid={`add-${path}`}>
+        <Plus size={14} /> Tambah Item
+      </button>
+    </div>
+  );
+}
+
+export function Field({ k, value, onChange, path }) {
+  if (typeof value === "string") {
+    if (isImage(k)) return <ImageField value={value} onChange={onChange} testId={`field-${path}`} />;
+    if (k === "icon") return <IconField value={value} onChange={onChange} />;
+    if (isLong(k, value))
+      return <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
+    return <input value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
+  }
+  if (Array.isArray(value)) return createElement(ArrayField, { value, onChange, path });
+  if (typeof value === "object" && value !== null) return createElement(ObjectField, { value, onChange, path });
+  return null;
+}

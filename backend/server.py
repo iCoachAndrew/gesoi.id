@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Request, Response, HTTPException, Depends
+from fastapi import FastAPI, APIRouter, Request, Response, HTTPException, Depends, UploadFile, File, Body
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional
 import uuid
 import bcrypt
+import requests
 import jwt as pyjwt
 from datetime import datetime, timezone, timedelta
 
@@ -144,6 +145,94 @@ async def root():
     return {"message": "GESOI API"}
 
 
+STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
+APP_NAME = "gesoi"
+storage_key = None
+
+
+def init_storage():
+    global storage_key
+    if storage_key:
+        return storage_key
+    resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": os.environ["EMERGENT_LLM_KEY"]}, timeout=30)
+    resp.raise_for_status()
+    storage_key = resp.json()["storage_key"]
+    return storage_key
+
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    key = init_storage()
+    resp = requests.put(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key, "Content-Type": content_type},
+        data=data, timeout=120,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def get_object(path: str):
+    key = init_storage()
+    resp = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
+    resp.raise_for_status()
+    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+
+
+ALLOWED_IMAGE_EXT = {"jpg", "jpeg", "png", "gif", "webp"}
+
+
+@api_router.post("/admin/upload")
+async def upload_image(file: UploadFile = File(...), admin: dict = Depends(get_current_admin)):
+    ext = file.filename.split(".")[-1].lower() if "." in file.filename else ""
+    if ext not in ALLOWED_IMAGE_EXT:
+        raise HTTPException(status_code=400, detail="Format tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP.")
+    data = await file.read()
+    if len(data) > 8 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Ukuran file maksimal 8MB.")
+    path = f"{APP_NAME}/uploads/{uuid.uuid4()}.{ext}"
+    result = put_object(path, data, file.content_type or "image/jpeg")
+    await db.files.insert_one({
+        "id": str(uuid.uuid4()),
+        "storage_path": result["path"],
+        "original_filename": file.filename,
+        "content_type": file.content_type,
+        "size": result["size"],
+        "is_deleted": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"url": f"/api/files/{result['path']}", "path": result["path"]}
+
+
+@api_router.get("/files/{path:path}")
+async def serve_file(path: str):
+    record = await db.files.find_one({"storage_path": path, "is_deleted": False})
+    if not record:
+        raise HTTPException(status_code=404, detail="File not found")
+    data, content_type = get_object(path)
+    return Response(content=data, media_type=record.get("content_type") or content_type)
+
+
+@api_router.get("/content")
+async def get_site_content():
+    doc = await db.site_content.find_one({"_id": "content"})
+    if not doc:
+        return {}
+    doc.pop("_id", None)
+    return doc
+
+
+@api_router.put("/admin/content")
+async def save_site_content(payload: dict = Body(...), admin: dict = Depends(get_current_admin)):
+    await db.site_content.replace_one({"_id": "content"}, {"_id": "content", **payload}, upsert=True)
+    return {"ok": True}
+
+
+@api_router.delete("/admin/content")
+async def reset_site_content(admin: dict = Depends(get_current_admin)):
+    await db.site_content.delete_one({"_id": "content"})
+    return {"ok": True}
+
+
 @api_router.post("/contact", response_model=ContactSubmission)
 async def create_contact(input: ContactSubmissionCreate):
     obj = ContactSubmission(**input.model_dump())
@@ -180,6 +269,11 @@ logger = logging.getLogger(__name__)
 async def startup():
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
+    try:
+        init_storage()
+        logger.info("Storage initialized")
+    except Exception as e:
+        logger.error(f"Storage init failed: {e}")
     admin_email = os.environ["ADMIN_EMAIL"].lower()
     admin_password = os.environ["ADMIN_PASSWORD"]
     existing = await db.users.find_one({"email": admin_email})

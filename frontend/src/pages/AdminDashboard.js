@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { LogOut, Mail, Building2, Download } from "lucide-react";
+import AdminEditor from "./AdminEditor";
+import { Toaster } from "sonner";
 
 const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
 
@@ -23,6 +25,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const [contacts, setContacts] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [tab, setTab] = useState("pendaftar");
 
   useEffect(() => {
     const load = async () => {
@@ -93,6 +96,24 @@ export default function AdminDashboard() {
         </button>
       </header>
 
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-8 flex gap-2">
+        {[["pendaftar", "Data Pendaftar"], ["editor", "Editor Website"]].map(([key, lbl]) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            data-testid={`admin-tab-${key}`}
+            className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-wider font-medium transition-colors duration-200 ${
+              tab === key ? "bg-[#D4AF37] text-[#0B1F3A]" : "bg-white border border-[#0B1F3A]/15 text-[#4B5563] hover:border-[#0B1F3A]"
+            }`}
+          >
+            {lbl}
+          </button>
+        ))}
+      </div>
+
+      {tab === "editor" ? (
+        <AdminEditor />
+      ) : (
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
         <h1 className="font-serif-display text-4xl text-[#0B1F3A] mb-8" data-testid="admin-title">Data Pendaftar</h1>
 
@@ -166,6 +187,8 @@ export default function AdminDashboard() {
           </table>
         </div>
       </main>
+      )}
+      <Toaster position="bottom-right" richColors />
     </div>
   );
 }

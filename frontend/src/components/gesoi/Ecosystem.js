@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
-import { FlaskConical, Megaphone, Cpu, Network, ArrowDown } from "lucide-react";
+import { ArrowDown } from "lucide-react";
+import { getIcon } from "../../lib/icons";
 import { SectionHeader, fadeUp } from "./SectionHeader";
-
-const icons = [FlaskConical, Megaphone, Cpu, Network];
 
 export const Ecosystem = ({ t }) => (
   <section id="ecosystem" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="ecosystem-section">
@@ -23,7 +22,7 @@ export const Ecosystem = ({ t }) => (
 
       <div className="mt-16 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {t.nodes.map((node, i) => {
-          const Icon = icons[i];
+          const Icon = getIcon(node.icon);
           const featured = node.name === "GESOI";
           return (
             <motion.div
