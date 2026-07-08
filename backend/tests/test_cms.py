@@ -1,14 +1,10 @@
 """Tests for CMS content API + upload (iteration 3)."""
-import os
-import io
 import struct
 import zlib
-import pytest
+
 import requests
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://social-impact-web-2.preview.emergentagent.com").rstrip("/")
-ADMIN_EMAIL = "admin@gesoi.or.id"
-ADMIN_PASSWORD = "GesoiAdmin#2045"
+from conftest import BASE_URL
 
 
 def _tiny_png_bytes() -> bytes:
@@ -20,19 +16,6 @@ def _tiny_png_bytes() -> bytes:
     raw = b"\x00" + bytes([255, 0, 0])
     idat = zlib.compress(raw)
     return sig + chunk(b"IHDR", ihdr) + chunk(b"IDAT", idat) + chunk(b"IEND", b"")
-
-
-@pytest.fixture(scope="module")
-def token():
-    r = requests.post(f"{BASE_URL}/api/auth/login",
-                      json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD}, timeout=15)
-    assert r.status_code == 200, r.text
-    return r.json()["access_token"]
-
-
-@pytest.fixture(scope="module")
-def auth_headers(token):
-    return {"Authorization": f"Bearer {token}"}
 
 
 class TestContentAPI:
@@ -53,7 +36,7 @@ class TestContentAPI:
         payload = {"id": {"hero": {"badge": "TEST_CMS_BADGE_XYZ"}}}
         r = requests.put(f"{BASE_URL}/api/admin/content", json=payload, headers=auth_headers, timeout=10)
         assert r.status_code == 200
-        assert r.json().get("ok") is True
+        assert r.json() == {"ok": True}
 
         r2 = requests.get(f"{BASE_URL}/api/content", timeout=10)
         assert r2.status_code == 200
@@ -62,7 +45,7 @@ class TestContentAPI:
 
         r3 = requests.delete(f"{BASE_URL}/api/admin/content", headers=auth_headers, timeout=10)
         assert r3.status_code == 200
-        assert r3.json().get("ok") is True
+        assert r3.json() == {"ok": True}
 
         r4 = requests.get(f"{BASE_URL}/api/content", timeout=10)
         assert r4.status_code == 200

@@ -1,30 +1,8 @@
 """Order endpoint tests for GESOI iteration 6"""
-import os
 import pytest
 import requests
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://social-impact-web-2.preview.emergentagent.com').rstrip('/')
-ADMIN_EMAIL = "admin@gesoi.or.id"
-ADMIN_PASSWORD = "GesoiAdmin#2045"
-
-
-@pytest.fixture(scope="module")
-def api():
-    s = requests.Session()
-    s.headers.update({"Content-Type": "application/json"})
-    return s
-
-
-@pytest.fixture(scope="module")
-def admin_token(api):
-    r = api.post(f"{BASE_URL}/api/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
-    assert r.status_code == 200, r.text
-    return r.json()["access_token"]
-
-
-@pytest.fixture(scope="module")
-def auth_headers(admin_token):
-    return {"Authorization": f"Bearer {admin_token}"}
+from conftest import BASE_URL
 
 
 # --- POST /api/orders (public) ---

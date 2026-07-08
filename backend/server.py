@@ -344,7 +344,7 @@ async def startup():
     admin_email = os.environ["ADMIN_EMAIL"].lower()
     admin_password = os.environ["ADMIN_PASSWORD"]
     existing = await db.users.find_one({"email": admin_email})
-    if existing is None:
+    if not existing:
         await db.users.insert_one({
             "email": admin_email,
             "password_hash": hash_password(admin_password),
