@@ -4,6 +4,7 @@ import axios from "axios";
 import { Lock, FileText, X } from "lucide-react";
 import { toast } from "sonner";
 import { SectionHeader, fadeUp } from "./SectionHeader";
+import { trackEvent } from "../../lib/analytics";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const emptyBuyer = { name: "", email: "", phone: "", organization: "" };
@@ -74,7 +75,7 @@ export const Publications = ({ t }) => {
                 <p className="font-serif-display text-[#D4AF37] text-3xl">{item.price}</p>
                 <p className="text-white/40 text-xs font-light mt-1 mb-5">{t.priceNote}</p>
                 <button
-                  onClick={() => setSelected(item)}
+                  onClick={() => { setSelected(item); trackEvent("buy_click"); }}
                   data-testid={`publication-buy-btn-${i}`}
                   className="w-full py-3 rounded-full bg-emerald-500 text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-emerald-400 transition-colors duration-300"
                 >

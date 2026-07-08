@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,7 @@ import Lenis from "lenis";
 import { Toaster } from "sonner";
 import { content, sharedDefaults } from "@/i18n";
 import { deepMerge } from "@/lib/merge";
+import { trackPageview, trackEvent } from "@/lib/analytics";
 import { Navbar } from "@/components/gesoi/Navbar";
 import { Hero } from "@/components/gesoi/Hero";
 import { MarqueeStrip } from "@/components/gesoi/MarqueeStrip";
@@ -30,10 +31,24 @@ const defaults = { ...content, shared: sharedDefaults };
 const Landing = () => {
   const [lang, setLang] = useState("id");
   const [overrides, setOverrides] = useState(null);
+  const langRef = useRef(lang);
+  langRef.current = lang;
 
   useEffect(() => {
     axios.get(`${API}/content`).then((r) => setOverrides(r.data || {})).catch(() => setOverrides({}));
   }, []);
+
+  useEffect(() => {
+    trackPageview(langRef.current);
+    const onConsent = () => trackPageview(langRef.current);
+    window.addEventListener("gesoi-consent-accepted", onConsent);
+    return () => window.removeEventListener("gesoi-consent-accepted", onConsent);
+  }, []);
+
+  const changeLang = (l) => {
+    setLang(l);
+    trackEvent("lang_switch", l);
+  };
 
   const merged = useMemo(() => deepMerge(defaults, overrides || {}), [overrides]);
   const t = merged[lang];
@@ -51,7 +66,7 @@ const Landing = () => {
 
   return (
     <div className="App bg-[#F9F9F7]">
-      <Navbar t={t} lang={lang} setLang={setLang} />
+      <Navbar t={t} lang={lang} setLang={changeLang} />
       <Hero t={t} bg={shared.heroBg} />
       <MarqueeStrip items={t.marquee} />
       <Problem t={t.problem} />

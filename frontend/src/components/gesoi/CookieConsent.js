@@ -12,6 +12,7 @@ export const CookieConsent = ({ t }) => {
   const choose = (value) => {
     localStorage.setItem("gesoi_cookie_consent", value);
     setVisible(false);
+    if (value === "accepted") window.dispatchEvent(new Event("gesoi-consent-accepted"));
   };
 
   return (

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ArrowDown, Sparkles } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 
 const lineVariants = {
   hidden: { y: "110%" },
@@ -75,6 +76,7 @@ export const Hero = ({ t, bg }) => {
         >
           <a
             href="#join"
+            onClick={() => trackEvent("join_click")}
             data-testid="hero-cta-primary"
             className="px-8 py-4 rounded-full bg-emerald-500 text-white text-sm uppercase tracking-[0.15em] font-medium hover:bg-emerald-400 hover:scale-[1.03] transition-[background-color,transform] duration-300"
           >

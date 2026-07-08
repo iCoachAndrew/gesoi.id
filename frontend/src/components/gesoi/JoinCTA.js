@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "sonner";
 import { SectionHeader, fadeUp } from "./SectionHeader";
+import { trackEvent } from "../../lib/analytics";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -22,6 +23,7 @@ export const JoinCTA = ({ t, bg }) => {
         message: form.message || null,
       });
       toast.success(t.form.success);
+      trackEvent("form_submit");
       setForm({ name: "", email: "", organization: "", interest: "volunteer", message: "" });
     } catch {
       toast.error(t.form.error);

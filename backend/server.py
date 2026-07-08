@@ -318,6 +318,97 @@ async def list_contacts(admin: dict = Depends(get_current_admin)):
     return docs
 
 
+class TrackEvent(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    type: str
+    name: Optional[str] = None
+    visitor_id: str
+    lang: Optional[str] = None
+    device: Optional[str] = None
+    referrer: Optional[str] = None
+
+
+@api_router.post("/track")
+async def track_event(input: TrackEvent):
+    if input.type not in {"pageview", "event"}:
+        raise HTTPException(status_code=400, detail="Tipe tidak valid")
+    now = datetime.now(timezone.utc)
+    await db.analytics.insert_one({
+        "id": str(uuid.uuid4()),
+        "type": input.type,
+        "name": (input.name or "")[:60] or None,
+        "visitor_id": input.visitor_id[:64],
+        "lang": input.lang if input.lang in ("id", "en") else None,
+        "device": input.device if input.device in ("mobile", "desktop") else None,
+        "referrer": (input.referrer or "")[:200] or None,
+        "date": now.strftime("%Y-%m-%d"),
+        "created_at": now.isoformat(),
+    })
+    return {"ok": True}
+
+
+@api_router.get("/admin/analytics")
+async def admin_analytics(days: int = 30, admin: dict = Depends(get_current_admin)):
+    days = max(1, min(days, 90))
+    now = datetime.now(timezone.utc)
+    start = (now - timedelta(days=days - 1)).strftime("%Y-%m-%d")
+    pv = {"date": {"$gte": start}, "type": "pageview"}
+
+    daily_raw = await db.analytics.aggregate([
+        {"$match": pv},
+        {"$group": {"_id": "$date", "views": {"$sum": 1}, "visitors": {"$addToSet": "$visitor_id"}}},
+        {"$project": {"_id": 0, "date": "$_id", "views": 1, "uniques": {"$size": "$visitors"}}},
+    ]).to_list(200)
+    by_date = {d["date"]: d for d in daily_raw}
+    daily = []
+    for i in range(days):
+        key = (now - timedelta(days=days - 1 - i)).strftime("%Y-%m-%d")
+        row = by_date.get(key, {"views": 0, "uniques": 0})
+        daily.append({"date": key, "views": row["views"], "uniques": row["uniques"]})
+
+    uniques_total = await db.analytics.aggregate([
+        {"$match": pv},
+        {"$group": {"_id": "$visitor_id"}},
+        {"$count": "n"},
+    ]).to_list(1)
+
+    devices_raw = await db.analytics.aggregate([
+        {"$match": {**pv, "device": {"$ne": None}}},
+        {"$group": {"_id": "$device", "count": {"$sum": 1}}},
+    ]).to_list(10)
+
+    langs_raw = await db.analytics.aggregate([
+        {"$match": {"date": {"$gte": start}, "lang": {"$ne": None}}},
+        {"$group": {"_id": "$lang", "count": {"$sum": 1}}},
+    ]).to_list(10)
+
+    referrers = await db.analytics.aggregate([
+        {"$match": {**pv, "referrer": {"$ne": None}}},
+        {"$group": {"_id": "$referrer", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10},
+        {"$project": {"_id": 0, "source": "$_id", "count": 1}},
+    ]).to_list(10)
+
+    events_raw = await db.analytics.aggregate([
+        {"$match": {"date": {"$gte": start}, "type": "event", "name": {"$ne": None}}},
+        {"$group": {"_id": "$name", "count": {"$sum": 1}}},
+    ]).to_list(50)
+
+    return {
+        "days": days,
+        "totals": {
+            "views": sum(d["views"] for d in daily),
+            "uniques": uniques_total[0]["n"] if uniques_total else 0,
+        },
+        "daily": daily,
+        "devices": {d["_id"]: d["count"] for d in devices_raw},
+        "langs": {d["_id"]: d["count"] for d in langs_raw},
+        "referrers": referrers,
+        "events": {d["_id"]: d["count"] for d in events_raw},
+    }
+
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -336,6 +427,7 @@ logger = logging.getLogger(__name__)
 async def startup():
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
+    await db.analytics.create_index([("date", 1), ("type", 1)])
     try:
         init_storage()
         logger.info("Storage initialized")

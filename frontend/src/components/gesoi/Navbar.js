@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 
 const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
 
@@ -68,6 +69,7 @@ export const Navbar = ({ t, lang, setLang }) => {
           </div>
           <a
             href="#join"
+            onClick={() => trackEvent("join_click")}
             data-testid="navbar-join-btn"
             className="hidden sm:inline-flex px-5 py-2 rounded-full bg-white text-[#0B1F3A] text-xs uppercase tracking-[0.15em] font-medium hover:bg-emerald-300 transition-colors duration-300"
           >
@@ -96,7 +98,7 @@ export const Navbar = ({ t, lang, setLang }) => {
               {l.label}
             </a>
           ))}
-          <a href="#join" onClick={() => setOpen(false)} data-testid="mobile-menu-join" className="text-emerald-300 text-sm uppercase tracking-[0.15em]">
+          <a href="#join" onClick={() => { setOpen(false); trackEvent("join_click"); }} data-testid="mobile-menu-join" className="text-emerald-300 text-sm uppercase tracking-[0.15em]">
             {t.nav.join}
           </a>
         </nav>
