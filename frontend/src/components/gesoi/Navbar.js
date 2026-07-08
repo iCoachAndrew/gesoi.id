@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Brain, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+
+const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
 
 const links = (t) => [
   { href: "#problem", label: t.nav.problem },
@@ -26,16 +28,15 @@ export const Navbar = ({ t, lang, setLang }) => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 ${
-        scrolled ? "bg-[#0A2E20]/85 backdrop-blur-xl border-b border-white/10" : "bg-[#0A2E20]/40 backdrop-blur-md"
+        scrolled ? "bg-[#0B1F3A]/85 backdrop-blur-xl border-b border-white/10" : "bg-[#0B1F3A]/40 backdrop-blur-md"
       }`}
       data-testid="main-navbar"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
         <a href="#top" className="flex items-center gap-2.5" data-testid="navbar-logo">
-          <span className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
-            <Brain className="w-4.5 h-4.5 text-emerald-300" size={18} />
+          <span className="bg-white rounded-lg px-2.5 py-1.5 flex items-center shadow-sm">
+            <img src={LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-7 w-auto" />
           </span>
-          <span className="text-white font-medium tracking-[0.2em] text-sm">GESOI</span>
         </a>
         <nav className="hidden md:flex items-center gap-8">
           {links(t).map((l) => (
@@ -67,7 +68,7 @@ export const Navbar = ({ t, lang, setLang }) => {
           <a
             href="#join"
             data-testid="navbar-join-btn"
-            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-white text-[#0A2E20] text-xs uppercase tracking-[0.15em] font-medium hover:bg-emerald-300 transition-colors duration-300"
+            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-white text-[#0B1F3A] text-xs uppercase tracking-[0.15em] font-medium hover:bg-emerald-300 transition-colors duration-300"
           >
             {t.nav.join}
           </a>
@@ -82,7 +83,7 @@ export const Navbar = ({ t, lang, setLang }) => {
         </div>
       </div>
       {open && (
-        <nav className="md:hidden bg-[#0A2E20]/95 backdrop-blur-xl border-t border-white/10 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
+        <nav className="md:hidden bg-[#0B1F3A]/95 backdrop-blur-xl border-t border-white/10 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
           {links(t).map((l) => (
             <a
               key={l.href}

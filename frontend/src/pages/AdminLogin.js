@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Brain, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { Toaster } from "sonner";
+
+const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -41,13 +43,13 @@ export default function AdminLogin() {
     "w-full rounded-xl bg-white/10 border border-white/20 px-5 py-4 text-white placeholder:text-white/40 text-sm font-light focus:outline-none focus:border-emerald-300 transition-colors duration-300";
 
   return (
-    <div className="min-h-screen bg-[#0A2E20] flex items-center justify-center px-6 grain-overlay relative" data-testid="admin-login-page">
+    <div className="min-h-screen bg-[#0B1F3A] flex items-center justify-center px-6 grain-overlay relative" data-testid="admin-login-page">
       <div className="w-full max-w-md relative z-10">
         <div className="flex items-center gap-3 mb-10 justify-center">
-          <span className="w-11 h-11 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
-            <Brain size={20} className="text-emerald-300" />
+          <span className="bg-white rounded-lg px-3 py-2 inline-flex items-center">
+            <img src={LOGO} alt="GESOI" className="h-8 w-auto" />
           </span>
-          <span className="text-white font-medium tracking-[0.25em]">GESOI ADMIN</span>
+          <span className="text-white font-medium tracking-[0.25em]">ADMIN</span>
         </div>
         <form onSubmit={submit} className="rounded-3xl backdrop-blur-xl bg-white/5 border border-white/15 p-8 lg:p-10 space-y-5" data-testid="admin-login-form">
           <div className="flex items-center gap-2 text-white/60 text-xs uppercase tracking-[0.25em] mb-2">

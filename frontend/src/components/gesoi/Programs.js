@@ -38,13 +38,13 @@ export const Programs = ({ t }) => (
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-40px" }}
-                className="rounded-2xl border border-[#0A2E20]/10 bg-[#F9F9F7] p-8 hover:bg-[#0A2E20] group transition-colors duration-500"
+                className="rounded-2xl border border-[#0B1F3A]/10 bg-[#F9F9F7] p-8 hover:bg-[#0B1F3A] group transition-colors duration-500"
                 data-testid={`program-card-${i}`}
               >
                 <span className="inline-flex w-11 h-11 rounded-full bg-emerald-100 group-hover:bg-emerald-500/20 items-center justify-center mb-5 transition-colors duration-500">
                   <Icon size={18} className="text-emerald-700 group-hover:text-emerald-300 transition-colors duration-500" />
                 </span>
-                <h3 className="text-lg font-medium text-[#0A2E20] group-hover:text-white transition-colors duration-500 mb-2">{item.title}</h3>
+                <h3 className="text-lg font-medium text-[#0B1F3A] group-hover:text-white transition-colors duration-500 mb-2">{item.title}</h3>
                 <p className="text-sm text-[#4B5563] group-hover:text-white/60 font-light leading-relaxed transition-colors duration-500">{item.desc}</p>
               </motion.div>
             );

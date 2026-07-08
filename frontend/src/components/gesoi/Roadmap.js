@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 
 export const Roadmap = ({ t }) => (
-  <section id="roadmap" className="py-24 lg:py-36 bg-[#0A2E20] relative overflow-hidden grain-overlay" data-testid="roadmap-section">
+  <section id="roadmap" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="roadmap-section">
     <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-[#D4AF37]/5 blur-3xl" />
     <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
       <SectionHeader kicker={t.kicker} title={t.title} dark testId="roadmap-header" />
@@ -20,7 +20,7 @@ export const Roadmap = ({ t }) => (
             className={`relative grid grid-cols-1 lg:grid-cols-2 gap-6 pb-16 last:pb-0 ${i % 2 === 0 ? "" : ""}`}
             data-testid={`roadmap-item-${i}`}
           >
-            <span className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full bg-[#0A2E20] border-2 border-emerald-400" />
+            <span className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full bg-[#0B1F3A] border-2 border-emerald-400" />
             <div className={`pl-16 lg:pl-0 ${i % 2 === 0 ? "lg:pr-16 lg:text-right" : "lg:col-start-2 lg:pl-16"}`}>
               <p className="font-serif-display italic text-[#D4AF37] text-4xl lg:text-5xl mb-3">{item.year}</p>
               <h3 className="text-white text-xl font-medium mb-3">{item.title}</h3>

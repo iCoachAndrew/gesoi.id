@@ -17,14 +17,14 @@ export const Hero = ({ t }) => {
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
 
   return (
-    <section id="top" ref={ref} className="relative min-h-screen bg-[#0A2E20] overflow-hidden grain-overlay" data-testid="hero-section">
+    <section id="top" ref={ref} className="relative min-h-screen bg-[#0B1F3A] overflow-hidden grain-overlay" data-testid="hero-section">
       <motion.div style={{ y: bgY }} className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1616072775440-ca2ea7c7ce13?q=80&w=2000"
-          alt="Brain energy abstract"
-          className="w-full h-[120%] object-cover opacity-25"
+          src="https://static.prod-images.emergentagent.com/jobs/78977f7c-f3ba-400c-a818-65b9fa51f8ca/images/510166fe8058f53a8ce9c5a8d3c2545b9488d0c85b5a0789a955e9d169ca2101.png"
+          alt="Blueprint peta Indonesia"
+          className="w-full h-[120%] object-cover opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A2E20]/70 via-[#0A2E20]/40 to-[#0A2E20]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F3A]/70 via-[#0B1F3A]/40 to-[#0B1F3A]" />
       </motion.div>
 
       <motion.div style={{ y: textY }} className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 pt-40 pb-24 flex flex-col min-h-screen justify-center">
@@ -46,7 +46,7 @@ export const Hero = ({ t }) => {
                 variants={lineVariants}
                 initial="hidden"
                 animate="visible"
-                className={`block ${i === 1 ? "italic text-emerald-300" : ""}`}
+                className={`block ${i === 1 ? "italic text-emerald-300" : ""} ${i === 3 ? "text-[#D4AF37]" : ""}`}
               >
                 {line}
               </motion.span>

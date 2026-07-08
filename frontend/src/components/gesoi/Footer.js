@@ -1,15 +1,16 @@
-import { Brain, MapPin, Mail } from "lucide-react";
+import { MapPin, Mail } from "lucide-react";
+
+const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
 
 export const Footer = ({ t }) => (
-  <footer className="bg-[#071F16] text-white pt-20 pb-10 relative overflow-hidden" data-testid="main-footer">
+  <footer className="bg-[#07142A] text-white pt-20 pb-10 relative overflow-hidden" data-testid="main-footer">
     <div className="max-w-7xl mx-auto px-6 lg:px-10">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-white/10">
         <div className="md:col-span-6">
           <div className="flex items-center gap-3 mb-6">
-            <span className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
-              <Brain size={18} className="text-emerald-300" />
+            <span className="bg-white rounded-lg px-3 py-2 inline-flex items-center">
+              <img src={LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-9 w-auto" />
             </span>
-            <span className="font-medium tracking-[0.2em]">GESOI</span>
           </div>
           <p className="font-serif-display italic text-2xl lg:text-3xl text-white/80 max-w-md leading-snug" data-testid="footer-tagline">
             {t.footer.tagline}

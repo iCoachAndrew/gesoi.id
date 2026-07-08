@@ -16,7 +16,7 @@ export const Problem = ({ t }) => (
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
-            className={`rounded-2xl p-10 border border-[#0A2E20]/10 ${i === 2 ? "bg-[#0A2E20] text-white" : "bg-white"} shadow-[0_8px_32px_rgba(0,0,0,0.06)]`}
+            className={`rounded-2xl p-10 border border-[#0B1F3A]/10 ${i === 2 ? "bg-[#0B1F3A] text-white" : "bg-white"} shadow-[0_8px_32px_rgba(0,0,0,0.06)]`}
             data-testid={`problem-stat-${i}`}
           >
             <p className={`font-serif-display text-6xl lg:text-7xl ${i === 2 ? "text-[#D4AF37]" : "text-emerald-700"}`}>{s.value}</p>
@@ -31,12 +31,12 @@ export const Problem = ({ t }) => (
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="rounded-2xl border border-[#0A2E20]/10 bg-white/60 p-10"
+          className="rounded-2xl border border-[#0B1F3A]/10 bg-white/60 p-10"
           data-testid="paradigm-old"
         >
           <div className="flex items-center gap-3 mb-8">
             <span className="w-8 h-8 rounded-full bg-red-50 border border-red-200 flex items-center justify-center"><X size={14} className="text-red-500" /></span>
-            <h3 className="text-lg text-[#0A2E20] font-medium">{t.paradigmOld.title}</h3>
+            <h3 className="text-lg text-[#0B1F3A] font-medium">{t.paradigmOld.title}</h3>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {t.paradigmOld.steps.map((step, i) => (
@@ -54,7 +54,7 @@ export const Problem = ({ t }) => (
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="rounded-2xl bg-[#0A2E20] p-10 relative overflow-hidden grain-overlay"
+          className="rounded-2xl bg-[#0B1F3A] p-10 relative overflow-hidden grain-overlay"
           data-testid="paradigm-new"
         >
           <div className="flex items-center gap-3 mb-8 relative z-10">

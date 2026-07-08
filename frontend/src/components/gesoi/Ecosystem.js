@@ -5,7 +5,7 @@ import { SectionHeader, fadeUp } from "./SectionHeader";
 const icons = [FlaskConical, Megaphone, Cpu, Network];
 
 export const Ecosystem = ({ t }) => (
-  <section id="ecosystem" className="py-24 lg:py-36 bg-[#0A2E20] relative overflow-hidden grain-overlay" data-testid="ecosystem-section">
+  <section id="ecosystem" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="ecosystem-section">
     <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-emerald-600/10 blur-3xl" />
     <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
       <SectionHeader kicker={t.kicker} title={t.title} body={t.body} dark testId="ecosystem-header" />

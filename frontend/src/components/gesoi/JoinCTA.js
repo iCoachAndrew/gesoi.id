@@ -34,10 +34,10 @@ export const JoinCTA = ({ t }) => {
     "w-full rounded-xl bg-white/10 border border-white/20 px-5 py-4 text-white placeholder:text-white/40 text-sm font-light focus:outline-none focus:border-emerald-300 transition-colors duration-300";
 
   return (
-    <section id="join" className="py-24 lg:py-36 bg-[#0A2E20] relative overflow-hidden grain-overlay" data-testid="join-section">
+    <section id="join" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="join-section">
       <div className="absolute inset-0 opacity-15">
         <img src="https://images.pexels.com/photos/18772861/pexels-photo-18772861.jpeg" alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-[#0A2E20]/80" />
+        <div className="absolute inset-0 bg-[#0B1F3A]/80" />
       </div>
       <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div className="lg:sticky lg:top-32">
@@ -82,7 +82,7 @@ export const JoinCTA = ({ t }) => {
             type="submit"
             disabled={sending}
             data-testid="join-submit-btn"
-            className="w-full py-4 rounded-full bg-[#D4AF37] text-[#0A2E20] text-sm uppercase tracking-[0.2em] font-semibold hover:bg-[#e5c657] hover:scale-[1.01] transition-[background-color,transform] duration-300 disabled:opacity-60"
+            className="w-full py-4 rounded-full bg-[#D4AF37] text-[#0B1F3A] text-sm uppercase tracking-[0.2em] font-semibold hover:bg-[#e5c657] hover:scale-[1.01] transition-[background-color,transform] duration-300 disabled:opacity-60"
           >
             {sending ? t.form.sending : t.form.submit}
           </button>

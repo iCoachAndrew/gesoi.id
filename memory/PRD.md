@@ -41,6 +41,12 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Sensitive info intentionally EXCLUDED from public site: initial capital amount, notary details, revenue-sharing terms, personal addresses, internal procedural docs
 - Tested: iteration_2.json — 2 issues found & fixed (lockout identifier, ID cooperation chips), verified
 
+## Implemented (Iteration 3 — June 2026)
+- Rebrand to official design reference: deep navy (#0B1F3A) + gold (#D4AF37), green/blue kept as brand accents from logo
+- Real GESOI logo (green brain + blue bubble) in navbar, footer, admin login & dashboard (white chip on navy)
+- AI-generated navy blueprint Indonesia map hero background matching reference deck; "Emas 2045" hero line in gold
+- Export CSV button on admin dashboard (exports filtered registrants, verified download works)
+
 ## Deferred
 - Email notification on new registrant via Resend (user has no API key yet). Recipient: gesoigerakansehatotaknasional@gmail.com
 - Real GESOI logo & photos (user will upload)

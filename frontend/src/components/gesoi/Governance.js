@@ -19,14 +19,14 @@ export const Governance = ({ t }) => (
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-40px" }}
-              className="rounded-2xl bg-white border border-[#0A2E20]/10 p-10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] hover:-translate-y-1.5 transition-transform duration-500"
+              className="rounded-2xl bg-white border border-[#0B1F3A]/10 p-10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] hover:-translate-y-1.5 transition-transform duration-500"
               data-testid={`governance-card-${i}`}
             >
-              <span className="inline-flex w-12 h-12 rounded-full bg-[#0A2E20] items-center justify-center mb-6">
+              <span className="inline-flex w-12 h-12 rounded-full bg-[#0B1F3A] items-center justify-center mb-6">
                 <Icon size={20} className="text-[#D4AF37]" />
               </span>
               <p className="text-xs uppercase tracking-[0.25em] text-emerald-700 mb-2">{item.role}</p>
-              <h3 className="font-serif-display text-3xl text-[#0A2E20] mb-2">{item.name}</h3>
+              <h3 className="font-serif-display text-3xl text-[#0B1F3A] mb-2">{item.name}</h3>
               <p className="text-sm text-[#4B5563] font-light">{item.desc}</p>
             </motion.div>
           );
@@ -39,7 +39,7 @@ export const Governance = ({ t }) => (
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-40px" }}
-          className="mt-12 rounded-2xl bg-[#0A2E20] p-8 lg:p-10 grain-overlay relative overflow-hidden"
+          className="mt-12 rounded-2xl bg-[#0B1F3A] p-8 lg:p-10 grain-overlay relative overflow-hidden"
           data-testid="advisory-council"
         >
           <div className="relative z-10">

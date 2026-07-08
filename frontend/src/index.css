@@ -6,7 +6,7 @@
 
 :root {
     --gesoi-bg: #F9F9F7;
-    --gesoi-dark: #0A2E20;
+    --gesoi-dark: #0B1F3A;
     --gesoi-primary: #059669;
     --gesoi-gold: #D4AF37;
     --gesoi-ink: #1C1C1C;
@@ -64,8 +64,8 @@ body {
         --accent-foreground: 0 0% 9%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
-        --border: 158 55% 12% / 0.12;
-        --input: 158 55% 12% / 0.15;
+        --border: 217 55% 14% / 0.12;
+        --input: 217 55% 14% / 0.15;
         --ring: 160 91% 31%;
         --radius: 0.5rem;
     }
