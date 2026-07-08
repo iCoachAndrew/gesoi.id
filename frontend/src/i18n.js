@@ -40,6 +40,8 @@ export const content = {
         { name: "otaQku", role: "Platform Teknologi", desc: "Memberikan teknologi preventif: brain profiling & laporan qEEG." },
         { name: "ICC", role: "Induk Inovasi", desc: "Mengembangkan IP, algoritma, riset, dan ekosistem teknologi." },
       ],
+      coopLabel: "Lima Pilar Kerja Sama",
+      cooperation: ["Edukasi", "Aktivasi", "Advokasi", "Kolaborasi", "Riset"],
     },
     pillars: {
       kicker: "03 — Manifesto",

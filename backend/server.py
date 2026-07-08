@@ -94,7 +94,7 @@ async def get_current_admin(request: Request) -> dict:
 @api_router.post("/auth/login")
 async def login(input: LoginInput, request: Request, response: Response):
     email = input.email.lower()
-    ident = f"{request.client.host}:{email}"
+    ident = email
     now = datetime.now(timezone.utc)
     att = await db.login_attempts.find_one({"identifier": ident})
     if att and att.get("count", 0) >= 5:

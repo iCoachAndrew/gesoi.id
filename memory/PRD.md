@@ -33,11 +33,18 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Footer with Jakarta address
 - Tested: iteration_1.json — backend 100%, frontend 100%
 
-## Backlog
-- P1: Admin view for contact submissions; email notification (Resend/SendGrid) on new submission
-- P2: News/publications section, partner logos, real photography from GESOI, SEO meta/OG tags, mobile nav menu (hamburger)
-- P2: Multi-page structure (About, Programs detail) as movement grows per canonical knowledge base
+## Implemented (Iteration 2 — June 2026)
+- Admin dashboard `/admin` (JWT auth, bcrypt, httpOnly cookie + Bearer, brute-force lockout keyed by email, admin seeded from .env). Creds in /app/memory/test_credentials.md
+- Protected GET /api/contact & /api/admin/contacts; stats + interest filter + table in dashboard
+- New public content from uploaded docs (AD Yayasan, persiapan rapat, Matrix Kerjasama): flagship programs (GESOI Goes to School, Kelas 1000 Hari Otak, 30-Day Challenge, Duta Otak Indonesia, Festival Otak Sehat Nasional, White Book), Konsil Penasehat Kehormatan (Rudiantara chair + 15 tokoh), Lima Pilar Kerja Sama chips, Grand Launching 17 Agustus 2026 badge, tagline "Salam Otak Sehat, Indonesia Cerdas"
+- Mobile hamburger menu; verified responsive at 16:9 (1920), 4:3 (1024x768), 19.5:9 (390x844)
+- Sensitive info intentionally EXCLUDED from public site: initial capital amount, notary details, revenue-sharing terms, personal addresses, internal procedural docs
+- Tested: iteration_2.json — 2 issues found & fixed (lockout identifier, ID cooperation chips), verified
 
-## Next Tasks
-- Gather real brand assets (logo, photos) from user
-- Admin dashboard for submissions
+## Deferred
+- Email notification on new registrant via Resend (user has no API key yet). Recipient: gesoigerakansehatotaknasional@gmail.com
+- Real GESOI logo & photos (user will upload)
+
+## Backlog
+- P1: Resend email notification (once key provided); replace logo/photos when uploaded
+- P2: News/publications section, partner logos, SEO meta/OG tags, GESOI Hub teaser, export registrants to CSV
