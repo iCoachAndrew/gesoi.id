@@ -42,6 +42,8 @@ export const LABELS = {
   policyLink: "Label Tautan Kebijakan", policyTitle: "Judul Kebijakan Privasi",
   policyText: "Teks Kebijakan Privasi", video: "Video", publications: "Publikasi",
   privacy: "Privasi", layout: "Tata Letak / Template", phone: "Telepon/WhatsApp",
+  date: "Tanggal", backLabel: "Label Tombol Kembali", moreLabel: "Label Berita Lainnya",
+  notFound: "Teks Berita Tidak Ditemukan",
 };
 
 export const label = (k) => LABELS[k] || k;
@@ -66,6 +68,10 @@ export const LAYOUT_OPTIONS = {
 };
 
 const IMAGE_ITEM_PATHS = /^(pillars-items|programs-items|roadmap-items)/;
+const ITEM_KEY_INJECTIONS = [
+  [IMAGE_ITEM_PATHS, ["image"]],
+  [/^news-items/, ["date", "body"]],
+];
 const isLong = (k, v) => ["body", "desc", "sub", "note", "message", "quote", "banner", "policyText"].includes(k) || (typeof v === "string" && v.length > 90);
 const isImage = (k) => /photo|image|bg|poster/i.test(k);
 
@@ -232,6 +238,16 @@ function ObjectField({ value, onChange, path }) {
 function ArrayField({ value, onChange, path }) {
   const supportsImage = IMAGE_ITEM_PATHS.test(path);
   const withImage = (item) => (supportsImage && typeof item === "object" && !("image" in item) ? { ...item, image: "" } : item);
+  const withInjected = (item) => {
+    if (typeof item !== "object" || item === null) return item;
+    let out = item;
+    for (const [re, keys] of ITEM_KEY_INJECTIONS) {
+      if (re.test(path)) {
+        for (const k of keys) if (!(k in out)) out = { ...out, [k]: "" };
+      }
+    }
+    return out;
+  };
 
   const addItem = () => {
     let template = value.length
@@ -262,7 +278,7 @@ function ArrayField({ value, onChange, path }) {
             />
           ) : (
             <div className="space-y-3 pr-6">
-              {Object.entries(withImage(item)).map(([ck, cv]) => (
+              {Object.entries(withInjected(item)).map(([ck, cv]) => (
                 <div key={ck}>
                   <p className="text-[11px] uppercase tracking-wider text-[#6B7280] mb-1">{label(ck)}</p>
                   {subField({
@@ -300,7 +316,7 @@ export function Field({ k, value, onChange, path }) {
       );
     }
     if (isLong(k, value))
-      return <textarea rows={k === "policyText" ? 12 : 3} value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
+      return <textarea rows={k === "policyText" ? 12 : k === "body" ? 6 : 3} value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
     return <input value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
   }
   if (Array.isArray(value)) return createElement(ArrayField, { value, onChange, path });

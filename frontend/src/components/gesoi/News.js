@@ -1,8 +1,29 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { SectionHeader, fadeUp } from "./SectionHeader";
+import { newsUrl } from "../../lib/slug";
+
+const CardInner = ({ item, large }) => (
+  <>
+    <img
+      src={item.image}
+      alt={item.title}
+      loading="lazy"
+      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A]/30 to-transparent" />
+    <div className="absolute bottom-4 left-4 right-10 bg-white rounded-xl p-4 shadow-lg">
+      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-emerald-700 font-semibold mb-1.5">
+        <span className="w-2 h-2 bg-[#D4AF37]" /> {item.category}
+        {item.date && <span className="text-[#9CA3AF] normal-case tracking-normal font-light ml-auto">{item.date}</span>}
+      </p>
+      <h3 className={`text-[#0B1F3A] font-medium leading-snug ${large ? "text-base md:text-lg" : "text-sm"}`}>{item.title}</h3>
+    </div>
+  </>
+);
 
 const Card = ({ item, i, large }) => {
-  const Wrapper = item.link ? "a" : "div";
+  const cls = `group relative block w-full overflow-hidden rounded-2xl ${large ? "h-80 md:h-full md:min-h-[420px]" : "h-72"}`;
   return (
     <motion.div
       variants={fadeUp}
@@ -13,23 +34,15 @@ const Card = ({ item, i, large }) => {
       className={large ? "md:col-span-2 md:row-span-2" : ""}
       data-testid={`news-card-${i}`}
     >
-      <Wrapper
-        {...(item.link ? { href: item.link, target: "_blank", rel: "noopener noreferrer" } : {})}
-        className={`group relative block w-full overflow-hidden rounded-2xl ${large ? "h-80 md:h-full md:min-h-[420px]" : "h-72"}`}
-      >
-        <img
-          src={item.image}
-          alt={item.title}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A]/30 to-transparent" />
-        <div className="absolute bottom-4 left-4 right-10 bg-white rounded-xl p-4 shadow-lg">
-          <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-emerald-700 font-semibold mb-1.5">
-            <span className="w-2 h-2 bg-[#D4AF37]" /> {item.category}
-          </p>
-          <h3 className={`text-[#0B1F3A] font-medium leading-snug ${large ? "text-base md:text-lg" : "text-sm"}`}>{item.title}</h3>
-        </div>
-      </Wrapper>
+      {item.link ? (
+        <a href={item.link} target="_blank" rel="noopener noreferrer" className={cls}>
+          <CardInner item={item} large={large} />
+        </a>
+      ) : (
+        <Link to={newsUrl(item, i)} className={cls} data-testid={`news-card-link-${i}`}>
+          <CardInner item={item} large={large} />
+        </Link>
+      )}
     </motion.div>
   );
 };

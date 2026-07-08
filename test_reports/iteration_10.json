@@ -1,0 +1,37 @@
+{
+  "summary": "E2E tested new NewsDetail page + CMS editor date/body injection. All feature requirements pass: landing news cards render as internal react-router Links (news-card-link-0..3), client-side nav to /berita/{i}-{slug} works, detail page renders category/date/title/body with markdown-lite (## => h2, ** => strong), lang toggle switches ID/EN, back link goes to /#news and scrolls to news section, invalid slugs /berita/99-tidak-ada and /berita/abc show not-found state, document.title updates. CMS Editor: news-items-0 shows date + body(textarea rows=6) fields, save persists, detail page reflects edited **bold** and ## heading. External link on item 1 renders as <a target=_blank rel=noopener noreferrer>, replacing the internal Link. Reset restores defaults (/api/content -> {}). Pageview tracking fires on detail load when consent accepted (key gesoi_cookie_consent). Backend pytest 51/51 pass. FIXED one blocking bug: withInjected() was referenced but not defined in editorFields.js (ReferenceError would crash Editor on any object-array render).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "NewsDetail pageview tracking", "issue": "trackPageview fires TWICE on a single detail page load (both with same visitor_id, referrer=direct). Likely React StrictMode double-invoke in dev — verify prod build only fires once. Not blocking.", "affected_selectors": ["POST /api/track"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_analytics.py",
+    "/app/backend/tests/test_auth_admin.py",
+    "/app/backend/tests/test_cms.py",
+    "/app/backend/tests/test_contact.py",
+    "/app/backend/tests/test_orders.py",
+    "/app/test_reports/pytest/iter10.xml"
+  ],
+  "action_items": [
+    "Review withInjected fix in /app/frontend/src/lib/editorFields.js (added helper that reads ITEM_KEY_INJECTIONS and injects missing keys with '' for matching item paths). Original code referenced this function but never declared it — would crash the entire Editor at runtime when rendering any object-array section (news items, pillars, programs, roadmap, hero.lines, publications.authors, etc.). ESLint (no-undef) confirmed.",
+    "(Optional) Double-firing trackPageview on NewsDetail: verify in prod build (StrictMode may be the cause). If real, guard the useEffect with a ref to avoid duplicate pageviews inflating analytics."
+  ],
+  "critical_code_review_comments": [
+    "editorFields.js:271 — withInjected() called but not defined; caught by lint, fixed inline as a local helper inside ArrayField.",
+    "NewsDetail useEffect deps: pageview effect deps only on [slug] via the axios/reset effect while trackPageview is inside the same effect — fine, but confirms fire-on-mount semantics.",
+    "slug.js: newsIndexFromSlug uses parseInt so '/berita/abc' -> NaN -> -1 -> not-found (correct). Note: parseInt('9foo') -> 9, so '/berita/9foo-anything' would resolve to index 9 (currently out-of-bounds -> not-found). Acceptable.",
+    "News.js Card renders motion.div with data-testid=news-card-{i} AND child Link with data-testid=news-card-link-{i}; queries for '[data-testid^=\"news-card-\"]' match both — noted but not a bug."
+  ],
+  "updated_files": ["/app/frontend/src/lib/editorFields.js"],
+  "success_rate": {"backend": "100% (51/51)", "frontend": "100% of requested feature scenarios"},
+  "test_credentials": "admin@gesoi.or.id / GesoiAdmin#2045 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "None persistent — CMS edits were reset via editor-reset-btn; /api/content returns {} after cleanup. No stray analytics/contacts.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "The Editor object-array rendering path depends on the newly-added withInjected() helper in editorFields.js ArrayField. If future item types need injected keys, extend ITEM_KEY_INJECTIONS. Pageview double-fire on NewsDetail is suspected StrictMode; not confirmed in prod.",
+  "rca of the issue": "withInjected referenced without declaration — pure oversight in main-agent implementation. Fix: added local helper inside ArrayField that iterates ITEM_KEY_INJECTIONS, tests the current path against each regex, and returns the item with any missing keys added as '' so the field UI renders (existing values preserved). Verified by manual editor test: news-items-0 shows date + body(rows=6) fields even though live DB content lacks those keys."
+}

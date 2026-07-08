@@ -24,6 +24,7 @@ import { CookieConsent } from "@/components/gesoi/CookieConsent";
 import { Footer } from "@/components/gesoi/Footer";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import NewsDetail from "@/pages/NewsDetail";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const defaults = { ...content, shared: sharedDefaults };
@@ -61,6 +62,9 @@ const Landing = () => {
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
+    if (window.location.hash) {
+      setTimeout(() => document.querySelector(window.location.hash)?.scrollIntoView(), 400);
+    }
     return () => lenis.destroy();
   }, []);
 
@@ -91,6 +95,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/berita/:slug" element={<NewsDetail />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
