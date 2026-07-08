@@ -36,3 +36,28 @@ export const ICONS = {
 };
 
 export const getIcon = (name) => ICONS[name] || Brain;
+
+export const parseIcon = (value) => {
+  if (!value) return { base: "brain", scale: 1, isUrl: false };
+  let base = value;
+  let scale = 1;
+  const at = value.lastIndexOf("@");
+  if (at > 0) {
+    const s = parseInt(value.slice(at + 1), 10);
+    if (!isNaN(s) && s >= 10 && s <= 400) {
+      scale = s / 100;
+      base = value.slice(0, at);
+    }
+  }
+  return { base, scale, isUrl: /^https?:\/\//.test(base) || base.startsWith("/") };
+};
+
+export const SectionIcon = ({ icon, size = 18, className = "" }) => {
+  const { base, scale, isUrl } = parseIcon(icon);
+  const px = Math.round(size * scale);
+  if (isUrl) {
+    return <img src={base} alt="" style={{ width: px, height: px }} className={`object-contain ${className}`} />;
+  }
+  const I = ICONS[base] || Brain;
+  return <I size={px} className={className} />;
+};

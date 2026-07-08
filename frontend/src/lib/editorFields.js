@@ -2,7 +2,7 @@ import { useState, createElement } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Upload, Plus, Trash2 } from "lucide-react";
-import { ICONS, getIcon } from "./icons";
+import { ICONS, parseIcon, SectionIcon } from "./icons";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -91,16 +91,103 @@ export const ImageField = ({ value, onChange, testId }) => {
   );
 };
 
+const uploadFile = async (file, onDone, setUploading, accept) => {
+  setUploading(true);
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    const { data } = await axios.post(`${API}/admin/upload`, fd, authConfig());
+    onDone(`${BACKEND_URL}${data.url}`);
+    toast.success("Berhasil diunggah");
+  } catch (err) {
+    toast.error(err.response?.data?.detail || "Gagal mengunggah");
+  } finally {
+    setUploading(false);
+  }
+};
+
 export const IconField = ({ value, onChange }) => {
-  const Icon = getIcon(value);
+  const { base, scale, isUrl } = parseIcon(value);
+  const [uploading, setUploading] = useState(false);
+
+  const write = (newBase, newScale) => {
+    const s = Math.round(newScale * 100);
+    onChange(s === 100 ? newBase : `${newBase}@${s}`);
+  };
+
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-9 h-9 rounded-lg bg-[#0B1F3A] flex items-center justify-center shrink-0">
-        <Icon size={16} className="text-[#D4AF37]" />
-      </span>
-      <select value={value || "brain"} onChange={(e) => onChange(e.target.value)} className={inputCls}>
-        {Object.keys(ICONS).map((k) => <option key={k} value={k}>{k}</option>)}
-      </select>
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <span className="w-12 h-12 rounded-lg bg-[#0B1F3A] flex items-center justify-center shrink-0 overflow-hidden">
+          <SectionIcon icon={value} size={20} className="text-[#D4AF37]" />
+        </span>
+        <select
+          value={isUrl ? "__custom" : base}
+          onChange={(e) => e.target.value !== "__custom" && write(e.target.value, scale)}
+          className={inputCls}
+        >
+          {isUrl && <option value="__custom">— Ikon kustom (unggahan) —</option>}
+          {Object.keys(ICONS).map((k) => <option key={k} value={k}>{k}</option>)}
+        </select>
+        <label className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[#0B1F3A] text-white text-xs cursor-pointer hover:bg-[#1B3A63] transition-colors duration-200 whitespace-nowrap shrink-0">
+          <Upload size={12} /> {uploading ? "..." : "Unggah Ikon"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) uploadFile(f, (url) => write(url, scale), setUploading);
+              e.target.value = "";
+            }}
+          />
+        </label>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-[11px] uppercase tracking-wider text-[#6B7280] w-24 shrink-0">Ukuran: {Math.round(scale * 100)}%</span>
+        <input
+          type="range"
+          min="50"
+          max="200"
+          step="5"
+          value={Math.round(scale * 100)}
+          onChange={(e) => write(base, parseInt(e.target.value, 10) / 100)}
+          className="flex-1 accent-emerald-600"
+        />
+        {isUrl && (
+          <button type="button" onClick={() => write("brain", 1)} className="text-xs text-red-500 hover:underline shrink-0">
+            Hapus kustom
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const VideoField = ({ value, onChange, testId }) => {
+  const [uploading, setUploading] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      {value && (
+        <video src={value} muted className="w-48 rounded-lg border border-[#0B1F3A]/10 bg-black" preload="metadata" />
+      )}
+      <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="URL video (.mp4 / .webm)" className={inputCls} data-testid={testId} />
+      <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B1F3A] text-white text-xs cursor-pointer hover:bg-[#1B3A63] transition-colors duration-200">
+        <Upload size={12} /> {uploading ? "Mengunggah video..." : "Unggah Video (maks 60MB)"}
+        <input
+          type="file"
+          accept="video/mp4,video/webm,video/quicktime"
+          className="hidden"
+          disabled={uploading}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) uploadFile(f, onChange, setUploading);
+            e.target.value = "";
+          }}
+        />
+      </label>
     </div>
   );
 };
@@ -176,6 +263,7 @@ export function Field({ k, value, onChange, path }) {
   if (typeof value === "string") {
     if (isImage(k)) return <ImageField value={value} onChange={onChange} testId={`field-${path}`} />;
     if (k === "icon") return <IconField value={value} onChange={onChange} />;
+    if (k === "url") return <VideoField value={value} onChange={onChange} testId={`field-${path}`} />;
     if (k === "layout")
       return (
         <select value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`}>

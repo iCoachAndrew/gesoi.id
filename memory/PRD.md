@@ -70,6 +70,11 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Awaiting from user: official GESOI video URL (can be set via Editor → 08 — Video)
 - Tested: iteration_5.json — backend 10/10, frontend 100%
 
+## Implemented (Iteration 7 — June 2026)
+- Custom icon uploader: every icon field in CMS editor now has lucide dropdown + "Unggah Ikon" (custom image) + size slider 50–200% (value format "name-or-url@scale", rendered via SectionIcon in lib/icons.js; used by Ecosystem & Programs)
+- Video uploader: backend /api/admin/upload accepts mp4/webm/mov up to 60MB; editor video "url" field has upload button + inline preview
+- Verified: video upload API, .txt rejection (400), custom icon @150% renders on landing; content reset to defaults after test
+
 ## Deferred
 - Email notification on new registrant via Resend (user has no API key yet). Recipient: gesoigerakansehatotaknasional@gmail.com
 - Real GESOI logo & photos (user will upload)

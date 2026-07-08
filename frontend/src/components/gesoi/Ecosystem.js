@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { getIcon } from "../../lib/icons";
+import { SectionIcon } from "../../lib/icons";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 
 const ORBIT_POS = [
@@ -10,7 +10,6 @@ const ORBIT_POS = [
 ];
 
 const OrbitNode = ({ node, i, featured }) => {
-  const Icon = getIcon(node.icon);
   const pos = ORBIT_POS[i] || ORBIT_POS[0];
   return (
     <motion.div
@@ -32,7 +31,7 @@ const OrbitNode = ({ node, i, featured }) => {
         }`}
       >
         <span className={`inline-flex w-10 h-10 rounded-full items-center justify-center border mb-2 ${featured ? "bg-[#D4AF37]/20 border-[#D4AF37]/50" : "bg-emerald-500/10 border-emerald-400/30"}`}>
-          <Icon size={16} className={featured ? "text-[#D4AF37]" : "text-emerald-300"} />
+          <SectionIcon icon={node.icon} size={16} className={featured ? "text-[#D4AF37]" : "text-emerald-300"} />
         </span>
         <p className={`text-[9px] uppercase tracking-[0.2em] px-3 ${featured ? "text-[#D4AF37]" : "text-emerald-300/80"}`}>{node.role}</p>
         <h3 className={`font-serif-display text-white ${featured ? "text-3xl" : "text-xl"}`}>{node.name}</h3>
@@ -61,7 +60,6 @@ const OrbitLayout = ({ nodes }) => (
 const GridCards = ({ nodes, className }) => (
   <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 ${className || ""}`}>
     {nodes.map((node, i) => {
-      const Icon = getIcon(node.icon);
       const featured = node.name === "GESOI";
       return (
         <motion.div
@@ -77,7 +75,7 @@ const GridCards = ({ nodes, className }) => (
           data-testid={`ecosystem-card-${node.name.toLowerCase()}`}
         >
           <span className={`inline-flex w-11 h-11 rounded-full items-center justify-center border mb-5 ${featured ? "bg-[#D4AF37]/20 border-[#D4AF37]/50" : "bg-emerald-500/10 border-emerald-400/30"}`}>
-            <Icon size={18} className={featured ? "text-[#D4AF37]" : "text-emerald-300"} />
+            <SectionIcon icon={node.icon} size={18} className={featured ? "text-[#D4AF37]" : "text-emerald-300"} />
           </span>
           <p className={`text-[10px] uppercase tracking-[0.25em] mb-2 ${featured ? "text-[#D4AF37]" : "text-emerald-300/80"}`}>{node.role}</p>
           <h3 className="font-serif-display text-white text-2xl mb-3">{node.name}</h3>

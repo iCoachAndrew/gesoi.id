@@ -224,18 +224,22 @@ def get_object(path: str):
 
 
 ALLOWED_IMAGE_EXT = {"jpg", "jpeg", "png", "gif", "webp"}
+ALLOWED_VIDEO_EXT = {"mp4", "webm", "mov"}
 
 
 @api_router.post("/admin/upload")
 async def upload_image(file: UploadFile = File(...), admin: dict = Depends(get_current_admin)):
     ext = file.filename.split(".")[-1].lower() if "." in file.filename else ""
-    if ext not in ALLOWED_IMAGE_EXT:
-        raise HTTPException(status_code=400, detail="Format tidak didukung. Gunakan JPG, PNG, GIF, atau WEBP.")
+    if ext not in ALLOWED_IMAGE_EXT and ext not in ALLOWED_VIDEO_EXT:
+        raise HTTPException(status_code=400, detail="Format tidak didukung. Gunakan JPG, PNG, GIF, WEBP, MP4, WEBM, atau MOV.")
     data = await file.read()
-    if len(data) > 8 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Ukuran file maksimal 8MB.")
+    is_video = ext in ALLOWED_VIDEO_EXT
+    max_size = 60 * 1024 * 1024 if is_video else 8 * 1024 * 1024
+    if len(data) > max_size:
+        raise HTTPException(status_code=400, detail=f"Ukuran file maksimal {'60MB untuk video' if is_video else '8MB untuk gambar'}.")
     path = f"{APP_NAME}/uploads/{uuid.uuid4()}.{ext}"
-    result = put_object(path, data, file.content_type or "image/jpeg")
+    default_ct = "video/mp4" if is_video else "image/jpeg"
+    result = put_object(path, data, file.content_type or default_ct)
     await db.files.insert_one({
         "id": str(uuid.uuid4()),
         "storage_path": result["path"],

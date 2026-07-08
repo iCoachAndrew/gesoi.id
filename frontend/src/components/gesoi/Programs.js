@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { getIcon } from "../../lib/icons";
+import { SectionIcon } from "../../lib/icons";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 
 export const Programs = ({ t, image }) => (
@@ -27,7 +27,6 @@ export const Programs = ({ t, image }) => (
         </div>
         <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
           {t.items.map((item, i) => {
-            const Icon = getIcon(item.icon);
             return (
               <motion.div
                 key={item.title}
@@ -40,7 +39,7 @@ export const Programs = ({ t, image }) => (
                 data-testid={`program-card-${i}`}
               >
                 <span className="inline-flex w-11 h-11 rounded-full bg-emerald-100 group-hover:bg-emerald-500/20 items-center justify-center mb-5 transition-colors duration-500">
-                  <Icon size={18} className="text-emerald-700 group-hover:text-emerald-300 transition-colors duration-500" />
+                  <SectionIcon icon={item.icon} size={18} className="text-emerald-700 group-hover:text-emerald-300 transition-colors duration-500" />
                 </span>
                 <h3 className="text-lg font-medium text-[#0B1F3A] group-hover:text-white transition-colors duration-500 mb-2">{item.title}</h3>
                 <p className="text-sm text-[#4B5563] group-hover:text-white/60 font-light leading-relaxed transition-colors duration-500">{item.desc}</p>
