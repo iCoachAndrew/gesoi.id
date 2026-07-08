@@ -47,6 +47,15 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - AI-generated navy blueprint Indonesia map hero background matching reference deck; "Emas 2045" hero line in gold
 - Export CSV button on admin dashboard (exports filtered registrants, verified download works)
 
+## Implemented (Iteration 4 — June 2026)
+- Full-site CMS: admin dashboard tab "Editor Website" — every section's text, icons (curated lucide picker), and images editable; photo upload via Emergent object storage (POST /api/admin/upload → served at /api/files/{path} with cache); content stored in MongoDB site_content, landing deep-merges overrides over i18n defaults; Simpan/Reset flows verified
+- Governance redesigned GBHI-style: horizontal leadership people-card carousel (17 tokoh, initials avatars until photos uploaded via CMS)
+- Paradigm old/new redesigned: editorial navy panel (struck-through serif old steps → gold transition → numbered ascending new steps)
+- Footer "Portal Admin" link near copyright
+- SEO meta + OG image (AI-generated navy banner with logo) in index.html for WhatsApp/social sharing
+- Note: recursive editor fields use createElement (babel visual-edits plugin crashes on recursive JSX — do not convert back)
+- Tested: iteration_3.json — backend 24/24, frontend 100%
+
 ## Deferred
 - Email notification on new registrant via Resend (user has no API key yet). Recipient: gesoigerakansehatotaknasional@gmail.com
 - Real GESOI logo & photos (user will upload)
