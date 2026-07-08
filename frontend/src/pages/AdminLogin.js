@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { Lock } from "lucide-react";
+import { Lock, ArrowLeft } from "lucide-react";
 import { Toaster } from "sonner";
 
 const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
@@ -67,6 +67,13 @@ export default function AdminLogin() {
             {loading ? "Memproses..." : "Masuk"}
           </button>
         </form>
+        <Link
+          to="/"
+          data-testid="back-to-landing-link"
+          className="mt-6 flex items-center justify-center gap-2 text-white/60 hover:text-emerald-300 text-xs uppercase tracking-[0.2em] transition-colors duration-300"
+        >
+          <ArrowLeft size={14} /> Kembali ke Halaman Utama
+        </Link>
       </div>
       <Toaster position="bottom-right" richColors />
     </div>
