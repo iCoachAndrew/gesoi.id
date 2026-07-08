@@ -30,12 +30,23 @@ export const LABELS = {
   success: "Pesan Sukses", error: "Pesan Gagal", interest: "Label Minat",
   organization: "Organisasi", nav: "Navigasi", problem: "Urgensi",
   ecosystem: "Ekosistem", pillars: "Pilar", programs: "Program",
-  roadmap: "Peta Jalan", join: "Bergabung",
+  roadmap: "Peta Jalan", join: "Bergabung", news: "Kabar",
+  category: "Kategori", link: "Tautan (opsional)", image: "Gambar",
+  authors: "Penulis", price: "Harga", url: "URL Video (.mp4)",
+  poster: "Gambar Poster Video", quote: "Kutipan", author: "Nama Narasumber",
+  watchLabel: "Label Tombol Tonton", buyLabel: "Label Tombol Beli",
+  priceNote: "Keterangan Harga", modalTitle: "Judul Checkout",
+  payLabel: "Label Tombol Bayar", cancelLabel: "Label Tombol Batal",
+  prototypeNote: "Catatan Prototipe", banner: "Teks Banner Cookie",
+  accept: "Tombol Terima", decline: "Tombol Tolak",
+  policyLink: "Label Tautan Kebijakan", policyTitle: "Judul Kebijakan Privasi",
+  policyText: "Teks Kebijakan Privasi", video: "Video", publications: "Publikasi",
+  privacy: "Privasi",
 };
 
 export const label = (k) => LABELS[k] || k;
-const isLong = (k, v) => ["body", "desc", "sub", "note", "message"].includes(k) || (typeof v === "string" && v.length > 90);
-const isImage = (k) => /photo|image|bg/i.test(k);
+const isLong = (k, v) => ["body", "desc", "sub", "note", "message", "quote", "banner", "policyText"].includes(k) || (typeof v === "string" && v.length > 90);
+const isImage = (k) => /photo|image|bg|poster/i.test(k);
 
 export const inputCls =
   "w-full rounded-lg border border-[#0B1F3A]/15 bg-white px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors duration-200";
@@ -166,7 +177,7 @@ export function Field({ k, value, onChange, path }) {
     if (isImage(k)) return <ImageField value={value} onChange={onChange} testId={`field-${path}`} />;
     if (k === "icon") return <IconField value={value} onChange={onChange} />;
     if (isLong(k, value))
-      return <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
+      return <textarea rows={k === "policyText" ? 12 : 3} value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
     return <input value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
   }
   if (Array.isArray(value)) return createElement(ArrayField, { value, onChange, path });

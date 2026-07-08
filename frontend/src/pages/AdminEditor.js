@@ -19,7 +19,11 @@ const SECTIONS = [
   { key: "programs", label: "04 — Program" },
   { key: "roadmap", label: "05 — Peta Jalan" },
   { key: "governance", label: "06 — Kepemimpinan" },
-  { key: "join", label: "07 — Ajakan & Form" },
+  { key: "news", label: "07 — Kabar / News" },
+  { key: "video", label: "08 — Video" },
+  { key: "publications", label: "09 — Publikasi Ilmiah" },
+  { key: "join", label: "10 — Ajakan & Form" },
+  { key: "privacy", label: "Privasi & Cookie" },
   { key: "footer", label: "Footer" },
 ];
 

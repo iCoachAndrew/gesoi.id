@@ -16,6 +16,10 @@ import { Programs } from "@/components/gesoi/Programs";
 import { Roadmap } from "@/components/gesoi/Roadmap";
 import { Governance } from "@/components/gesoi/Governance";
 import { JoinCTA } from "@/components/gesoi/JoinCTA";
+import { News } from "@/components/gesoi/News";
+import { VideoFeature } from "@/components/gesoi/VideoFeature";
+import { Publications } from "@/components/gesoi/Publications";
+import { CookieConsent } from "@/components/gesoi/CookieConsent";
 import { Footer } from "@/components/gesoi/Footer";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -56,8 +60,12 @@ const Landing = () => {
       <Programs t={t.programs} image={shared.programsImage} />
       <Roadmap t={t.roadmap} />
       <Governance t={t.governance} people={shared.people} lang={lang} />
+      <News t={t.news} />
+      <VideoFeature t={t.video} />
+      <Publications t={t.publications} />
       <JoinCTA t={t.join} bg={shared.joinBg} />
       <Footer t={t} />
+      <CookieConsent t={t.privacy} />
       <Toaster position="bottom-right" richColors />
     </div>
   );

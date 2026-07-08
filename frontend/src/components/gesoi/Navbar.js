@@ -10,6 +10,7 @@ const links = (t) => [
   { href: "#pillars", label: t.nav.pillars },
   { href: "#programs", label: t.nav.programs },
   { href: "#roadmap", label: t.nav.roadmap },
+  { href: "#news", label: t.nav.news },
 ];
 
 export const Navbar = ({ t, lang, setLang }) => {
