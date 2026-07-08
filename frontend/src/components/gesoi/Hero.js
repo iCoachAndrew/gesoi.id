@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Sparkles } from "lucide-react";
 
 const lineVariants = {
   hidden: { y: "110%" },
@@ -85,6 +85,17 @@ export const Hero = ({ t }) => {
             {t.hero.cta2}
           </a>
         </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 1.9 }}
+          className="mt-10 inline-flex items-center gap-2.5 self-start px-5 py-2.5 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 text-[#D4AF37] text-xs sm:text-sm tracking-[0.15em] uppercase"
+          data-testid="hero-launch-badge"
+        >
+          <Sparkles size={14} />
+          {t.hero.launch}
+        </motion.p>
 
         <motion.div
           initial={{ opacity: 0 }}

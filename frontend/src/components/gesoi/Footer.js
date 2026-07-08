@@ -50,7 +50,7 @@ export const Footer = ({ t }) => (
       </div>
       <div className="pt-8 flex flex-col sm:flex-row justify-between gap-4 text-xs text-white/40 font-light">
         <p data-testid="footer-copyright">© {new Date().getFullYear()} {t.footer.rights}</p>
-        <p className="tracking-[0.2em] uppercase">Brain Energy · Indonesia Emas 2045</p>
+        <p className="tracking-[0.15em] uppercase">Salam Otak Sehat, Indonesia Cerdas</p>
       </div>
     </div>
   </footer>

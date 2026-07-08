@@ -10,7 +10,18 @@ export const Ecosystem = ({ t }) => (
     <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
       <SectionHeader kicker={t.kicker} title={t.title} body={t.body} dark testId="ecosystem-header" />
 
-      <div className="mt-20 grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {t.cooperation && (
+        <div className="mt-10 flex flex-wrap items-center gap-3" data-testid="cooperation-pillars">
+          <span className="text-[#D4AF37] text-xs uppercase tracking-[0.25em] mr-2">{t.coopLabel}</span>
+          {t.cooperation.map((c) => (
+            <span key={c} className="px-4 py-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-xs uppercase tracking-wider">
+              {c}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-16 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {t.nodes.map((node, i) => {
           const Icon = icons[i];
           const featured = node.name === "GESOI";

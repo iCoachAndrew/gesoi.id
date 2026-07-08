@@ -1,0 +1,43 @@
+{
+  "summary": "Iteration 2: Tested new admin auth flow (backend + frontend), updated landing content, mobile hamburger, and join-form regression. Backend 16/17 pytest passed. Frontend admin login/dashboard/logout, filter chips, contacts table, mobile menu, landing content (hero launch badge, programs flagship cards, Konsil Penasehat Kehormatan incl. Sandiaga Uno, footer 'Salam Otak Sehat, Indonesia Cerdas', EN toggle), join form + admin visibility — all pass. Two issues found: (1) brute-force lockout doesn't trigger because identifier uses request.client.host which varies across load-balanced backend replicas (429 never returned); (2) Indonesian ecosystem block is missing the `cooperation` array so the 'Lima Pilar Kerja Sama' chips (data-testid=cooperation-pillars) do NOT render in ID (default) language — only in EN.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "/api/auth/login", "issue": "Brute-force lockout (429 after 5 fails) never triggers. RCA: identifier is `{request.client.host}:{email}` but the app runs behind Kubernetes ingress with multiple replicas — different backend pods see different peer IPs (observed 10.208.128.9 and 10.208.128.10 in login_attempts collection), so counts split across identifiers and never reach 5. Fix: derive client IP from X-Forwarded-For header (first hop) or key lockout on email only.", "priority": "HIGH"}
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Ecosystem cooperation pillars (ID lang)", "issue": "`cooperation-pillars` div is not rendered on the default Indonesian view because i18n.js `content.id.ecosystem` has no `cooperation` array (only `content.en.ecosystem.cooperation` exists). Users in ID never see the 'Lima Pilar Kerja Sama' chips.", "affected_selectors": ["[data-testid='cooperation-pillars']"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_auth_admin.py",
+    "/app/backend/tests/test_contact.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix brute-force lockout identifier: use X-Forwarded-For (or email-only) so counts don't split across replicas.",
+    "Add `cooperation: ['Edukasi','Aktivasi','Advokasi','Kolaborasi','Riset']` (or the doc-approved wording) plus `coopLabel: 'Lima Pilar Kerja Sama'` to `content.id.ecosystem` in /app/frontend/src/i18n.js so the chips render in Indonesian."
+  ],
+  "critical_code_review_comments": [
+    "server.py: brute-force key uses request.client.host — unreliable behind ingress; also allows an attacker on a rotating IP to bypass lockout entirely.",
+    "server.py: set_cookie uses secure=True which is fine for the HTTPS preview but will silently drop cookies on http://localhost during dev; consider deriving `secure` from env or request scheme.",
+    "AdminDashboard.js: on any error in the /auth/me or /admin/contacts call the user is silently redirected to /admin/login — no toast/error surfaced (a 500 would feel like a logout).",
+    "server.py stores contacts.created_at as ISO string then re-parses on read — inconsistent with the ContactSubmission model (datetime); would be cleaner to persist as native datetime.",
+    "CORS still `allow_origins='*'` with `allow_credentials=True` — browsers reject credentials with wildcard; harmless right now (frontend sends Bearer + same-origin cookie) but should be tightened."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_auth_admin.py (new)",
+    "/app/backend/tests/test_contact.py (updated GET tests to authenticate)"
+  ],
+  "success_rate": {"backend": "94% (16/17)", "frontend": "95% (1 content miss in ID lang)"},
+  "test_credentials": "admin@gesoi.or.id / GesoiAdmin#2045 — verified working.",
+  "seed_data_creation": "Created a few TEST_ contact submissions via API + one via UI (TEST_PlaywrightUser). Also polluted login_attempts collection with lockout-solo@example.com and lockout-test@example.com entries.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Admin auth wiring works end-to-end (Bearer token + httpOnly cookie both accepted). Lockout logic bug requires X-Forwarded-For based key. Programs, Governance/Advisory Council, launch badge, footer tagline, mobile hamburger and 1024x768/390x844 responsive all verified. Only the ID-language cooperation-pillars chips are missing.",
+  "rca of the issue": "Lockout: MongoDB login_attempts collection shows the same failed email split into two identifiers e.g. '10.208.128.9:lockout-solo@example.com' (count=3) and '10.208.128.10:lockout-solo@example.com' (count=4). Kubernetes ingress balances requests to 2 backend pods, each recording request.client.host from its own peer, so the 5-attempt threshold is never reached from a single client. Fix should key lockout on email (optionally combined with the true client IP from X-Forwarded-For)."
+}

@@ -32,6 +32,29 @@ export const Governance = ({ t }) => (
           );
         })}
       </div>
+
+      {t.council && (
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          className="mt-12 rounded-2xl bg-[#0A2E20] p-8 lg:p-10 grain-overlay relative overflow-hidden"
+          data-testid="advisory-council"
+        >
+          <div className="relative z-10">
+            <h3 className="font-serif-display text-white text-2xl lg:text-3xl mb-2">{t.councilTitle}</h3>
+            <p className="text-white/60 text-sm font-light mb-6">{t.councilBody}</p>
+            <div className="flex flex-wrap gap-2.5">
+              {t.council.map((name) => (
+                <span key={name} className="px-4 py-2 rounded-full border border-white/15 bg-white/5 text-white/80 text-xs sm:text-sm font-light">
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   </section>
 );

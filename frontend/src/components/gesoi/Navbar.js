@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Brain } from "lucide-react";
+import { Brain, Menu, X } from "lucide-react";
 
 const links = (t) => [
   { href: "#problem", label: t.nav.problem },
@@ -12,6 +12,7 @@ const links = (t) => [
 
 export const Navbar = ({ t, lang, setLang }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -70,8 +71,34 @@ export const Navbar = ({ t, lang, setLang }) => {
           >
             {t.nav.join}
           </a>
+          <button
+            data-testid="mobile-menu-btn"
+            onClick={() => setOpen(!open)}
+            className="md:hidden w-9 h-9 flex items-center justify-center text-white"
+            aria-label="Menu"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
+      {open && (
+        <nav className="md:hidden bg-[#0A2E20]/95 backdrop-blur-xl border-t border-white/10 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
+          {links(t).map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              data-testid={`mobile-nav-link-${l.href.slice(1)}`}
+              className="text-white/80 text-sm uppercase tracking-[0.15em]"
+            >
+              {l.label}
+            </a>
+          ))}
+          <a href="#join" onClick={() => setOpen(false)} data-testid="mobile-menu-join" className="text-emerald-300 text-sm uppercase tracking-[0.15em]">
+            {t.nav.join}
+          </a>
+        </nav>
+      )}
     </motion.header>
   );
 };

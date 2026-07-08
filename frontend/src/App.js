@@ -15,6 +15,8 @@ import { Roadmap } from "@/components/gesoi/Roadmap";
 import { Governance } from "@/components/gesoi/Governance";
 import { JoinCTA } from "@/components/gesoi/JoinCTA";
 import { Footer } from "@/components/gesoi/Footer";
+import AdminLogin from "@/pages/AdminLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
 
 const Landing = () => {
   const [lang, setLang] = useState("id");
@@ -53,6 +55,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );

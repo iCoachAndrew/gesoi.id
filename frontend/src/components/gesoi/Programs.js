@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { School, Briefcase, Megaphone, Users, BookOpen, Landmark } from "lucide-react";
+import { School, Baby, CalendarCheck, Users, PartyPopper, BookOpen } from "lucide-react";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 
-const icons = [School, Briefcase, Megaphone, Users, BookOpen, Landmark];
+const icons = [School, Baby, CalendarCheck, Users, PartyPopper, BookOpen];
 
 export const Programs = ({ t }) => (
   <section id="programs" className="py-24 lg:py-36 bg-white" data-testid="programs-section">
