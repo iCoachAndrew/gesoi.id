@@ -86,3 +86,10 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 ## Backlog
 - P1: Resend email notification (once key provided); replace logo/photos when uploaded
 - P2: News/publications section, partner logos, SEO meta/OG tags, GESOI Hub teaser, export registrants to CSV
+
+## Implemented (Iteration 9 — June 2026)
+- Hero performance fix: hero bg 1.2MB PNG → local /hero-bg.webp (39KB, 30x lighter, visual identik), preload di index.html, fetchPriority=high, will-change-transform pada layer parallax, dukungan useReducedMotion
+- Galeri Media: tombol "Unggah File" langsung di halaman galeri (data-testid media-upload-btn), refresh grid otomatis setelah upload
+- CMS adaptif: pilihan Tata Letak/Template per section — Pillars (list/cards), Programs (grid/media), Roadmap (timeline/photos), Ecosystem (orbit/grid, sudah ada); semua item nested pillars/programs/roadmap punya field gambar opsional di editor (injeksi otomatis via IMAGE_ITEM_PATHS di editorFields.js); landing merender gambar sesuai layout terpilih
+- Fix minor: test_orders.py env fallback
+- Tested: iteration_6.json — backend 24/24, frontend 100%

@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 
-BASE_URL = os.environ['REACT_APP_BACKEND_URL'].rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://social-impact-web-2.preview.emergentagent.com').rstrip('/')
 ADMIN_EMAIL = "admin@gesoi.or.id"
 ADMIN_PASSWORD = "GesoiAdmin#2045"
 
