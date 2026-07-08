@@ -1,16 +1,46 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
 import { Lock, FileText, X } from "lucide-react";
 import { toast } from "sonner";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const emptyBuyer = { name: "", email: "", phone: "", organization: "" };
+
 export const Publications = ({ t }) => {
   const [selected, setSelected] = useState(null);
+  const [buyer, setBuyer] = useState(emptyBuyer);
+  const [sending, setSending] = useState(false);
 
-  const pay = () => {
-    toast.info(t.prototypeNote);
+  const set = (k) => (e) => setBuyer({ ...buyer, [k]: e.target.value });
+
+  const close = () => {
     setSelected(null);
+    setBuyer(emptyBuyer);
   };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    try {
+      await axios.post(`${API}/orders`, {
+        publication_title: selected.title,
+        price: selected.price,
+        ...buyer,
+        organization: buyer.organization || null,
+      });
+      toast.success(t.form.success);
+      close();
+    } catch {
+      toast.error(t.form.error);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const inputCls =
+    "w-full rounded-xl border border-[#0B1F3A]/15 bg-white px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition-colors duration-200";
 
   return (
     <section id="publications" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="publications-section">
@@ -57,43 +87,45 @@ export const Publications = ({ t }) => {
       </div>
 
       {selected && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center px-6" data-testid="checkout-modal">
-          <div className="absolute inset-0 bg-black/70" onClick={() => setSelected(null)} />
-          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
-            <button
-              onClick={() => setSelected(null)}
-              data-testid="checkout-close-btn"
-              className="absolute top-4 right-4 text-[#6B7280] hover:text-[#0B1F3A]"
-              aria-label="Tutup"
-            >
+        <div className="fixed inset-0 z-[70] flex items-center justify-center px-6 py-8" data-testid="checkout-modal">
+          <div className="absolute inset-0 bg-black/70" onClick={close} />
+          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <button onClick={close} data-testid="checkout-close-btn" className="absolute top-4 right-4 text-[#6B7280] hover:text-[#0B1F3A]" aria-label="Tutup">
               <X size={18} />
             </button>
             <p className="text-xs uppercase tracking-[0.25em] text-emerald-700 mb-3">{t.modalTitle}</p>
-            <h3 className="font-serif-display text-2xl text-[#0B1F3A] mb-2">{selected.title}</h3>
-            <p className="text-sm text-[#4B5563] font-light mb-5">{selected.authors} · {selected.year}</p>
-            <div className="flex items-baseline justify-between border-t border-b border-[#0B1F3A]/10 py-4 mb-5">
+            <h3 className="font-serif-display text-2xl text-[#0B1F3A] mb-1">{selected.title}</h3>
+            <div className="flex items-baseline justify-between border-t border-b border-[#0B1F3A]/10 py-3 my-4">
               <span className="text-sm text-[#4B5563]">{t.priceNote}</span>
               <span className="font-serif-display text-2xl text-[#0B1F3A]">{selected.price}</span>
             </div>
             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5" data-testid="prototype-note">
               {t.prototypeNote}
             </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setSelected(null)}
-                data-testid="checkout-cancel-btn"
-                className="flex-1 py-3 rounded-full border border-[#0B1F3A]/20 text-[#4B5563] text-xs uppercase tracking-wider hover:border-[#0B1F3A] transition-colors duration-300"
-              >
-                {t.cancelLabel}
-              </button>
-              <button
-                onClick={pay}
-                data-testid="checkout-pay-btn"
-                className="flex-1 py-3 rounded-full bg-[#D4AF37] text-[#0B1F3A] text-xs uppercase tracking-wider font-semibold hover:bg-[#e5c657] transition-colors duration-300"
-              >
-                {t.payLabel}
-              </button>
-            </div>
+            <form onSubmit={submit} className="space-y-3" data-testid="order-form">
+              <input required value={buyer.name} onChange={set("name")} placeholder={t.form.name} className={inputCls} data-testid="order-input-name" />
+              <input required type="email" value={buyer.email} onChange={set("email")} placeholder={t.form.email} className={inputCls} data-testid="order-input-email" />
+              <input required value={buyer.phone} onChange={set("phone")} placeholder={t.form.phone} className={inputCls} data-testid="order-input-phone" />
+              <input value={buyer.organization} onChange={set("organization")} placeholder={t.form.organization} className={inputCls} data-testid="order-input-organization" />
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={close}
+                  data-testid="checkout-cancel-btn"
+                  className="flex-1 py-3 rounded-full border border-[#0B1F3A]/20 text-[#4B5563] text-xs uppercase tracking-wider hover:border-[#0B1F3A] transition-colors duration-300"
+                >
+                  {t.cancelLabel}
+                </button>
+                <button
+                  type="submit"
+                  disabled={sending}
+                  data-testid="order-submit-btn"
+                  className="flex-1 py-3 rounded-full bg-[#D4AF37] text-[#0B1F3A] text-xs uppercase tracking-wider font-semibold hover:bg-[#e5c657] transition-colors duration-300 disabled:opacity-60"
+                >
+                  {sending ? t.form.sending : t.form.submit}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

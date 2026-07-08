@@ -41,7 +41,7 @@ export const LABELS = {
   accept: "Tombol Terima", decline: "Tombol Tolak",
   policyLink: "Label Tautan Kebijakan", policyTitle: "Judul Kebijakan Privasi",
   policyText: "Teks Kebijakan Privasi", video: "Video", publications: "Publikasi",
-  privacy: "Privasi",
+  privacy: "Privasi", layout: "Tata Letak", phone: "Telepon/WhatsApp",
 };
 
 export const label = (k) => LABELS[k] || k;
@@ -176,6 +176,13 @@ export function Field({ k, value, onChange, path }) {
   if (typeof value === "string") {
     if (isImage(k)) return <ImageField value={value} onChange={onChange} testId={`field-${path}`} />;
     if (k === "icon") return <IconField value={value} onChange={onChange} />;
+    if (k === "layout")
+      return (
+        <select value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`}>
+          <option value="orbit">Orbit (interaktif, GESOI di tengah)</option>
+          <option value="grid">Grid Kartu (klasik)</option>
+        </select>
+      );
     if (isLong(k, value))
       return <textarea rows={k === "policyText" ? 12 : 3} value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;
     return <input value={value} onChange={(e) => onChange(e.target.value)} className={inputCls} data-testid={`field-${path}`} />;

@@ -34,6 +34,7 @@ export const content = {
     },
     ecosystem: {
       kicker: "02 — Narasi Besar",
+      layout: "orbit",
       title: "Satu gerakan, satu ekosistem",
       body: "Indonesia membutuhkan Brain Energy yang sehat untuk mencapai Indonesia Emas 2045. Untuk mencapainya, diperlukan gerakan nasional — GESOI — yang didukung ekosistem yang saling menguatkan.",
       nodes: [
@@ -109,9 +110,18 @@ export const content = {
       buyLabel: "Beli Akses",
       priceNote: "Akses digital (PDF)",
       modalTitle: "Checkout Publikasi",
-      payLabel: "Bayar Sekarang",
       cancelLabel: "Batal",
       prototypeNote: "Ini adalah prototipe — pembayaran belum dihubungkan. Tim GESOI akan menghubungi Anda.",
+      form: {
+        name: "Nama lengkap",
+        email: "Alamat email",
+        phone: "Nomor WhatsApp",
+        organization: "Organisasi (opsional)",
+        submit: "Kirim Pesanan",
+        sending: "Mengirim...",
+        success: "Pesanan tercatat! Tim GESOI akan menghubungi Anda untuk pembayaran & akses.",
+        error: "Gagal mengirim pesanan. Periksa isian Anda.",
+      },
       items: [
         { title: "White Book Kesehatan Otak Indonesia 2026", authors: "GESOI × Akademisi Mitra", year: "2026", price: "Rp 250.000" },
         { title: "Brain Energy: Kerangka Brain Capital untuk Indonesia Emas 2045", authors: "Tim Riset GESOI", year: "2026", price: "Rp 150.000" },
@@ -191,6 +201,7 @@ export const content = {
     },
     ecosystem: {
       kicker: "02 — Grand Narrative",
+      layout: "orbit",
       title: "One movement, one ecosystem",
       body: "Indonesia needs healthy Brain Energy to reach a Golden Indonesia 2045. Achieving it requires a national movement — GESOI — powered by a mutually reinforcing ecosystem.",
       nodes: [
@@ -266,9 +277,18 @@ export const content = {
       buyLabel: "Buy Access",
       priceNote: "Digital access (PDF)",
       modalTitle: "Publication Checkout",
-      payLabel: "Pay Now",
       cancelLabel: "Cancel",
       prototypeNote: "This is a prototype — payment is not yet connected. The GESOI team will contact you.",
+      form: {
+        name: "Full name",
+        email: "Email address",
+        phone: "WhatsApp number",
+        organization: "Organization (optional)",
+        submit: "Place Order",
+        sending: "Sending...",
+        success: "Order recorded! The GESOI team will contact you for payment & access.",
+        error: "Failed to send order. Please check your details.",
+      },
       items: [
         { title: "Indonesian Brain Health White Book 2026", authors: "GESOI × Academic Partners", year: "2026", price: "Rp 250.000" },
         { title: "Brain Energy: A Brain Capital Framework for Golden Indonesia 2045", authors: "GESOI Research Team", year: "2026", price: "Rp 150.000" },

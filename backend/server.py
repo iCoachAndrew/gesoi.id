@@ -140,6 +140,51 @@ async def admin_contacts(admin: dict = Depends(get_current_admin)):
     return docs
 
 
+class OrderCreate(BaseModel):
+    publication_title: str
+    price: str
+    name: str
+    email: EmailStr
+    phone: str
+    organization: Optional[str] = None
+
+
+class Order(OrderCreate):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    status: str = "pending"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+@api_router.post("/orders", response_model=Order)
+async def create_order(input: OrderCreate):
+    obj = Order(**input.model_dump())
+    doc = obj.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    await db.orders.insert_one(doc)
+    return obj
+
+
+@api_router.get("/admin/orders", response_model=List[Order])
+async def admin_orders(admin: dict = Depends(get_current_admin)):
+    docs = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    for d in docs:
+        if isinstance(d.get('created_at'), str):
+            d['created_at'] = datetime.fromisoformat(d['created_at'])
+    return docs
+
+
+@api_router.patch("/admin/orders/{order_id}")
+async def update_order_status(order_id: str, payload: dict = Body(...), admin: dict = Depends(get_current_admin)):
+    status = payload.get("status")
+    if status not in {"pending", "contacted", "completed"}:
+        raise HTTPException(status_code=400, detail="Status tidak valid")
+    result = await db.orders.update_one({"id": order_id}, {"$set": {"status": status}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
+    return {"ok": True}
+
+
 @api_router.get("/")
 async def root():
     return {"message": "GESOI API"}
