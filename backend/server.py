@@ -252,6 +252,20 @@ async def upload_image(file: UploadFile = File(...), admin: dict = Depends(get_c
     return {"url": f"/api/files/{result['path']}", "path": result["path"]}
 
 
+@api_router.get("/admin/files")
+async def list_files(admin: dict = Depends(get_current_admin)):
+    docs = await db.files.find({"is_deleted": False}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return docs
+
+
+@api_router.delete("/admin/files/{file_id}")
+async def delete_file(file_id: str, admin: dict = Depends(get_current_admin)):
+    result = await db.files.update_one({"id": file_id}, {"$set": {"is_deleted": True}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="File tidak ditemukan")
+    return {"ok": True}
+
+
 @api_router.get("/files/{path:path}")
 async def serve_file(path: str):
     record = await db.files.find_one({"storage_path": path, "is_deleted": False})

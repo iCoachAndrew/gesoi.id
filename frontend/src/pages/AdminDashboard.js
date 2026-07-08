@@ -4,6 +4,7 @@ import axios from "axios";
 import { LogOut, Mail, Building2, Download } from "lucide-react";
 import AdminEditor from "./AdminEditor";
 import AdminOrders from "./AdminOrders";
+import AdminMedia from "./AdminMedia";
 import { Toaster } from "sonner";
 
 const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
@@ -98,7 +99,7 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-8 flex gap-2">
-        {[["pendaftar", "Data Pendaftar"], ["pembelian", "Pembelian Publikasi"], ["editor", "Editor Website"]].map(([key, lbl]) => (
+        {[["pendaftar", "Data Pendaftar"], ["pembelian", "Pembelian Publikasi"], ["editor", "Editor Website"], ["media", "Galeri Media"]].map(([key, lbl]) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -116,6 +117,8 @@ export default function AdminDashboard() {
         <AdminEditor />
       ) : tab === "pembelian" ? (
         <AdminOrders />
+      ) : tab === "media" ? (
+        <AdminMedia />
       ) : (
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-10">
         <h1 className="font-serif-display text-4xl text-[#0B1F3A] mb-8" data-testid="admin-title">Data Pendaftar</h1>

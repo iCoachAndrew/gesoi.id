@@ -75,6 +75,10 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Video uploader: backend /api/admin/upload accepts mp4/webm/mov up to 60MB; editor video "url" field has upload button + inline preview
 - Verified: video upload API, .txt rejection (400), custom icon @150% renders on landing; content reset to defaults after test
 
+## Implemented (Iteration 8 — June 2026)
+- Media gallery: admin tab "Galeri Media" — grid of all uploaded files (image/video previews, size, date), filter Semua/Gambar/Video, "Salin URL" (clipboard, reusable in Editor), soft delete (is_deleted; /api/files stops serving). Endpoints: GET /api/admin/files, DELETE /api/admin/files/{id}
+- Admin login page: "Kembali ke Halaman Utama" link (iteration 7.5)
+
 ## Deferred
 - Email notification on new registrant via Resend (user has no API key yet). Recipient: gesoigerakansehatotaknasional@gmail.com
 - Real GESOI logo & photos (user will upload)
