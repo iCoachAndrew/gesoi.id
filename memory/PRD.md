@@ -93,3 +93,8 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - CMS adaptif: pilihan Tata Letak/Template per section — Pillars (list/cards), Programs (grid/media), Roadmap (timeline/photos), Ecosystem (orbit/grid, sudah ada); semua item nested pillars/programs/roadmap punya field gambar opsional di editor (injeksi otomatis via IMAGE_ITEM_PATHS di editorFields.js); landing merender gambar sesuai layout terpilih
 - Fix minor: test_orders.py env fallback
 - Tested: iteration_6.json — backend 24/24, frontend 100%
+
+## Implemented (Iteration 10 — June 2026, code quality)
+- Kredensial admin dihapus dari semua file test → /app/backend/tests/conftest.py memuat backend/.env + frontend/.env (fixtures session-scoped: api, admin_token, auth_headers)
+- test_contact.py dipecah jadi test kecil (kompleksitas turun); perbandingan `is` → `==`/pattern equality di test_contact/test_cms; server.py startup seed `if not existing`
+- Verifikasi: iteration_7.json — pytest 36/36, tanpa hardcoded creds (grep bersih)
