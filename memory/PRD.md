@@ -98,3 +98,10 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Kredensial admin dihapus dari semua file test → /app/backend/tests/conftest.py memuat backend/.env + frontend/.env (fixtures session-scoped: api, admin_token, auth_headers)
 - test_contact.py dipecah jadi test kecil (kompleksitas turun); perbandingan `is` → `==`/pattern equality di test_contact/test_cms; server.py startup seed `if not existing`
 - Verifikasi: iteration_7.json — pytest 36/36, tanpa hardcoded creds (grep bersih)
+
+## Implemented (Iteration 11 — June 2026): Analitik Pengunjung Internal
+- POST /api/track (publik) + GET /api/admin/analytics?days=7|30|90 (protected, agregasi Mongo, clamp 1-90 hari)
+- Tab "Analitik" di dasbor admin (AdminAnalytics.js, recharts): 5 kartu statistik (kunjungan, unik, klik bergabung, form, beli), grafik area tren harian, panel Perangkat/Bahasa/Sumber Kunjungan, selektor rentang
+- Tracking frontend (lib/analytics.js) HANYA aktif setelah consent cookie "Terima" (event gesoi-consent-accepted); visitor id anonim di localStorage (gesoi_vid); event: pageview, join_click (hero+navbar), form_submit, buy_click, lang_switch
+- Catatan desain: agregasi bahasa mencakup event lang_switch (bukan hanya pageview) — disengaja
+- Tested: iteration_8.json — pytest 46/46 (incl. test_analytics.py baru), frontend 100%
