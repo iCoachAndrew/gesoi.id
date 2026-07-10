@@ -1,92 +1,93 @@
 {
-  "theme": "Elegant Organic & Premium Impact",
-  "archetype": "Organic & Earthy mixed with Luxury (Godly website level, elegant green)",
-  "colors": {
-    "background": "#F9F9F7",
-    "background_dark": "#0A2E20",
-    "primary": "#059669",
-    "primary_hover": "#047857",
-    "accent_gold": "#D4AF37",
-    "text_main": "#1C1C1C",
-    "text_muted": "#4B5563",
-    "text_inverse": "#FFFFFF",
-    "surface": "#FFFFFF",
-    "surface_glass": "rgba(255, 255, 255, 0.7)",
-    "surface_glass_dark": "rgba(10, 46, 32, 0.8)"
-  },
+  "theme": "light",
   "typography": {
-    "heading": {
-      "font": "Cormorant Garamond",
-      "style": "Elegant, serif, refined. Use tracking-tight for large text.",
-      "weights": ["400", "600"]
+    "fonts": {
+      "heading": "Cormorant Garamond, serif",
+      "body": "Manrope, sans-serif"
     },
-    "body": {
-      "font": "Outfit",
-      "style": "Clean, modern sans-serif. Excellent legibility.",
-      "weights": ["300", "400", "500"]
+    "scales": {
+      "h1": "text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-navy-900 leading-tight",
+      "h2": "text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-navy-900 leading-tight",
+      "h3": "text-2xl md:text-3xl font-medium text-navy-800",
+      "body": "text-base md:text-lg text-slate-600 font-light leading-relaxed",
+      "labels": "text-xs font-bold uppercase tracking-[0.2em] text-emerald-700"
     }
   },
-  "visual_enhancers": {
-    "shadows": "Ambient diffuse shadows. E.g. shadow-[0_8px_32px_rgba(0,0,0,0.08)]",
-    "borders": "1px solid rgba(10, 46, 32, 0.1) on light mode surfaces",
-    "glassmorphism": "backdrop-blur-xl bg-white/70 for sticky headers and overlays. NO fully transparent headers."
+  "colors": {
+    "background": {
+      "primary": "#FFFFFF",
+      "secondary": "#FAFAFA",
+      "tertiary": "#F1F5F9"
+    },
+    "text": {
+      "primary": "#0A192F",
+      "secondary": "#475569",
+      "accent": "#059669"
+    },
+    "brand": {
+      "navy": "#0A192F",
+      "emerald": "#059669",
+      "gold": "#D97706",
+      "gold_light": "#FDE68A"
+    },
+    "borders": "#E2E8F0"
   },
   "layouts": {
-    "spacing": "Generous spacing. p-8, p-12, p-24 for sections. High breathing room.",
-    "grid_strategy": "Bento Grid (Mode A). Asymmetrical. col-span-full md:col-span-8 for hero cards, col-span-4 for supporting."
+    "spacing": "py-24 md:py-32 px-6 md:px-12 max-w-7xl mx-auto",
+    "grids": "grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12"
+  },
+  "components": {
+    "button": {
+      "primary": "rounded-full bg-[#0A192F] text-white px-8 py-3 hover:bg-[#059669] transition-colors duration-300 font-medium text-sm tracking-wide",
+      "secondary": "rounded-full border border-[#0A192F] text-[#0A192F] px-8 py-3 hover:bg-slate-50 transition-colors duration-300 font-medium text-sm tracking-wide",
+      "accent": "rounded-full bg-[#059669] text-white px-8 py-3 hover:bg-[#047857] transition-colors duration-300 font-medium text-sm tracking-wide"
+    },
+    "chip": "rounded-full px-4 py-1.5 text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:border-[#059669] hover:text-[#059669] transition-colors",
+    "card": "bg-white border border-slate-100 p-8 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 rounded-none",
+    "input": "w-full border-b border-slate-200 bg-transparent py-3 focus:outline-none focus:border-[#059669] transition-colors rounded-none text-slate-800 placeholder-slate-400"
   },
   "motion": {
-    "scroll": "Lenis smooth scrolling (MANDATORY).",
-    "hero": "Framer-motion masked line-by-line text reveal. Kinetic and elegant.",
-    "marquee": "react-fast-marquee. Slow, elegant editorial ribbon. Spacing gap-24.",
-    "parallax": "Subtle parallax on hero image and background elements using framer-motion useScroll."
-  },
-  "images": [
-    {
-      "category": "Youth/Education (Early Education Pillar)",
-      "url": "https://images.pexels.com/photos/18772861/pexels-photo-18772861.jpeg",
-      "description": "Indonesian youth smiling."
-    },
-    {
-      "category": "Footer/Jakarta Background",
-      "url": "https://images.unsplash.com/photo-1736296982588-d7cbc2941977",
-      "description": "Jakarta skyline evening."
-    },
-    {
-      "category": "Hero/Ecosystem Abstract (Brain Energy)",
-      "url": "https://images.unsplash.com/photo-1616072775440-ca2ea7c7ce13",
-      "description": "Green glowing nodes - Abstract brain connections."
-    },
-    {
-      "category": "Community/Collective Awareness",
-      "url": "https://images.unsplash.com/photo-1611087802810-046bb671e644",
-      "description": "Indonesian community smiling."
+    "scroll": "Lenis smooth scrolling configuration with momentum",
+    "framer_motion": {
+      "fade_up": "{ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-100px' }, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }",
+      "stagger_children": "{ transition: { staggerChildren: 0.1 } }",
+      "parallax_image": "{ style: { y: useTransform(scrollYProgress, [0, 1], ['0%', '20%']) } }"
     }
-  ],
-  "accessibility": {
-    "contrast": "Ensure APCA contrast ratio. Text on dark backgrounds must be high contrast.",
-    "testing": "All interactive elements MUST have data-testid attributes."
   },
-  "instructions_to_main_agent": [
-    "Use raw HTML/Tailwind for the asymmetric main page layouts (Bento grids).",
-    "Use Shadcn only for form components in the CTA/Footer (Input, Textarea, Button).",
-    "Implement a language toggle (ID/EN) using a simple React state or Context in the navigation.",
-    "Hero section must use Framer Motion for line-by-line text reveal ('Brain Energy menuju Indonesia Emas 2045').",
-    "Implement the Grand Narrative ecosystem flow (PERDOSNI -> GESOI -> otaQku -> ICC) as an overlapping glassmorphism card stack or horizontal timeline, not a boring flowchart.",
-    "Number the manifesto chapters (4 mission pillars).",
-    "Roadmap timeline 3-7-10 years should be vertical or horizontal but visually distinct.",
-    "DO NOT center align the entire app container (.App { text-align: center }).",
-    "Ensure the header uses glassmorphism and is never fully transparent over the hero.",
-    "Install and use lenis for smooth scrolling.",
-    "Install and use react-fast-marquee for the editorial slow marquee."
-  ],
-  "universal_guidelines": [
-    "No generic centered layouts, simplistic gradients, and uniform styling.",
-    "Create depth through layered design elements with z-index hierarchy.",
-    "Use glass-morphism effects with backdrop filters (12-24px blur).",
-    "Never apply universal transition: all.",
-    "Always add 'data-testid' to interactive/informational elements.",
-    "Use lucide-react for icons.",
-    "Ensure files are .js (React), not .tsx."
+  "sections_restyle_guidance": {
+    "Sticky Navbar": "Use crystal glassmorphism: backdrop-blur-xl bg-white/80 with a delicate border-b border-slate-100. Logo left, Nav center, Lang toggle (ID/EN) and 'Bergabung' primary button right. Keep mobile menu elegant with full-screen white overlay.",
+    "Hero": "Kinetic multi-line H1 using Cormorant Garamond. Background: subtle abstract blue map network image with low opacity overlay (bg-white/95). Grand Launching badge: elegant gold pill chip. Two CTAs (Primary Navy, Secondary Gold border).",
+    "Marquee text strip": "Editorial ribbon style. Very slow smooth drift. Background: #FAFAFA. Text: uppercase Manrope, tracking-[0.3em], text-emerald-800, text-sm.",
+    "Urgency stats": "Clean white background. 3 stats in a row. Huge serif numbers (text-6xl text-[#0A192F]), subtle Slate-500 descriptions. Thin 1px vertical dividers between stats on desktop. Editorial panel text gracefully aligned alongside.",
+    "Ecosystem section": "Minimalist grid layout. 1px borders, generous p-8 padding. Five cooperation pillar chips positioned below. No heavy backgrounds, keep it off-white.",
+    "Four Mission Pillars": "Editorial rows. Left: 3x4 aspect ratio image. Right: Huge step number (01, 02) in thin gold serif + descriptive text. Alternate left/right alignment per row. Use massive gaps (gap-16).",
+    "Programs": "Sticky-top header on the left column (md:col-span-4). Right column (md:col-span-8) has 6 clean cards with minimal icons (Emerald) and crisp typography.",
+    "Roadmap timeline": "Minimalist vertical line (border-l) or offset horizontal blocks. Alternating text blocks with thin lines. Use tiny gold dots for nodes. Restrained typography.",
+    "Governance leadership": "Horizontal drag-to-scroll carousel. 3x4 portrait photos. Name and initials directly below in clean sans-serif. No visible card borders, purely image-driven.",
+    "News mosaic": "4-card asymmetrical bento grid. 1st card large (col-span-full md:col-span-2 row-span-2). Text overlaid cleanly at the bottom using subtle linear gradient. Minimalist.",
+    "Video feature": "Clean 16:9 full-width or inset container with rounded-2xl. Play button is a blurred glassmorphism circle in center. Quote panel below in large italic serif text.",
+    "Paid Publications": "3 clean pricing-style cards. White bg, emerald text for highlights. 'Buy' button is secondary style. Modal prototype must use backdrop-blur.",
+    "Join CTA": "Minimalist split layout. Left: large elegant text. Right: clean form with border-bottom ONLY inputs (no enclosed boxes). Primary CTA button right-aligned.",
+    "Footer": "Background #FAFAFA. Minimalist 4-column grid. Thin 1px border on top. Navy logo. Small text for nav and contact. Generous spacing (py-24).",
+    "Cookie consent banner": "Floating pill at bottom-left. White bg, sharp drop-shadow. Minimal text, 'Accept' as small emerald text, 'Decline' as slate text.",
+    "News Detail page": "Hero image max-h-[60vh] object-cover. Title cleanly below. Max-w-3xl for reading text, editorial drop-cap for first letter. WhatsApp share button as floating circular emerald icon. Clean related news grid at bottom."
+  },
+  "image_urls": {
+    "hero_background": "https://images.unsplash.com/photo-1644088379091-d574269d422f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGJsdWUlMjBtYXAlMjBuZXR3b3JrfGVufDB8fHx8MTc4MzY5NDIzMnww&ixlib=rb-4.1.0&q=85",
+    "community_elderly_1": "https://images.unsplash.com/photo-1761666520005-3ffcf13e74c8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwyfHxjb21tdW5pdHklMjBlbGRlcmx5fGVufDB8fHx8MTc4MzYyMTY0NHww&ixlib=rb-4.1.0&q=85",
+    "community_elderly_2": "https://images.unsplash.com/photo-1762955913084-96ea3f986468?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBlbGRlcmx5fGVufDB8fHx8MTc4MzYyMTY0NHww&ixlib=rb-4.1.0&q=85",
+    "professional_portrait_1": "https://images.pexels.com/photos/12660379/pexels-photo-12660379.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "professional_portrait_2": "https://images.pexels.com/photos/18788957/pexels-photo-18788957.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do NOT change existing functionality, props, CMS data model, or data-testids. This is purely a UI/UX restyle.",
+    "Install and use Lenis for smooth scrolling in the main layout wrapper.",
+    "Apply Framer Motion selectively for fade-ups and stagger effects. Avoid over-animating.",
+    "Use generous whitespace (p-16 to p-32) to emulate gbhi.org elegance.",
+    "All cards/borders must use subtle slate-100/200 (not harsh black) to maintain an elegant, lightweight feel.",
+    "Implement pure HTML/Tailwind for marketing layouts; do NOT use Shadcn Card components if they restrict custom spacing.",
+    "Do NOT use 'transparent' background in the sticky header; use backdrop-blur-xl bg-white/80 instead to ensure readability.",
+    "Retain all bilingual (ID/EN) text structures and CMS injection points.",
+    "Ensure contrast ratio meets minimum 4.5:1 (WCAG AA) across all text elements."
   ]
 }
