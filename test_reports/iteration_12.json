@@ -1,0 +1,23 @@
+{
+  "summary": "Frontend-only end-to-end verification of all remaining GESOI flows on preview URL after gbhi-style restyle. All 11 flows PASS: cookie consent gating (POST /api/track pageview fires only after Terima), hero CTA join_click event, language toggle EN/ID, join form submission (POST /api/contact 200 + success toast), publications checkout modal + order POST + success toast + cancel-close, news detail page (title/h2/strong/wa.me share/more/back), governance carousel (overflow-x:auto), video + mute + gold quote border, mobile 390 menu + zero horizontal overflow, and CMS regression (login \u2192 Editor Website tab \u2192 editor-section-pillars \u2192 field-pillars-layout SELECT set to 'cards' \u2192 editor-save-btn \u2192 landing shows pillar-card-01 \u2192 editor-reset-btn restores default list layout). Testids differ from spec: main-tab is [data-testid=admin-tab-editor] (not /admin/editor route) and pillar section testid is [data-testid=editor-section-pillars] (not section-pillars) \u2014 documented for main agent context.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_12.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AdminEditor is embedded as a tab inside AdminDashboard (/admin) accessed via [data-testid=admin-tab-editor]; there is no standalone /admin/editor route. Review spec referenced /admin/editor \u2014 clarify docs.",
+    "Editor section navigation uses [data-testid=editor-section-<name>] pattern (e.g., editor-section-pillars) not [section-<name>]; review request wording could be aligned.",
+    "Consent-gated analytics correctly throttles pageview to a single POST /api/track after Terima click; join_click event fires immediately on hero CTA. No pre-consent tracking observed."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not tested (skip per request)", "frontend": "100% (11/11 flows)"},
+  "test_credentials": "admin@gesoi.or.id / GesoiAdmin#2045",
+  "seed_data_creation": "Created during test: TEST_John Doe contact, TEST_Buyer+TEST_Buyer2 orders. ALL CLEANED UP post-run via direct Mongo delete_many on prefix TEST_ (contacts: 34 deleted, orders: 24 deleted \u2014 included leftovers from prior iterations). site_content reset to defaults via editor-reset-btn (verified pillar-card-01 disappears from landing).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Preview URL live. Cookie consent stored in localStorage key 'gesoi_cookie_consent'='accepted'. Analytics endpoint schema: {visitor_id, session_id, type: 'pageview'|'event', name?, path, lang, device, referrer}. Order/contact toast messages: 'Terima kasih! Kami akan segera menghubungi Anda.' and 'Pesanan tercatat! Tim GESOI akan menghubungi Anda untuk pembayaran & akses.'. Interest chip testids: join-interest-{volunteer|partner|donor|founder}. Editor uses admin-tab-editor + editor-section-<name> + field-<section>-<key>."
+}

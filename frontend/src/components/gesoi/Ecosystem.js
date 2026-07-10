@@ -24,20 +24,20 @@ const OrbitNode = ({ node, i, featured }) => {
       <motion.div
         animate={{ y: [0, featured ? 0 : -10, 0] }}
         transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut" }}
-        className={`relative flex flex-col items-center justify-center text-center rounded-full backdrop-blur-xl border transition-all duration-500 group-hover:scale-105 ${
+        className={`relative flex flex-col items-center justify-center text-center rounded-full bg-white border transition-all duration-500 group-hover:scale-105 ${
           featured
-            ? "w-56 h-56 bg-emerald-500/15 border-[#D4AF37]/60 shadow-[0_0_60px_rgba(212,175,55,0.15)]"
-            : "w-40 h-40 bg-white/5 border-white/15 group-hover:border-emerald-300/50"
+            ? "w-56 h-56 border-emerald-600/50 shadow-[0_16px_50px_rgba(5,150,105,0.12)]"
+            : "w-40 h-40 border-slate-200 shadow-[0_8px_30px_rgba(10,25,47,0.06)] group-hover:border-emerald-500/40"
         }`}
       >
-        <span className={`inline-flex w-10 h-10 rounded-full items-center justify-center border mb-2 ${featured ? "bg-[#D4AF37]/20 border-[#D4AF37]/50" : "bg-emerald-500/10 border-emerald-400/30"}`}>
-          <SectionIcon icon={node.icon} size={16} className={featured ? "text-[#D4AF37]" : "text-emerald-300"} />
+        <span className={`inline-flex w-10 h-10 rounded-full items-center justify-center border mb-2 ${featured ? "bg-emerald-50 border-emerald-200" : "bg-[#FAFAFA] border-slate-200"}`}>
+          <SectionIcon icon={node.icon} size={16} className={featured ? "text-emerald-700" : "text-slate-500"} />
         </span>
-        <p className={`text-[9px] uppercase tracking-[0.2em] px-3 ${featured ? "text-[#D4AF37]" : "text-emerald-300/80"}`}>{node.role}</p>
-        <h3 className={`font-serif-display text-white ${featured ? "text-3xl" : "text-xl"}`}>{node.name}</h3>
+        <p className={`text-[9px] font-bold uppercase tracking-[0.2em] px-3 ${featured ? "text-emerald-700" : "text-slate-400"}`}>{node.role}</p>
+        <h3 className={`font-serif-display text-[#0A192F] ${featured ? "text-3xl" : "text-xl"}`}>{node.name}</h3>
       </motion.div>
-      <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-56 rounded-xl bg-[#0B1F3A]/95 border border-white/15 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
-        <p className="text-white/70 text-xs font-light leading-relaxed">{node.desc}</p>
+      <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-56 rounded-lg bg-white border border-slate-200 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 shadow-xl">
+        <p className="text-slate-500 text-xs font-light leading-relaxed">{node.desc}</p>
       </div>
     </motion.div>
   );
@@ -46,10 +46,10 @@ const OrbitNode = ({ node, i, featured }) => {
 const OrbitLayout = ({ nodes }) => (
   <div className="relative hidden lg:block h-[520px] mt-8" data-testid="ecosystem-orbit">
     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 520" fill="none" preserveAspectRatio="none">
-      <line x1="180" y1="270" x2="470" y2="290" stroke="rgba(110,231,183,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
-      <line x1="560" y1="250" x2="800" y2="130" stroke="rgba(110,231,183,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
-      <line x1="560" y1="310" x2="780" y2="390" stroke="rgba(212,175,55,0.3)" strokeWidth="1.5" strokeDasharray="6 6" />
-      <circle cx="500" cy="280" r="230" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+      <line x1="180" y1="270" x2="470" y2="290" stroke="rgba(5,150,105,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
+      <line x1="560" y1="250" x2="800" y2="130" stroke="rgba(5,150,105,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
+      <line x1="560" y1="310" x2="780" y2="390" stroke="rgba(180,83,9,0.3)" strokeWidth="1.5" strokeDasharray="6 6" />
+      <circle cx="500" cy="280" r="230" stroke="rgba(10,25,47,0.05)" strokeWidth="1" />
     </svg>
     {nodes.map((node, i) => (
       <OrbitNode key={node.name} node={node} i={i} featured={node.name === "GESOI"} />
@@ -69,17 +69,17 @@ const GridCards = ({ nodes, className }) => (
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className={`relative rounded-2xl p-7 backdrop-blur-xl border transition-transform duration-500 hover:-translate-y-2 ${
-            featured ? "bg-emerald-500/15 border-[#D4AF37]/50" : "bg-white/5 border-white/10"
+          className={`relative bg-white p-8 border transition-[box-shadow,border-color] duration-500 hover:shadow-[0_8px_30px_rgba(10,25,47,0.06)] ${
+            featured ? "border-emerald-600/40" : "border-slate-200"
           }`}
           data-testid={`ecosystem-card-${node.name.toLowerCase()}`}
         >
-          <span className={`inline-flex w-11 h-11 rounded-full items-center justify-center border mb-5 ${featured ? "bg-[#D4AF37]/20 border-[#D4AF37]/50" : "bg-emerald-500/10 border-emerald-400/30"}`}>
-            <SectionIcon icon={node.icon} size={18} className={featured ? "text-[#D4AF37]" : "text-emerald-300"} />
+          <span className={`inline-flex w-11 h-11 rounded-full items-center justify-center border mb-5 ${featured ? "bg-emerald-50 border-emerald-200" : "bg-[#FAFAFA] border-slate-200"}`}>
+            <SectionIcon icon={node.icon} size={18} className={featured ? "text-emerald-700" : "text-slate-500"} />
           </span>
-          <p className={`text-[10px] uppercase tracking-[0.25em] mb-2 ${featured ? "text-[#D4AF37]" : "text-emerald-300/80"}`}>{node.role}</p>
-          <h3 className="font-serif-display text-white text-2xl mb-3">{node.name}</h3>
-          <p className="text-white/60 text-sm font-light leading-relaxed">{node.desc}</p>
+          <p className={`text-[10px] font-bold uppercase tracking-[0.25em] mb-2 ${featured ? "text-emerald-700" : "text-slate-400"}`}>{node.role}</p>
+          <h3 className="font-serif-display text-[#0A192F] text-2xl mb-3">{node.name}</h3>
+          <p className="text-slate-500 text-sm font-light leading-relaxed">{node.desc}</p>
         </motion.div>
       );
     })}
@@ -87,16 +87,15 @@ const GridCards = ({ nodes, className }) => (
 );
 
 export const Ecosystem = ({ t }) => (
-  <section id="ecosystem" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="ecosystem-section">
-    <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-emerald-600/10 blur-3xl" />
+  <section id="ecosystem" className="py-24 lg:py-32 bg-[#FAFAFA] relative overflow-hidden" data-testid="ecosystem-section">
     <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
-      <SectionHeader kicker={t.kicker} title={t.title} body={t.body} dark testId="ecosystem-header" />
+      <SectionHeader kicker={t.kicker} title={t.title} body={t.body} testId="ecosystem-header" />
 
       {t.cooperation && (
         <div className="mt-10 flex flex-wrap items-center gap-3" data-testid="cooperation-pillars">
-          <span className="text-[#D4AF37] text-xs uppercase tracking-[0.25em] mr-2">{t.coopLabel}</span>
+          <span className="text-[#B45309] text-xs font-bold uppercase tracking-[0.25em] mr-2">{t.coopLabel}</span>
           {t.cooperation.map((c) => (
-            <span key={c} className="px-4 py-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-200 text-xs uppercase tracking-wider">
+            <span key={c} className="px-4 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600 text-xs uppercase tracking-wider hover:border-emerald-600 hover:text-emerald-700 transition-colors duration-300">
               {c}
             </span>
           ))}

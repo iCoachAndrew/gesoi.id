@@ -22,7 +22,7 @@ const isImgLine = (l) => /^https?:\/\/\S+\.(png|jpe?g|webp|gif)(\?\S*)?$/i.test(
 
 const renderInline = (text) =>
   text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith("**") && part.endsWith("**") ? <strong key={i} className="font-semibold text-[#0B1F3A]">{part.slice(2, -2)}</strong> : part
+    part.startsWith("**") && part.endsWith("**") ? <strong key={i} className="font-semibold text-[#0A192F]">{part.slice(2, -2)}</strong> : part
   );
 
 const ArticleBody = ({ body }) => (
@@ -31,7 +31,7 @@ const ArticleBody = ({ body }) => (
       const b = block.trim();
       if (!b) return null;
       if (b.startsWith("## "))
-        return <h2 key={i} className="font-serif-display text-2xl lg:text-3xl text-[#0B1F3A] pt-2">{b.slice(3)}</h2>;
+        return <h2 key={i} className="font-serif-display text-2xl lg:text-3xl text-[#0A192F] pt-2">{b.slice(3)}</h2>;
       if (isImgLine(b))
         return <img key={i} src={b} alt="" loading="lazy" className="w-full rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)]" />;
       return <p key={i} className="text-[#4B5563] font-light leading-relaxed text-base md:text-lg">{renderInline(b)}</p>;
@@ -64,20 +64,20 @@ export default function NewsDetail() {
   if (!overrides) return <div className="min-h-screen bg-[#F9F9F7]" data-testid="news-detail-loading" />;
 
   return (
-    <div className="min-h-screen bg-[#F9F9F7] flex flex-col" data-testid="news-detail-page">
-      <header className="bg-[#0B1F3A] px-6 lg:px-10 h-16 flex items-center justify-between sticky top-0 z-40">
-        <Link to="/" className="bg-white rounded-lg px-2.5 py-1.5 inline-flex items-center" data-testid="news-detail-logo-link">
-          <img src={LOGO} alt="GESOI" className="h-7 w-auto" />
+    <div className="min-h-screen bg-white flex flex-col" data-testid="news-detail-page">
+      <header className="bg-white/90 backdrop-blur-xl border-b border-slate-100 px-6 lg:px-10 h-16 flex items-center justify-between sticky top-0 z-40">
+        <Link to="/" className="inline-flex items-center" data-testid="news-detail-logo-link">
+          <img src={LOGO} alt="GESOI" className="h-8 w-auto" />
         </Link>
         <div className="flex items-center gap-4">
-          <div className="flex items-center rounded-full border border-white/25 overflow-hidden text-xs">
+          <div className="flex items-center rounded-full border border-slate-200 overflow-hidden text-xs">
             {["id", "en"].map((l) => (
               <button
                 key={l}
                 onClick={() => setLang(l)}
                 data-testid={`news-detail-lang-${l}`}
                 className={`px-3 py-1.5 uppercase tracking-wider transition-colors duration-300 ${
-                  lang === l ? "bg-emerald-500 text-white" : "text-white/60 hover:text-white"
+                  lang === l ? "bg-[#0A192F] text-white" : "text-slate-400 hover:text-[#0A192F]"
                 }`}
               >
                 {l}
@@ -87,7 +87,7 @@ export default function NewsDetail() {
           <Link
             to="/#news"
             data-testid="news-detail-back"
-            className="flex items-center gap-2 text-white/70 hover:text-white text-xs uppercase tracking-[0.15em] transition-colors duration-300"
+            className="flex items-center gap-2 text-slate-500 hover:text-[#0A192F] text-xs uppercase tracking-[0.15em] transition-colors duration-300"
           >
             <ArrowLeft size={14} /> {t.news.backLabel}
           </Link>
@@ -96,36 +96,36 @@ export default function NewsDetail() {
 
       {!item ? (
         <main className="flex-1 flex flex-col items-center justify-center py-32 px-6 text-center" data-testid="news-detail-notfound">
-          <p className="font-serif-display text-3xl text-[#0B1F3A] mb-6">{t.news.notFound}</p>
-          <Link to="/#news" className="px-6 py-3 rounded-full bg-[#0B1F3A] text-white text-xs uppercase tracking-wider hover:bg-[#1B3A63] transition-colors duration-300">
+          <p className="font-serif-display text-3xl text-[#0A192F] mb-6">{t.news.notFound}</p>
+          <Link to="/#news" className="px-6 py-3 rounded-full bg-[#0A192F] text-white text-xs uppercase tracking-wider hover:bg-[#1B3A63] transition-colors duration-300">
             {t.news.backLabel}
           </Link>
         </main>
       ) : (
         <main className="flex-1">
-          <div className="relative h-[38vh] min-h-[280px] lg:h-[48vh] bg-[#0B1F3A] overflow-hidden">
-            <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-80" fetchPriority="high" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A] via-[#0B1F3A]/30 to-transparent" />
+          <div className="relative h-[38vh] min-h-[280px] lg:h-[48vh] bg-[#0A192F] overflow-hidden">
+            <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-90" fetchPriority="high" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
           </div>
 
           <article className="max-w-3xl mx-auto px-6 lg:px-0 -mt-24 relative z-10 pb-20">
-            <div className="bg-white rounded-3xl shadow-[0_16px_48px_rgba(0,0,0,0.1)] p-8 lg:p-12">
+            <div className="bg-white border border-slate-100 shadow-[0_16px_48px_rgba(10,25,47,0.08)] p-8 lg:p-12">
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] uppercase tracking-[0.2em] font-semibold" data-testid="news-detail-category">
-                  <span className="w-2 h-2 bg-[#D4AF37]" /> {item.category}
+                  <span className="w-2 h-2 bg-[#B45309]" /> {item.category}
                 </span>
                 {item.date && (
                   <span className="inline-flex items-center gap-2 text-[#9CA3AF] text-xs" data-testid="news-detail-date">
-                    <Calendar size={13} className="text-[#D4AF37]" /> {item.date}
+                    <Calendar size={13} className="text-[#B45309]" /> {item.date}
                   </span>
                 )}
               </div>
-              <h1 className="font-serif-display text-3xl sm:text-4xl lg:text-5xl leading-[1.1] tracking-tight text-[#0B1F3A] mb-8" data-testid="news-detail-title">
+              <h1 className="font-serif-display text-3xl sm:text-4xl lg:text-5xl leading-[1.1] tracking-tight text-[#0A192F] mb-8" data-testid="news-detail-title">
                 {item.title}
               </h1>
-              <span className="block w-16 h-px bg-[#D4AF37] mb-8" />
+              <span className="block w-16 h-px bg-[#B45309] mb-8" />
               <ArticleBody body={item.body || ""} />
-              <div className="mt-10 pt-8 border-t border-[#0B1F3A]/10">
+              <div className="mt-10 pt-8 border-t border-[#0A192F]/10">
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(`${item.title}\n\n${window.location.href}`)}`}
                   target="_blank"
@@ -150,7 +150,7 @@ export default function NewsDetail() {
                       </div>
                       <div className="p-4">
                         <p className="text-[9px] uppercase tracking-[0.2em] text-emerald-700 font-semibold mb-1">{it.category}</p>
-                        <h3 className="text-sm text-[#0B1F3A] font-medium leading-snug">{it.title}</h3>
+                        <h3 className="text-sm text-[#0A192F] font-medium leading-snug">{it.title}</h3>
                       </div>
                     </Link>
                   ))}

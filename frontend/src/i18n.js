@@ -406,7 +406,7 @@ export const content = {
 };
 
 export const sharedDefaults = {
-  heroBg: "/hero-bg.webp",
+  heroBg: "/hero-bg-light.webp",
   programsImage: "https://images.unsplash.com/photo-1611087802810-046bb671e644?q=80&w=1200",
   joinBg: "https://images.pexels.com/photos/18772861/pexels-photo-18772861.jpeg",
   people: [

@@ -41,13 +41,12 @@ export const Publications = ({ t }) => {
   };
 
   const inputCls =
-    "w-full rounded-xl border border-[#0B1F3A]/15 bg-white px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition-colors duration-200";
+    "w-full border-b border-slate-200 bg-transparent px-1 py-3 text-sm text-[#0A192F] placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 transition-colors duration-200";
 
   return (
-    <section id="publications" className="py-24 lg:py-36 bg-[#0B1F3A] relative overflow-hidden grain-overlay" data-testid="publications-section">
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-[#D4AF37]/5 blur-3xl" />
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
-        <SectionHeader kicker={t.kicker} title={t.title} body={t.body} dark testId="publications-header" />
+    <section id="publications" className="py-24 lg:py-32 bg-[#FAFAFA]" data-testid="publications-section">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+        <SectionHeader kicker={t.kicker} title={t.title} body={t.body} testId="publications-header" />
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           {t.items.map((item, i) => (
@@ -58,26 +57,26 @@ export const Publications = ({ t }) => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-40px" }}
-              className="rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 p-8 flex flex-col hover:-translate-y-1.5 transition-transform duration-500"
+              className="bg-white border border-slate-200 p-8 flex flex-col hover:shadow-[0_8px_30px_rgba(10,25,47,0.06)] transition-shadow duration-500"
               data-testid={`publication-card-${i}`}
             >
               <div className="flex items-center justify-between mb-6">
-                <span className="w-11 h-11 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 flex items-center justify-center">
-                  <FileText size={18} className="text-[#D4AF37]" />
+                <span className="w-11 h-11 rounded-full bg-[#FAFAFA] border border-slate-200 flex items-center justify-center">
+                  <FileText size={18} className="text-[#B45309]" />
                 </span>
-                <span className="flex items-center gap-1.5 text-white/40 text-[10px] uppercase tracking-[0.2em]">
+                <span className="flex items-center gap-1.5 text-slate-400 text-[10px] uppercase tracking-[0.2em]">
                   <Lock size={11} /> {item.year}
                 </span>
               </div>
-              <h3 className="font-serif-display text-white text-2xl leading-snug mb-3">{item.title}</h3>
-              <p className="text-white/50 text-sm font-light mb-6">{item.authors}</p>
+              <h3 className="font-serif-display text-[#0A192F] text-2xl leading-snug mb-3">{item.title}</h3>
+              <p className="text-slate-500 text-sm font-light mb-6">{item.authors}</p>
               <div className="mt-auto">
-                <p className="font-serif-display text-[#D4AF37] text-3xl">{item.price}</p>
-                <p className="text-white/40 text-xs font-light mt-1 mb-5">{t.priceNote}</p>
+                <p className="font-serif-display text-[#0A192F] text-3xl">{item.price}</p>
+                <p className="text-slate-400 text-xs font-light mt-1 mb-5">{t.priceNote}</p>
                 <button
                   onClick={() => { setSelected(item); trackEvent("buy_click"); }}
                   data-testid={`publication-buy-btn-${i}`}
-                  className="w-full py-3 rounded-full bg-emerald-500 text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-emerald-400 transition-colors duration-300"
+                  className="w-full py-3 rounded-full bg-[#059669] text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-[#047857] transition-colors duration-300"
                 >
                   {t.buyLabel}
                 </button>
@@ -89,16 +88,16 @@ export const Publications = ({ t }) => {
 
       {selected && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center px-6 py-8" data-testid="checkout-modal">
-          <div className="absolute inset-0 bg-black/70" onClick={close} />
+          <div className="absolute inset-0 bg-[#0A192F]/40 backdrop-blur-sm" onClick={close} />
           <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-            <button onClick={close} data-testid="checkout-close-btn" className="absolute top-4 right-4 text-[#6B7280] hover:text-[#0B1F3A]" aria-label="Tutup">
+            <button onClick={close} data-testid="checkout-close-btn" className="absolute top-4 right-4 text-slate-400 hover:text-[#0A192F]" aria-label="Tutup">
               <X size={18} />
             </button>
-            <p className="text-xs uppercase tracking-[0.25em] text-emerald-700 mb-3">{t.modalTitle}</p>
-            <h3 className="font-serif-display text-2xl text-[#0B1F3A] mb-1">{selected.title}</h3>
-            <div className="flex items-baseline justify-between border-t border-b border-[#0B1F3A]/10 py-3 my-4">
-              <span className="text-sm text-[#4B5563]">{t.priceNote}</span>
-              <span className="font-serif-display text-2xl text-[#0B1F3A]">{selected.price}</span>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-700 mb-3">{t.modalTitle}</p>
+            <h3 className="font-serif-display text-2xl text-[#0A192F] mb-1">{selected.title}</h3>
+            <div className="flex items-baseline justify-between border-t border-b border-slate-100 py-3 my-4">
+              <span className="text-sm text-slate-500">{t.priceNote}</span>
+              <span className="font-serif-display text-2xl text-[#0A192F]">{selected.price}</span>
             </div>
             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5" data-testid="prototype-note">
               {t.prototypeNote}
@@ -108,12 +107,12 @@ export const Publications = ({ t }) => {
               <input required type="email" value={buyer.email} onChange={set("email")} placeholder={t.form.email} className={inputCls} data-testid="order-input-email" />
               <input required value={buyer.phone} onChange={set("phone")} placeholder={t.form.phone} className={inputCls} data-testid="order-input-phone" />
               <input value={buyer.organization} onChange={set("organization")} placeholder={t.form.organization} className={inputCls} data-testid="order-input-organization" />
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-4">
                 <button
                   type="button"
                   onClick={close}
                   data-testid="checkout-cancel-btn"
-                  className="flex-1 py-3 rounded-full border border-[#0B1F3A]/20 text-[#4B5563] text-xs uppercase tracking-wider hover:border-[#0B1F3A] transition-colors duration-300"
+                  className="flex-1 py-3 rounded-full border border-slate-200 text-slate-500 text-xs uppercase tracking-wider hover:border-[#0A192F] hover:text-[#0A192F] transition-colors duration-300"
                 >
                   {t.cancelLabel}
                 </button>
@@ -121,7 +120,7 @@ export const Publications = ({ t }) => {
                   type="submit"
                   disabled={sending}
                   data-testid="order-submit-btn"
-                  className="flex-1 py-3 rounded-full bg-[#D4AF37] text-[#0B1F3A] text-xs uppercase tracking-wider font-semibold hover:bg-[#e5c657] transition-colors duration-300 disabled:opacity-60"
+                  className="flex-1 py-3 rounded-full bg-[#0A192F] text-white text-xs uppercase tracking-wider font-semibold hover:bg-[#059669] transition-colors duration-300 disabled:opacity-60"
                 >
                   {sending ? t.form.sending : t.form.submit}
                 </button>

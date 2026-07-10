@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 
 export const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] },
   }),
 };
 
@@ -16,7 +16,7 @@ export const SectionHeader = ({ kicker, title, body, dark = false, testId }) => 
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
-      className={`text-xs uppercase tracking-[0.3em] mb-6 ${dark ? "text-emerald-300" : "text-emerald-700"}`}
+      className={`text-xs font-bold uppercase tracking-[0.25em] mb-6 ${dark ? "text-emerald-300" : "text-emerald-700"}`}
     >
       {kicker}
     </motion.p>
@@ -26,7 +26,7 @@ export const SectionHeader = ({ kicker, title, body, dark = false, testId }) => 
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
-      className={`font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight ${dark ? "text-white" : "text-[#0B1F3A]"}`}
+      className={`font-serif-display font-light text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight ${dark ? "text-white" : "text-[#0A192F]"}`}
     >
       {title}
     </motion.h2>
@@ -37,7 +37,7 @@ export const SectionHeader = ({ kicker, title, body, dark = false, testId }) => 
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-80px" }}
-        className={`mt-6 text-base md:text-lg font-light leading-relaxed ${dark ? "text-white/70" : "text-[#4B5563]"}`}
+        className={`mt-6 text-base md:text-lg font-light leading-relaxed ${dark ? "text-white/70" : "text-slate-600"}`}
       >
         {body}
       </motion.p>

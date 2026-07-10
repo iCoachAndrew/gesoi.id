@@ -29,16 +29,14 @@ export const Navbar = ({ t, lang, setLang }) => {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 ${
-        scrolled ? "bg-[#0B1F3A]/85 backdrop-blur-xl border-b border-white/10" : "bg-[#0B1F3A]/40 backdrop-blur-md"
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl transition-[background-color,box-shadow] duration-500 border-b border-slate-100 ${
+        scrolled ? "bg-white/90 shadow-[0_1px_20px_rgba(10,25,47,0.05)]" : "bg-white/70"
       }`}
       data-testid="main-navbar"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
         <a href="#top" className="flex items-center gap-2.5" data-testid="navbar-logo">
-          <span className="bg-white rounded-lg px-2.5 py-1.5 flex items-center shadow-sm">
-            <img src={LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-7 w-auto" />
-          </span>
+          <img src={LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-8 w-auto" />
         </a>
         <nav className="hidden md:flex items-center gap-8">
           {links(t).map((l) => (
@@ -46,21 +44,21 @@ export const Navbar = ({ t, lang, setLang }) => {
               key={l.href}
               href={l.href}
               data-testid={`nav-link-${l.href.slice(1)}`}
-              className="text-white/70 hover:text-white text-xs uppercase tracking-[0.15em] transition-colors duration-300"
+              className="text-slate-500 hover:text-[#0A192F] text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300"
             >
               {l.label}
             </a>
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <div className="flex items-center rounded-full border border-white/20 overflow-hidden text-xs" data-testid="language-toggle">
+          <div className="flex items-center rounded-full border border-slate-200 overflow-hidden text-xs" data-testid="language-toggle">
             {["id", "en"].map((l) => (
               <button
                 key={l}
                 data-testid={`lang-btn-${l}`}
                 onClick={() => setLang(l)}
                 className={`px-3 py-1.5 uppercase tracking-wider transition-colors duration-300 ${
-                  lang === l ? "bg-emerald-500 text-white" : "text-white/60 hover:text-white"
+                  lang === l ? "bg-[#0A192F] text-white" : "text-slate-400 hover:text-[#0A192F]"
                 }`}
               >
                 {l}
@@ -71,14 +69,14 @@ export const Navbar = ({ t, lang, setLang }) => {
             href="#join"
             onClick={() => trackEvent("join_click")}
             data-testid="navbar-join-btn"
-            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-white text-[#0B1F3A] text-xs uppercase tracking-[0.15em] font-medium hover:bg-emerald-300 transition-colors duration-300"
+            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-[#0A192F] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#059669] transition-colors duration-300"
           >
             {t.nav.join}
           </a>
           <button
             data-testid="mobile-menu-btn"
             onClick={() => setOpen(!open)}
-            className="md:hidden w-9 h-9 flex items-center justify-center text-white"
+            className="md:hidden w-9 h-9 flex items-center justify-center text-[#0A192F]"
             aria-label="Menu"
           >
             {open ? <X size={20} /> : <Menu size={20} />}
@@ -86,19 +84,19 @@ export const Navbar = ({ t, lang, setLang }) => {
         </div>
       </div>
       {open && (
-        <nav className="md:hidden bg-[#0B1F3A]/95 backdrop-blur-xl border-t border-white/10 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
+        <nav className="md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
           {links(t).map((l) => (
             <a
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
               data-testid={`mobile-nav-link-${l.href.slice(1)}`}
-              className="text-white/80 text-sm uppercase tracking-[0.15em]"
+              className="text-slate-600 text-sm uppercase tracking-[0.15em]"
             >
               {l.label}
             </a>
           ))}
-          <a href="#join" onClick={() => { setOpen(false); trackEvent("join_click"); }} data-testid="mobile-menu-join" className="text-emerald-300 text-sm uppercase tracking-[0.15em]">
+          <a href="#join" onClick={() => { setOpen(false); trackEvent("join_click"); }} data-testid="mobile-menu-join" className="text-emerald-700 font-semibold text-sm uppercase tracking-[0.15em]">
             {t.nav.join}
           </a>
         </nav>
