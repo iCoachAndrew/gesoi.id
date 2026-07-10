@@ -130,3 +130,11 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Halaman detail berita: tombol hijau WhatsApp (ikon SVG brand) di bawah artikel → https://wa.me/?text={judul}%0A%0A{url}, target _blank, data-testid news-share-whatsapp
 - Dwibahasa via t.news.shareLabel (dapat diedit di CMS: "Label Tombol Bagikan"); klik terekam sebagai event analitik share_click
 - Self-tested: screenshot + verifikasi href/target/label ID & EN
+
+## Implemented (Iteration 16 — Juni 2026): Redesign UI "Clean, Minimalist, Elegant" (referensi gbhi.org)
+- Blueprint dari design_agent: /app/design_guidelines.json
+- Tema terang menyeluruh: bg putih/#FAFAFA (tidak ada lagi section navy gelap), font Cormorant Garamond (heading) + Manrope (body), warna navy #0A192F / emerald #059669 / gold #B45309, border slate tipis, whitespace lega
+- Semua komponen gesoi/*.js di-restyle + index.css + NewsDetail (header kaca putih); FUNGSIONALITAS/props/CMS/data-testid TIDAK berubah
+- Hero baru: gambar jaringan peta /hero-bg-light.webp (109KB, dioptimasi), opacity rendah di atas putih; preload di index.html; i18n heroBg default diganti
+- Ciri: stats dengan divider tipis, paradigm panel terang, orbit ecosystem putih, governance foto dengan nama di bawah, video quote border-kiri emas, form input border-bottom, cookie banner kartu putih kiri-bawah
+- Tested: pytest 51/51 (run pertama, terinterupsi kredit) + iteration_12.json 11/11 alur frontend (consent tracking, join form, publikasi modal, news detail, CMS layout switch+reset, mobile 390px, toggle bahasa)
