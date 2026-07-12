@@ -44,6 +44,7 @@ export const LABELS = {
   privacy: "Privasi", layout: "Tata Letak / Template", phone: "Telepon/WhatsApp",
   date: "Tanggal", backLabel: "Label Tombol Kembali", moreLabel: "Label Berita Lainnya",
   notFound: "Teks Berita Tidak Ditemukan", shareLabel: "Label Tombol Bagikan",
+  registeredTitle: "Judul Sudah Terdaftar", registeredMsg: "Pesan Sudah Terdaftar ({date} = tanggal)",
 };
 
 export const label = (k) => LABELS[k] || k;

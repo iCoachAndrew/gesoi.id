@@ -82,7 +82,7 @@ const Landing = () => {
       <News t={t.news} />
       <VideoFeature t={t.video} />
       <Publications t={t.publications} />
-      <JoinCTA t={t.join} bg={shared.joinBg} />
+      <JoinCTA t={t.join} bg={shared.joinBg} lang={lang} />
       <Footer t={t} />
       <CookieConsent t={t.privacy} />
       <Toaster position="bottom-right" richColors />

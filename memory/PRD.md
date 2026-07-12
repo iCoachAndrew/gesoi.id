@@ -138,3 +138,9 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Hero baru: gambar jaringan peta /hero-bg-light.webp (109KB, dioptimasi), opacity rendah di atas putih; preload di index.html; i18n heroBg default diganti
 - Ciri: stats dengan divider tipis, paradigm panel terang, orbit ecosystem putih, governance foto dengan nama di bawah, video quote border-kiri emas, form input border-bottom, cookie banner kartu putih kiri-bawah
 - Tested: pytest 51/51 (run pertama, terinterupsi kredit) + iteration_12.json 11/11 alur frontend (consent tracking, join form, publikasi modal, news detail, CMS layout switch+reset, mobile 390px, toggle bahasa)
+
+## Implemented (Iteration 17 — Juli 2026): Kunci Form Pendaftaran Setelah Submit
+- Setelah submit sukses, localStorage 'gesoi_registered' = {name, date ISO}; kunjungan berikutnya form diganti kartu konfirmasi elegan (ikon centang, judul, garis emas, pesan "Anda telah mendaftar pada {tanggal}..." + kalimat pemanis kesabaran)
+- Dwibahasa (registeredTitle/registeredMsg di i18n join.form, tanggal terformat id-ID/en-US via prop lang baru di JoinCTA); teks dapat diedit di CMS (label editor ditambahkan)
+- data-testid: join-already-registered, join-registered-message
+- Self-tested e2e: submit → kartu muncul; reload → form terkunci; toggle EN → pesan Inggris. TEST_ contact dibersihkan

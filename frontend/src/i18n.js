@@ -191,6 +191,8 @@ export const content = {
         sending: "Mengirim...",
         success: "Terima kasih! Kami akan segera menghubungi Anda.",
         error: "Gagal mengirim. Mohon periksa isian Anda.",
+        registeredTitle: "Anda telah terdaftar",
+        registeredMsg: "Anda telah mendaftar pada {date}. Terima kasih atas antusiasme Anda untuk bergabung dalam gerakan ini! Tim GESOI sedang memproses pendaftaran Anda dengan sepenuh hati — mohon kesabarannya, kami akan segera menghubungi Anda melalui email.",
       },
     },
     footer: {
@@ -393,6 +395,8 @@ export const content = {
         sending: "Sending...",
         success: "Thank you! We will be in touch soon.",
         error: "Failed to send. Please check your details.",
+        registeredTitle: "You are registered",
+        registeredMsg: "You registered on {date}. Thank you for your enthusiasm to join this movement! The GESOI team is processing your registration wholeheartedly — please bear with us, we will reach out to you by email soon.",
       },
     },
     footer: {

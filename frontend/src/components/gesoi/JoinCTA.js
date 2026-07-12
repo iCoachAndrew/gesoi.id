@@ -1,15 +1,25 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 import { trackEvent } from "../../lib/analytics";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-export const JoinCTA = ({ t, bg }) => {
+const getRegistration = () => {
+  try {
+    return JSON.parse(localStorage.getItem("gesoi_registered"));
+  } catch {
+    return null;
+  }
+};
+
+export const JoinCTA = ({ t, bg, lang }) => {
   const [form, setForm] = useState({ name: "", email: "", organization: "", interest: "volunteer", message: "" });
   const [sending, setSending] = useState(false);
+  const [registration, setRegistration] = useState(getRegistration);
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -24,6 +34,9 @@ export const JoinCTA = ({ t, bg }) => {
       });
       toast.success(t.form.success);
       trackEvent("form_submit");
+      const record = { name: form.name, date: new Date().toISOString() };
+      localStorage.setItem("gesoi_registered", JSON.stringify(record));
+      setRegistration(record);
       setForm({ name: "", email: "", organization: "", interest: "volunteer", message: "" });
     } catch {
       toast.error(t.form.error);
@@ -46,6 +59,33 @@ export const JoinCTA = ({ t, bg }) => {
           <SectionHeader kicker={t.kicker} title={t.title} body={t.body} testId="join-header" />
         </div>
 
+        {registration ? (
+          <motion.div
+            variants={fadeUp}
+            custom={1}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            className="bg-white border border-slate-200 p-8 lg:p-12 shadow-[0_8px_30px_rgba(10,25,47,0.04)]"
+            data-testid="join-already-registered"
+          >
+            <span className="inline-flex w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 items-center justify-center mb-6">
+              <CheckCircle2 size={26} className="text-emerald-600" />
+            </span>
+            <h3 className="font-serif-display font-light text-3xl text-[#0A192F] mb-4">{t.form.registeredTitle}</h3>
+            <span className="block w-10 h-px bg-[#B45309] mb-6" />
+            <p className="text-slate-600 font-light leading-relaxed" data-testid="join-registered-message">
+              {t.form.registeredMsg.replace(
+                "{date}",
+                new Date(registration.date).toLocaleDateString(lang === "en" ? "en-US" : "id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+              )}
+            </p>
+          </motion.div>
+        ) : (
         <motion.form
           variants={fadeUp}
           custom={1}
@@ -89,6 +129,7 @@ export const JoinCTA = ({ t, bg }) => {
             {sending ? t.form.sending : t.form.submit}
           </button>
         </motion.form>
+        )}
       </div>
     </section>
   );
