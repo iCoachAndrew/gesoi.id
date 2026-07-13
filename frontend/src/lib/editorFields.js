@@ -154,7 +154,7 @@ export const IconField = ({ value, onChange }) => {
           onChange={(e) => e.target.value !== "__custom" && write(e.target.value, scale)}
           className={inputCls}
         >
-          {isUrl && <option value="__custom">— Ikon kustom (unggahan) —</option>}
+          {isUrl && <option value="__custom">Ikon kustom (unggahan)</option>}
           {Object.keys(ICONS).map((k) => <option key={k} value={k}>{k}</option>)}
         </select>
         <label className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[#0B1F3A] text-white text-xs cursor-pointer hover:bg-[#1B3A63] transition-colors duration-200 whitespace-nowrap shrink-0">

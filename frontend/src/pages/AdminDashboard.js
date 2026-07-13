@@ -185,9 +185,9 @@ export default function AdminDashboard() {
                   <tr key={c.id} className="border-b border-[#0B1F3A]/5 hover:bg-[#F9F9F7] transition-colors duration-200" data-testid={`contact-row-${c.id}`}>
                     <td className="px-6 py-4 font-medium text-[#0B1F3A]">{c.name}</td>
                     <td className="px-6 py-4 text-[#4B5563]"><span className="flex items-center gap-2"><Mail size={13} className="text-emerald-600" />{c.email}</span></td>
-                    <td className="px-6 py-4 text-[#4B5563]">{c.organization ? <span className="flex items-center gap-2"><Building2 size={13} className="text-emerald-600" />{c.organization}</span> : "—"}</td>
+                    <td className="px-6 py-4 text-[#4B5563]">{c.organization ? <span className="flex items-center gap-2"><Building2 size={13} className="text-emerald-600" />{c.organization}</span> : "-"}</td>
                     <td className="px-6 py-4"><span className={`px-3 py-1 rounded-full text-xs font-medium ${badge.cls}`}>{badge.label}</span></td>
-                    <td className="px-6 py-4 text-[#4B5563] max-w-xs truncate">{c.message || "—"}</td>
+                    <td className="px-6 py-4 text-[#4B5563] max-w-xs truncate">{c.message || "-"}</td>
                     <td className="px-6 py-4 text-[#9CA3AF] whitespace-nowrap">{new Date(c.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</td>
                   </tr>
                 );

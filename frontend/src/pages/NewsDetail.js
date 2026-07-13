@@ -57,8 +57,8 @@ export default function NewsDetail() {
   const others = t.news.items.map((it, i) => ({ ...it, _i: i })).filter((it) => it._i !== idx && !it.link).slice(0, 3);
 
   useEffect(() => {
-    if (item) document.title = `${item.title} — GESOI`;
-    return () => { document.title = "GESOI — Gerakan Otak Sehat Indonesia"; };
+    if (item) document.title = `${item.title} | GESOI`;
+    return () => { document.title = "GESOI | Gerakan Otak Sehat Indonesia"; };
   }, [item]);
 
   if (!overrides) return <div className="min-h-screen bg-[#F9F9F7]" data-testid="news-detail-loading" />;

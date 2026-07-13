@@ -12,17 +12,17 @@ export const content = {
     hero: {
       badge: "Yayasan Gerakan Otak Sehat Indonesia",
       lines: ["Membangun Fondasi", "Brain Energy", "Menuju Indonesia", "Emas 2045"],
-      sub: "GESOI adalah gerakan nasional kesehatan otak — mengubah paradigma dari mengobati penyakit menjadi mengoptimalkan potensi manusia Indonesia.",
+      sub: "GESOI adalah gerakan nasional kesehatan otak yang mengubah paradigma dari mengobati penyakit menjadi mengoptimalkan potensi manusia Indonesia.",
       cta1: "Jadilah Arsitek Brain Energy",
       cta2: "Pelajari Gerakan Ini",
       scroll: "Gulir untuk menjelajah",
-      launch: "Grand Launching — 17 Agustus 2026",
+      launch: "Grand Launching · 17 Agustus 2026",
     },
     marquee: ["Salam Otak Sehat, Indonesia Cerdas", "Sosialisasi", "Edukasi", "Advokasi", "Riset", "Brain Energy", "Indonesia Emas 2045", "Gerakan Nasional", "Otak Sehat"],
     problem: {
-      kicker: "01 — Urgensi",
+      kicker: "01 · Urgensi",
       title: "Realitas yang tersembunyi",
-      body: "Bonus demografi Indonesia terancam. Krisis fokus, kecanduan layar, dan tekanan mental generasi muda adalah ancaman diam-diam bagi produktivitas bangsa. Apa yang McKinsey sebut Brain Capital, kami sebut Brain Energy — dan ia harus dibangun sekarang.",
+      body: "Bonus demografi Indonesia terancam. Krisis fokus, kecanduan layar, dan tekanan mental generasi muda adalah ancaman diam-diam bagi produktivitas bangsa. Apa yang McKinsey sebut Brain Capital, kami sebut Brain Energy, dan ia harus dibangun sekarang.",
       stats: [
         { value: "6.2%", label: "Remaja Indonesia mengalami depresi" },
         { value: "5.5%", label: "Prevalensi gangguan kesehatan mental" },
@@ -33,10 +33,10 @@ export const content = {
       shiftLabel: "bertransformasi menjadi",
     },
     ecosystem: {
-      kicker: "02 — Narasi Besar",
+      kicker: "02 · Narasi Besar",
       layout: "orbit",
       title: "Satu gerakan, satu ekosistem",
-      body: "Indonesia membutuhkan Brain Energy yang sehat untuk mencapai Indonesia Emas 2045. Untuk mencapainya, diperlukan gerakan nasional — GESOI — yang didukung ekosistem yang saling menguatkan.",
+      body: "Indonesia membutuhkan Brain Energy yang sehat untuk mencapai Indonesia Emas 2045. Untuk mencapainya, diperlukan gerakan nasional, GESOI, yang didukung ekosistem yang saling menguatkan.",
       nodes: [
         { name: "PERDOSNI", role: "Otoritas Ilmiah", desc: "Menyediakan validasi ilmiah dan standar neurologi nasional.", icon: "flask" },
         { name: "GESOI", role: "Gerakan Nasional", desc: "Menggerakkan masyarakat melalui edukasi, kampanye, dan advokasi.", icon: "megaphone" },
@@ -47,7 +47,7 @@ export const content = {
       cooperation: ["Edukasi", "Aktivasi", "Advokasi", "Kolaborasi", "Riset"],
     },
     pillars: {
-      kicker: "03 — Manifesto",
+      kicker: "03 · Manifesto",
       title: "Empat pilar misi",
       layout: "list",
       items: [
@@ -58,9 +58,9 @@ export const content = {
       ],
     },
     programs: {
-      kicker: "04 — Program & Dampak",
+      kicker: "04 · Program & Dampak",
       title: "Mesin penggerak perubahan",
-      body: "GESOI tidak menjual teknologi. GESOI menghadirkan dampak sosial — dari sekolah hingga tempat kerja, dari kampanye publik hingga kebijakan nasional.",
+      body: "GESOI tidak menjual teknologi. GESOI menghadirkan dampak sosial: dari sekolah hingga tempat kerja, dari kampanye publik hingga kebijakan nasional.",
       layout: "grid",
       items: [
         { title: "GESOI Goes to School", desc: "Edukasi interaktif Neuro-Hygiene di sekolah: pola tidur, adiksi gawai, dan nutrisi otak.", icon: "school" },
@@ -72,23 +72,23 @@ export const content = {
       ],
     },
     roadmap: {
-      kicker: "05 — Peta Jalan",
+      kicker: "05 · Peta Jalan",
       title: "Sepuluh tahun menuju 2045",
       layout: "timeline",
       items: [
         { year: "3 Tahun", title: "Literasi & Pilot", desc: "Literasi publik, pengurangan stigma, dan proyek percontohan di sekolah serta komunitas." },
         { year: "7 Tahun", title: "Integrasi Sistemik", desc: "SDM berbasis otak di sektor pemerintah & swasta; skrining otak menjadi prosedur standar di Puskesmas." },
-        { year: "10 Tahun", title: "Infrastruktur Nasional", desc: "Infrastruktur neuro-teknologi di seluruh segmen ekonomi — generasi tangguh, inovatif, dan teregulasi secara emosional." },
+        { year: "10 Tahun", title: "Infrastruktur Nasional", desc: "Infrastruktur neuro-teknologi di seluruh segmen ekonomi: generasi tangguh, inovatif, dan teregulasi secara emosional." },
       ],
     },
     governance: {
-      kicker: "06 — Kepemimpinan",
+      kicker: "06 · Kepemimpinan",
       title: "Memimpin gerakan nasional otak sehat",
       body: "GESOI dikawal para tokoh nasional lintas sektor dan dikelola secara profesional dengan prinsip Good Corporate Governance serta Dana Abadi untuk keberlanjutan gerakan.",
       note: "Dana Abadi GESOI dirancang tumbuh melalui kemitraan strategis lintas sektor.",
     },
     news: {
-      kicker: "07 — Kabar",
+      kicker: "07 · Kabar",
       title: "Kabar & kegiatan terbaru",
       backLabel: "Kembali",
       moreLabel: "Berita Lainnya",
@@ -101,7 +101,7 @@ export const content = {
           date: "12 Juni 2026",
           image: "https://images.unsplash.com/photo-1573164574572-cb89e39749b4?q=80&w=1200",
           link: "",
-          body: "Jakarta — Yayasan Gerakan Otak Sehat Indonesia (GESOI) resmi dibentuk sebagai wadah gerakan nasional untuk kesehatan otak. Pembentukan ini menandai langkah awal perjalanan panjang menuju **Indonesia Emas 2045** melalui paradigma Brain Energy.\n\n## Mengapa gerakan ini penting\n\nKesehatan otak selama ini dipandang semata urusan medis. GESOI hadir untuk mengubah cara pandang tersebut: dari mengobati penyakit menjadi mengoptimalkan potensi manusia Indonesia — di sekolah, tempat kerja, dan keluarga.\n\nDengan dukungan para tokoh nasional lintas sektor, GESOI akan menjalankan program edukasi, aktivasi komunitas, advokasi kebijakan, kolaborasi ekosistem, dan riset.",
+          body: "Jakarta - Yayasan Gerakan Otak Sehat Indonesia (GESOI) resmi dibentuk sebagai wadah gerakan nasional untuk kesehatan otak. Pembentukan ini menandai langkah awal perjalanan panjang menuju **Indonesia Emas 2045** melalui paradigma Brain Energy.\n\n## Mengapa gerakan ini penting\n\nKesehatan otak selama ini dipandang semata urusan medis. GESOI hadir untuk mengubah cara pandang tersebut: dari mengobati penyakit menjadi mengoptimalkan potensi manusia Indonesia: di sekolah, tempat kerja, dan keluarga.\n\nDengan dukungan para tokoh nasional lintas sektor, GESOI akan menjalankan program edukasi, aktivasi komunitas, advokasi kebijakan, kolaborasi ekosistem, dan riset.",
         },
         {
           category: "Event",
@@ -109,7 +109,7 @@ export const content = {
           date: "17 Agustus 2026",
           image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200",
           link: "",
-          body: "Gerakan Otak Sehat Indonesia akan dideklarasikan secara resmi pada **17 Agustus 2026**, bertepatan dengan Hari Kemerdekaan Republik Indonesia.\n\nMomentum ini dipilih sebagai simbol: kemerdekaan sejati dimulai dari otak yang sehat — generasi yang fokus, tangguh, dan teregulasi secara emosional.\n\nInformasi lengkap acara akan diumumkan melalui kanal resmi GESOI.",
+          body: "Gerakan Otak Sehat Indonesia akan dideklarasikan secara resmi pada **17 Agustus 2026**, bertepatan dengan Hari Kemerdekaan Republik Indonesia.\n\nMomentum ini dipilih sebagai simbol: kemerdekaan sejati dimulai dari otak yang sehat: generasi yang fokus, tangguh, dan teregulasi secara emosional.\n\nInformasi lengkap acara akan diumumkan melalui kanal resmi GESOI.",
         },
         {
           category: "News",
@@ -125,13 +125,13 @@ export const content = {
           date: "Juni 2026",
           image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200",
           link: "",
-          body: "Brain Energy adalah kerangka berpikir yang menempatkan kesehatan otak sebagai modal utama pembangunan bangsa — **brain capital**.\n\n## Dari mengobati ke mengoptimalkan\n\nBeban gangguan neurologis dan kesehatan mental terus meningkat, sementara tuntutan ekonomi berbasis pengetahuan makin tinggi. Investasi pada kesehatan otak sejak dini adalah investasi pada daya saing Indonesia.\n\nMelalui edukasi, kebiasaan harian ramah otak, dan kebijakan publik yang berpihak, Indonesia dapat menyiapkan generasi emas 2045.",
+          body: "Brain Energy adalah kerangka berpikir yang menempatkan kesehatan otak sebagai modal utama pembangunan bangsa, yaitu **brain capital**.\n\n## Dari mengobati ke mengoptimalkan\n\nBeban gangguan neurologis dan kesehatan mental terus meningkat, sementara tuntutan ekonomi berbasis pengetahuan makin tinggi. Investasi pada kesehatan otak sejak dini adalah investasi pada daya saing Indonesia.\n\nMelalui edukasi, kebiasaan harian ramah otak, dan kebijakan publik yang berpihak, Indonesia dapat menyiapkan generasi emas 2045.",
         },
       ],
     },
     video: {
-      kicker: "08 — Video",
-      quote: "Kesehatan otak bukan hanya urusan medis — ia menentukan masa depan keluarga, produktivitas, dan daya saing bangsa. Itulah mengapa gerakan ini begitu mendesak.",
+      kicker: "08 · Video",
+      quote: "Kesehatan otak bukan hanya urusan medis, ia menentukan masa depan keluarga, produktivitas, dan daya saing bangsa. Itulah mengapa gerakan ini begitu mendesak.",
       author: "GESOI",
       role: "Gerakan Otak Sehat Indonesia",
       watchLabel: "Tonton Video",
@@ -139,14 +139,14 @@ export const content = {
       poster: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=1600",
     },
     publications: {
-      kicker: "09 — Publikasi Ilmiah",
+      kicker: "09 · Publikasi Ilmiah",
       title: "Publikasi ilmiah",
       body: "Akses riset dan white paper kesehatan otak Indonesia. Pendapatan publikasi mendukung keberlanjutan gerakan.",
       buyLabel: "Beli Akses",
       priceNote: "Akses digital (PDF)",
       modalTitle: "Checkout Publikasi",
       cancelLabel: "Batal",
-      prototypeNote: "Ini adalah prototipe — pembayaran belum dihubungkan. Tim GESOI akan menghubungi Anda.",
+      prototypeNote: "Ini adalah prototipe: pembayaran belum dihubungkan. Tim GESOI akan menghubungi Anda.",
       form: {
         name: "Nama lengkap",
         email: "Alamat email",
@@ -172,7 +172,7 @@ export const content = {
       policyText: "Yayasan Gerakan Otak Sehat Indonesia (GESOI) menghormati privasi Anda.\n\n1. Data yang Kami Kumpulkan\nKami mengumpulkan data yang Anda berikan secara sukarela melalui formulir pendaftaran (nama, email, organisasi, minat, dan pesan) serta data teknis dasar seperti jenis peramban dan halaman yang dikunjungi melalui cookie.\n\n2. Penggunaan Data\nData digunakan untuk menghubungi Anda terkait keikutsertaan dalam gerakan, mengirim informasi program, serta meningkatkan kualitas layanan situs ini. Kami tidak menjual atau membagikan data pribadi Anda kepada pihak ketiga tanpa persetujuan.\n\n3. Cookie\nCookie digunakan untuk mengingat preferensi Anda dan menganalisis kunjungan secara agregat. Anda dapat menolak penggunaan cookie melalui banner persetujuan atau pengaturan peramban.\n\n4. Keamanan\nKami menerapkan langkah-langkah teknis yang wajar untuk melindungi data Anda.\n\n5. Hak Anda\nAnda berhak meminta akses, koreksi, atau penghapusan data pribadi Anda dengan menghubungi kami di info@gesoi.or.id.\n\nDengan menggunakan situs ini, Anda menyetujui kebijakan privasi ini. Kebijakan dapat diperbarui sewaktu-waktu.",
     },
     join: {
-      kicker: "10 — Ajakan",
+      kicker: "10 · Ajakan",
       title: "Jadilah Arsitek Brain Energy Indonesia",
       body: "Bergabunglah sebagai relawan, mitra, atau pendukung gerakan. Bersama, kita bangun fondasi Indonesia Emas 2045.",
       form: {
@@ -192,7 +192,7 @@ export const content = {
         success: "Terima kasih! Kami akan segera menghubungi Anda.",
         error: "Gagal mengirim. Mohon periksa isian Anda.",
         registeredTitle: "Anda telah terdaftar",
-        registeredMsg: "Anda telah mendaftar pada {date}. Terima kasih atas antusiasme Anda untuk bergabung dalam gerakan ini! Tim GESOI sedang memproses pendaftaran Anda dengan sepenuh hati — mohon kesabarannya, kami akan segera menghubungi Anda melalui email.",
+        registeredMsg: "Anda telah mendaftar pada {date}. Terima kasih atas antusiasme Anda untuk bergabung dalam gerakan ini! Tim GESOI sedang memproses pendaftaran Anda dengan sepenuh hati, mohon kesabarannya, kami akan segera menghubungi Anda melalui email.",
       },
     },
     footer: {
@@ -216,17 +216,17 @@ export const content = {
     hero: {
       badge: "Indonesian Healthy Brain Movement Foundation",
       lines: ["Building the", "Brain Energy", "Foundation for a", "Golden Indonesia 2045"],
-      sub: "GESOI is a national brain health movement — shifting the paradigm from curing illness to optimizing the potential of every Indonesian mind.",
+      sub: "GESOI is a national brain health movement, shifting the paradigm from curing illness to optimizing the potential of every Indonesian mind.",
       cta1: "Become a Brain Energy Architect",
       cta2: "Explore the Movement",
       scroll: "Scroll to explore",
-      launch: "Grand Launching — August 17, 2026",
+      launch: "Grand Launching · August 17, 2026",
     },
     marquee: ["Salam Otak Sehat, Indonesia Cerdas", "Socialization", "Education", "Advocacy", "Research", "Brain Energy", "Golden Indonesia 2045", "National Movement", "Healthy Brains"],
     problem: {
-      kicker: "01 — Urgency",
+      kicker: "01 · Urgency",
       title: "The hidden reality",
-      body: "Indonesia's demographic bonus is at risk. A crisis of focus, screen addiction, and youth mental strain silently threatens national productivity. What McKinsey calls Brain Capital, we call Brain Energy — and it must be built now.",
+      body: "Indonesia's demographic bonus is at risk. A crisis of focus, screen addiction, and youth mental strain silently threatens national productivity. What McKinsey calls Brain Capital, we call Brain Energy, and it must be built now.",
       stats: [
         { value: "6.2%", label: "Indonesian youth experiencing depression" },
         { value: "5.5%", label: "Prevalence of mental health disorders" },
@@ -237,10 +237,10 @@ export const content = {
       shiftLabel: "transforms into",
     },
     ecosystem: {
-      kicker: "02 — Grand Narrative",
+      kicker: "02 · Grand Narrative",
       layout: "orbit",
       title: "One movement, one ecosystem",
-      body: "Indonesia needs healthy Brain Energy to reach a Golden Indonesia 2045. Achieving it requires a national movement — GESOI — powered by a mutually reinforcing ecosystem.",
+      body: "Indonesia needs healthy Brain Energy to reach a Golden Indonesia 2045. Achieving it requires a national movement, GESOI, powered by a mutually reinforcing ecosystem.",
       nodes: [
         { name: "PERDOSNI", role: "Scientific Authority", desc: "Provides scientific validation and national neurology standards.", icon: "flask" },
         { name: "GESOI", role: "National Movement", desc: "Mobilizes society through education, campaigns, and advocacy.", icon: "megaphone" },
@@ -251,7 +251,7 @@ export const content = {
       cooperation: ["Education", "Activation", "Advocacy", "Collaboration", "Research"],
     },
     pillars: {
-      kicker: "03 — Manifesto",
+      kicker: "03 · Manifesto",
       title: "Four pillars of mission",
       layout: "list",
       items: [
@@ -262,9 +262,9 @@ export const content = {
       ],
     },
     programs: {
-      kicker: "04 — Programs & Impact",
+      kicker: "04 · Programs & Impact",
       title: "The engine of change",
-      body: "GESOI does not sell technology. GESOI delivers social impact — from schools to workplaces, from public campaigns to national policy.",
+      body: "GESOI does not sell technology. GESOI delivers social impact: from schools to workplaces, from public campaigns to national policy.",
       layout: "grid",
       items: [
         { title: "GESOI Goes to School", desc: "Interactive Neuro-Hygiene education in schools: sleep, gadget addiction, and brain nutrition.", icon: "school" },
@@ -276,23 +276,23 @@ export const content = {
       ],
     },
     roadmap: {
-      kicker: "05 — Roadmap",
+      kicker: "05 · Roadmap",
       title: "Ten years toward 2045",
       layout: "timeline",
       items: [
         { year: "3 Years", title: "Literacy & Pilots", desc: "Public literacy, stigma reduction, and pilot projects in schools and communities." },
         { year: "7 Years", title: "Systemic Integration", desc: "Brain-based HR in government & private sectors; brain screenings as standard practice in public health clinics." },
-        { year: "10 Years", title: "National Infrastructure", desc: "Neuro-technology infrastructure across all economic segments — a resilient, innovative, emotionally regulated generation." },
+        { year: "10 Years", title: "National Infrastructure", desc: "Neuro-technology infrastructure across all economic segments: a resilient, innovative, emotionally regulated generation." },
       ],
     },
     governance: {
-      kicker: "06 — Leadership",
+      kicker: "06 · Leadership",
       title: "Leading a national movement for brain health",
       body: "GESOI is guided by national cross-sector figures and professionally managed under Good Corporate Governance principles, with an Endowment Fund for the movement's sustainability.",
       note: "The GESOI Endowment Fund is designed to grow through cross-sector strategic partnerships.",
     },
     news: {
-      kicker: "07 — Updates",
+      kicker: "07 · Updates",
       title: "Latest news & activities",
       backLabel: "Back",
       moreLabel: "More News",
@@ -305,7 +305,7 @@ export const content = {
           date: "June 12, 2026",
           image: "https://images.unsplash.com/photo-1573164574572-cb89e39749b4?q=80&w=1200",
           link: "",
-          body: "Jakarta — The Indonesian Healthy Brain Movement Foundation (GESOI) has been officially established as the home of a national movement for brain health. This marks the first step of a long journey toward **Golden Indonesia 2045** through the Brain Energy paradigm.\n\n## Why this movement matters\n\nBrain health has long been seen as a purely medical matter. GESOI exists to change that perspective: from treating disease to optimizing the potential of the Indonesian people — in schools, workplaces, and families.\n\nBacked by national cross-sector figures, GESOI will run programs in education, community activation, policy advocacy, ecosystem collaboration, and research.",
+          body: "Jakarta - The Indonesian Healthy Brain Movement Foundation (GESOI) has been officially established as the home of a national movement for brain health. This marks the first step of a long journey toward **Golden Indonesia 2045** through the Brain Energy paradigm.\n\n## Why this movement matters\n\nBrain health has long been seen as a purely medical matter. GESOI exists to change that perspective: from treating disease to optimizing the potential of the Indonesian people: in schools, workplaces, and families.\n\nBacked by national cross-sector figures, GESOI will run programs in education, community activation, policy advocacy, ecosystem collaboration, and research.",
         },
         {
           category: "Event",
@@ -313,7 +313,7 @@ export const content = {
           date: "August 17, 2026",
           image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200",
           link: "",
-          body: "The Indonesian Healthy Brain Movement will be officially declared on **August 17, 2026**, coinciding with the Independence Day of the Republic of Indonesia.\n\nThe moment was chosen as a symbol: true independence begins with a healthy brain — a generation that is focused, resilient, and emotionally regulated.\n\nFull event details will be announced through GESOI's official channels.",
+          body: "The Indonesian Healthy Brain Movement will be officially declared on **August 17, 2026**, coinciding with the Independence Day of the Republic of Indonesia.\n\nThe moment was chosen as a symbol: true independence begins with a healthy brain: a generation that is focused, resilient, and emotionally regulated.\n\nFull event details will be announced through GESOI's official channels.",
         },
         {
           category: "News",
@@ -329,13 +329,13 @@ export const content = {
           date: "June 2026",
           image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200",
           link: "",
-          body: "Brain Energy is a framework that positions brain health as the nation's primary development asset — **brain capital**.\n\n## From treating to optimizing\n\nThe burden of neurological and mental health disorders keeps rising, while the demands of a knowledge-based economy grow ever higher. Investing in brain health from an early age is investing in Indonesia's competitiveness.\n\nThrough education, brain-friendly daily habits, and supportive public policy, Indonesia can prepare its golden generation of 2045.",
+          body: "Brain Energy is a framework that positions brain health as the nation's primary development asset, **brain capital**.\n\n## From treating to optimizing\n\nThe burden of neurological and mental health disorders keeps rising, while the demands of a knowledge-based economy grow ever higher. Investing in brain health from an early age is investing in Indonesia's competitiveness.\n\nThrough education, brain-friendly daily habits, and supportive public policy, Indonesia can prepare its golden generation of 2045.",
         },
       ],
     },
     video: {
-      kicker: "08 — Video",
-      quote: "Brain health is not just a medical matter — it shapes the future of families, productivity, and national competitiveness. That is why this movement is so urgent.",
+      kicker: "08 · Video",
+      quote: "Brain health is not just a medical matter, it shapes the future of families, productivity, and national competitiveness. That is why this movement is so urgent.",
       author: "GESOI",
       role: "Indonesian Healthy Brain Movement",
       watchLabel: "Watch The Video",
@@ -343,14 +343,14 @@ export const content = {
       poster: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=1600",
     },
     publications: {
-      kicker: "09 — Scientific Publications",
+      kicker: "09 · Scientific Publications",
       title: "Scientific publications",
       body: "Access Indonesian brain health research and white papers. Publication revenue supports the movement's sustainability.",
       buyLabel: "Buy Access",
       priceNote: "Digital access (PDF)",
       modalTitle: "Publication Checkout",
       cancelLabel: "Cancel",
-      prototypeNote: "This is a prototype — payment is not yet connected. The GESOI team will contact you.",
+      prototypeNote: "This is a prototype: payment is not yet connected. The GESOI team will contact you.",
       form: {
         name: "Full name",
         email: "Email address",
@@ -376,7 +376,7 @@ export const content = {
       policyText: "Yayasan Gerakan Otak Sehat Indonesia (GESOI) respects your privacy.\n\n1. Data We Collect\nWe collect data you voluntarily provide through the registration form (name, email, organization, interest, and message) as well as basic technical data such as browser type and pages visited via cookies.\n\n2. Use of Data\nData is used to contact you regarding participation in the movement, send program information, and improve this site. We do not sell or share your personal data with third parties without consent.\n\n3. Cookies\nCookies are used to remember your preferences and analyze visits in aggregate. You may decline cookies via the consent banner or your browser settings.\n\n4. Security\nWe apply reasonable technical measures to protect your data.\n\n5. Your Rights\nYou may request access, correction, or deletion of your personal data by contacting info@gesoi.or.id.\n\nBy using this site you agree to this privacy policy. The policy may be updated from time to time.",
     },
     join: {
-      kicker: "10 — Call to Action",
+      kicker: "10 · Call to Action",
       title: "Become an Architect of Indonesia's Brain Energy",
       body: "Join as a volunteer, partner, or supporter of the movement. Together, we build the foundation of a Golden Indonesia 2045.",
       form: {
@@ -396,7 +396,7 @@ export const content = {
         success: "Thank you! We will be in touch soon.",
         error: "Failed to send. Please check your details.",
         registeredTitle: "You are registered",
-        registeredMsg: "You registered on {date}. Thank you for your enthusiasm to join this movement! The GESOI team is processing your registration wholeheartedly — please bear with us, we will reach out to you by email soon.",
+        registeredMsg: "You registered on {date}. Thank you for your enthusiasm to join this movement! The GESOI team is processing your registration wholeheartedly, please bear with us, we will reach out to you by email soon.",
       },
     },
     footer: {

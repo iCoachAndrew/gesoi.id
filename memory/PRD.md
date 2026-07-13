@@ -144,3 +144,10 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Dwibahasa (registeredTitle/registeredMsg di i18n join.form, tanggal terformat id-ID/en-US via prop lang baru di JoinCTA); teks dapat diedit di CMS (label editor ditambahkan)
 - data-testid: join-already-registered, join-registered-message
 - Self-tested e2e: submit → kartu muncul; reload → form terkunci; toggle EN → pesan Inggris. TEST_ contact dibersihkan
+
+## CARDINAL RULE (Juli 2026, WAJIB SELAMANYA)
+- DILARANG menggunakan em-dash (—) di narasi dan di mana pun pada website (konten i18n, komponen, meta tags, admin UI). Gunakan koma/titik dua/interpunct (·) untuk kicker, atau " | " untuk judul dokumen.
+
+## Implemented (Iteration 18 — Juli 2026): Penghapusan Em-dash Menyeluruh
+- 65 kemunculan em-dash dihapus dari i18n.js (narasi ID+EN ditulis ulang natural dengan koma/titik dua), kicker "01 — X" → "01 · X", AdminEditor/editorFields/AdminDashboard/NewsDetail/index.html (meta & title → " | ")
+- Verifikasi: grep 0 di src+public, DB override 0, innerText halaman live 0 em-dash, compile sukses
