@@ -151,3 +151,7 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 ## Implemented (Iteration 18 — Juli 2026): Penghapusan Em-dash Menyeluruh
 - 65 kemunculan em-dash dihapus dari i18n.js (narasi ID+EN ditulis ulang natural dengan koma/titik dua), kicker "01 — X" → "01 · X", AdminEditor/editorFields/AdminDashboard/NewsDetail/index.html (meta & title → " | ")
 - Verifikasi: grep 0 di src+public, DB override 0, innerText halaman live 0 em-dash, compile sukses
+
+## Implemented (Iteration 19 - Juli 2026): Tab Bantuan di Dasbor Admin
+- Panduan admin (7 section: Login, Data Pendaftar, Pembelian, Analitik, Editor CMS, Galeri Media, Hal Penting) kini tampil sebagai tab "Bantuan" di dasbor (pages/AdminHelp.js); sumber konten sama dengan /app/docs/PANDUAN_ADMIN.md
+- Self-tested: screenshot, 7 section ter-render, tanpa em-dash
