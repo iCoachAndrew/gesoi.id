@@ -161,3 +161,9 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 2. Galeri Media: unggah massal (input multiple, loop sekuensial, label progres "Mengunggah i/N...", toast ringkasan)
 3. Crop selector (react-easy-crop v6, lib/CropUpload.js): pilih file di ImageField Editor membuka modal crop (drag area, zoom slider, rasio 1:1/4:3/3:4/16:9, tombol Gunakan & Unggah / Unggah Tanpa Crop / Batal); hasil crop diunggah sebagai JPEG; img.crossOrigin anonymous
 - Tested: iteration_13.json frontend 100%; galeri media dibersihkan dari 19 file uji lama
+
+## Bug Fix (Agustus 2026): PNG Transparan Jadi Hitam Setelah Crop
+- Akar masalah: hasil crop selalu diekspor JPEG (tanpa alpha), piksel transparan menjadi hitam
+- Fix di lib/CropUpload.js: sumber PNG/WebP/GIF diekspor PNG (alpha dipertahankan); preview cropper berlatar checkerboard terang (bukan navy); opsi "Latar PNG" untuk file ber-alpha: Transparan (asli, default) / Putih / color picker kustom (di-fill di canvas sebelum draw); sumber JPEG tetap JPEG
+- Verified: iteration_14.json 5/5 pixel-level (alpha=0 di sudut transparan, putih 255, warna kustom cocok, tanpa-crop byte-identical); file uji dibersihkan
+- Catatan minor: objstore preview kadang 500 transien saat upload (retry manual berhasil); backlog opsional: tambah 1x retry di backend upload
