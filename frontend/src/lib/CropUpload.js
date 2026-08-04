@@ -11,6 +11,7 @@ const ASPECTS = [
 const cropToBlob = (imageSrc, area) =>
   new Promise((resolve, reject) => {
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = Math.round(area.width);

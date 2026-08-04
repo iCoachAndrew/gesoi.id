@@ -155,3 +155,9 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 ## Implemented (Iteration 19 - Juli 2026): Tab Bantuan di Dasbor Admin
 - Panduan admin (7 section: Login, Data Pendaftar, Pembelian, Analitik, Editor CMS, Galeri Media, Hal Penting) kini tampil sebagai tab "Bantuan" di dasbor (pages/AdminHelp.js); sumber konten sama dengan /app/docs/PANDUAN_ADMIN.md
 - Self-tested: screenshot, 7 section ter-render, tanpa em-dash
+
+## Implemented (Iteration 20 - Agustus 2026): Karosel Otomatis, Mass Upload, Crop Selector
+1. Karosel pengurus/pendiri (Governance) berjalan otomatis smooth via react-fast-marquee (speed 35, pauseOnHover, autoFill, adaptif semua layar); catatan: autoFill menduplikasi data-testid person-card-i (pakai .first di test)
+2. Galeri Media: unggah massal (input multiple, loop sekuensial, label progres "Mengunggah i/N...", toast ringkasan)
+3. Crop selector (react-easy-crop v6, lib/CropUpload.js): pilih file di ImageField Editor membuka modal crop (drag area, zoom slider, rasio 1:1/4:3/3:4/16:9, tombol Gunakan & Unggah / Unggah Tanpa Crop / Batal); hasil crop diunggah sebagai JPEG; img.crossOrigin anonymous
+- Tested: iteration_13.json frontend 100%; galeri media dibersihkan dari 19 file uji lama
