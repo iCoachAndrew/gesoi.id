@@ -1,0 +1,23 @@
+{
+  "summary": "Frontend-only regression + feature tests for GESOI iteration 13. Verified: (1) Governance carousel auto-scrolls (react-fast-marquee, ~35px/s, delta -71px over 2s at 1920 and -52px at 390), pauseOnHover works (delta 0 when mouse over carousel, resumes on leave), no horizontal overflow at 390px, no console errors. (2) Admin Media Gallery mass upload: uploaded 3 PNGs via set_input_files, progress label showed 'Mengunggah 1/3...', all 3 appeared in grid, success toast '3 file berhasil diunggah!' shown, all 3 test files deleted afterward. (3) Crop modal in Editor > Gambar & Tokoh (Global) > Gambar Latar Hero: file pick opened crop-modal, crop-aspect-16-9 selectable, crop-zoom-slider adjustable, crop-confirm-btn closed modal and uploaded cropped JPEG (URL field populated with /api/files/gesoi/uploads/<uuid>.jpg), thumbnail preview updated, toast 'Foto berhasil diunggah'. crop-cancel-btn closed modal without upload. crop-skip-btn uploaded original file (toast success). Editor reset via Reset button restored defaults ('Konten dikembalikan ke bawaan.') so site_content unchanged.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "CropUpload.cropToBlob draws from a fresh Image() with img.src = objectURL (same-origin blob) which is fine, but the canvas 2D context has no willReadFrequently hint and no CORS crossOrigin attr — future refactor to accept remote URLs would fail toBlob due to tainted canvas. Consider setting img.crossOrigin='anonymous' proactively.",
+    "ImageField picks the file, clears input, then opens CropModal — if the admin cancels the modal, the same file cannot be reselected without picking a different name first (browser suppresses same-file change event even though value was cleared to ''). This flow does work here because e.target.value='' clears it, but worth adding a test."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped)", "frontend": "100%"},
+  "seed_data_creation": "None persisted. Uploaded 3 TEST_img_*.png via Media Gallery and deleted them. Uploaded 2 crop-flow images via Editor (used cropped + skip), then clicked Reset (DELETE /api/admin/content) to restore default site_content. Note: the 2 crop-flow files remain in /api/files/gesoi/uploads storage but are no longer referenced by site content; can be cleaned via Media Gallery if needed.",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": false,
+  "test_credentials": "admin@gesoi.or.id / GesoiAdmin#2045 (from /app/memory/test_credentials.md)",
+  "context_for_next_testing_agent": "All 3 features from iteration 13 work end-to-end. If cleaning storage is desired, delete two orphaned uploads via Admin > Galeri Media (files uploaded 4 Aug 2026 during crop testing). Marquee autoFill duplicates data-testids so use .first for person-card selectors. Aspect testids use dash: crop-aspect-1-1, crop-aspect-4-3, crop-aspect-3-4, crop-aspect-16-9.",
+  "rca_of_the_issue": "No issues found."
+}

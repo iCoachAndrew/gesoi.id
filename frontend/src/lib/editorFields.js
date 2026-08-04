@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Upload, Plus, Trash2 } from "lucide-react";
 import { ICONS, parseIcon, SectionIcon } from "./icons";
+import { CropModal } from "./CropUpload";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -81,14 +82,20 @@ export const inputCls =
 
 export const ImageField = ({ value, onChange, testId }) => {
   const [uploading, setUploading] = useState(false);
+  const [pendingFile, setPendingFile] = useState(null);
 
-  const upload = async (e) => {
+  const pick = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (file) setPendingFile(file);
+    e.target.value = "";
+  };
+
+  const doUpload = async (blob) => {
+    setPendingFile(null);
     setUploading(true);
     try {
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", blob, blob.name || "foto.jpg");
       const { data } = await axios.post(`${API}/admin/upload`, fd, authConfig());
       onChange(`${BACKEND_URL}${data.url}`);
       toast.success("Foto berhasil diunggah");
@@ -96,7 +103,6 @@ export const ImageField = ({ value, onChange, testId }) => {
       toast.error(err.response?.data?.detail || "Gagal mengunggah foto");
     } finally {
       setUploading(false);
-      e.target.value = "";
     }
   };
 
@@ -109,12 +115,13 @@ export const ImageField = ({ value, onChange, testId }) => {
         <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="URL gambar" className={inputCls} data-testid={testId} />
         <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B1F3A] text-white text-xs cursor-pointer hover:bg-[#1B3A63] transition-colors duration-200">
           <Upload size={12} /> {uploading ? "Mengunggah..." : "Unggah Foto"}
-          <input type="file" accept="image/*" className="hidden" onChange={upload} disabled={uploading} />
+          <input type="file" accept="image/*" className="hidden" onChange={pick} disabled={uploading} />
         </label>
         {value && (
           <button type="button" onClick={() => onChange("")} className="ml-2 text-xs text-red-500 hover:underline">Hapus</button>
         )}
       </div>
+      {pendingFile && <CropModal file={pendingFile} onCancel={() => setPendingFile(null)} onUpload={doUpload} />}
     </div>
   );
 };

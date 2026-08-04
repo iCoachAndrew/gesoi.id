@@ -13,6 +13,7 @@ export default function AdminMedia() {
   const [files, setFiles] = useState(null);
   const [filter, setFilter] = useState("all");
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState("");
 
   const fetchFiles = () => {
     axios.get(`${API}/admin/files`, authConfig()).then((r) => setFiles(r.data)).catch(() => setFiles([]));
@@ -21,21 +22,28 @@ export default function AdminMedia() {
   useEffect(fetchFiles, []);
 
   const upload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const list = Array.from(e.target.files || []);
+    if (!list.length) return;
     setUploading(true);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      await axios.post(`${API}/admin/upload`, fd, authConfig());
-      toast.success("File berhasil diunggah!");
-      fetchFiles();
-    } catch (err) {
-      toast.error(err.response?.data?.detail || "Gagal mengunggah file");
-    } finally {
-      setUploading(false);
-      e.target.value = "";
+    let ok = 0;
+    let fail = 0;
+    for (let i = 0; i < list.length; i++) {
+      setProgress(list.length > 1 ? `${i + 1}/${list.length}` : "");
+      try {
+        const fd = new FormData();
+        fd.append("file", list[i]);
+        await axios.post(`${API}/admin/upload`, fd, authConfig());
+        ok++;
+      } catch {
+        fail++;
+      }
     }
+    setUploading(false);
+    setProgress("");
+    if (ok) toast.success(ok > 1 ? `${ok} file berhasil diunggah!` : "File berhasil diunggah!");
+    if (fail) toast.error(`${fail} file gagal diunggah`);
+    fetchFiles();
+    e.target.value = "";
   };
 
   const copyUrl = (f) => {
@@ -76,9 +84,10 @@ export default function AdminMedia() {
             data-testid="media-upload-btn"
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 text-white text-xs uppercase tracking-wider font-semibold hover:bg-emerald-500 transition-colors duration-200 cursor-pointer ${uploading ? "opacity-60 pointer-events-none" : ""}`}
           >
-            <Upload size={14} /> {uploading ? "Mengunggah..." : "Unggah File"}
+            <Upload size={14} /> {uploading ? `Mengunggah${progress ? ` ${progress}` : ""}...` : "Unggah File"}
             <input
               type="file"
+              multiple
               accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime"
               className="hidden"
               onChange={upload}
