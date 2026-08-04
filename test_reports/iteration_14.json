@@ -1,0 +1,30 @@
+{
+  "summary": "Frontend-only verification of the CropUpload PNG-transparency bug fix on the admin Editor Website (shared → Gambar Latar Hero). Executed 5 scenarios end-to-end through the real UI on the preview URL, downloaded each resulting file from /api/files/... and inspected file magic bytes, content-type, and per-pixel RGBA to programmatically confirm the fix. All 5 scenarios PASS. No console errors, no site content saved, all uploaded test files cleaned up.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/admin/upload", "issue": "One transient 500 from upstream objstore (integrations.emergentagent.com/objstore …500 Server Error) during first JPEG attempt; re-ran and it succeeded on next attempts. Unrelated to crop fix. Backend has no retry/friendlier error handling — surfaces as generic 'Gagal mengunggah foto' toast."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/tmp/cropfx/transparent.png", "/tmp/cropfx/photo.jpg"],
+  "action_items": [
+    "(optional) Add a small retry (e.g., 1 retry) inside put_object or upload_image on 5xx from objstore so a transient upstream 500 doesn't surface to admins as an upload failure."
+  ],
+  "critical_code_review_comments": [
+    "CropUpload.js: cropToBlob revokes objectURL AFTER onUpload resolves in finish(); good. blob.name relies on setting a property on the Blob which is not standardized (works because axios FormData tolerates it), but consider constructing a `new File([blob], name, {type: mime})` for clarity.",
+    "editorFields.js:doUpload appends `blob.name || 'foto.jpg'` — for a raw JPEG-source skip flow this defaults to .jpg extension; server validates extension so PNG skip must keep .png (verified working)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "100% (5/5 scenarios)"},
+  "seed_data_creation": "Generated two local fixtures: /tmp/cropfx/transparent.png (400x400 RGBA, transparent bg, red disc) and /tmp/cropfx/photo.jpg (400x400 opaque). All 6 files uploaded during testing were deleted via /api/admin/files/{id}. site_content was never saved (no Reset needed).",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": false,
+  "test_credentials": "admin@gesoi.or.id / GesoiAdmin#2045 (from /app/memory/test_credentials.md)",
+  "context_for_next_testing_agent": "Testids used: admin-tab-editor → editor-section-shared → field-shared-heroBg (URL input) + first input[type=file][accept=image/*] on the page. Modal testids: crop-modal, crop-bg-options, crop-bg-transparent, crop-bg-white, crop-bg-color-picker, crop-confirm-btn, crop-skip-btn. To verify pixel-level output without PIL in the browser, fetch(url) → arrayBuffer → check first bytes (0x89 PNG / 0xFF 0xD8 JPEG) and load into Image + canvas.getImageData for RGBA at (2,2). CropModal.doUpload sets pendingFile=null at start → modal detaches BEFORE upload resolves, so 'modal detached' does NOT mean upload succeeded; poll the URL input value change to confirm success. The preview objstore occasionally returns transient 500 on upload — retry once.",
+  "rca_of_the_issue": "Original bug: crop always produced canvas.toBlob(_, 'image/jpeg') which drops alpha and turns transparent pixels black. Fix (CropUpload.js): hasAlpha() detects png/webp/gif; when alpha capable, mime = 'image/png' preserving transparency, bg option lets user choose transparent (default) / white / custom color which is filled behind image before drawImage. Preview background changed from dark navy to light checker gradient so admins visually recognize transparent areas. All fix pieces verified: (1) PNG output with alpha=0 at transparent corners, (2) checker gradient present in cropper container, (3) 'Latar PNG' options row shown only for alpha-capable files (0 for JPEG), (4) white bg → RGBA(255,255,255,255), (5) custom color picker → matching RGB with alpha=255, (6) 'Unggah Tanpa Crop' streams original bytes intact (byte-identical, 1840=1840). Bug is FIXED."
+}
