@@ -140,3 +140,11 @@ Fungsi yang tersedia:
 ---
 
 Dokumen dibuat: Juli 2026. Simpan dokumen ini sebagai referensi tim pengelola website GESOI.
+
+## Pembaruan (September 2026)
+- GESOI = Gerakan Sehat Otak Indonesia (nama diperbaiki di seluruh website).
+- Section baru "SEO & Browser" di Editor: judul tab browser (ID/EN) dan deskripsi meta Google.
+- Section "Pengaturan Situs & Tokoh (Global)" kini memuat: Logo Website, Ikon Tab (favicon), Gambar OG (saat link dibagikan), Warna Tema (3 color picker), dan "Susunan & Tampil Section" (urutkan/sembunyikan section landing page; Hero selalu di atas).
+- Footer: teks copyright, salam penutup, label Portal Admin, dan email kontak kini bisa diedit.
+- Unggah foto: jendela crop mendukung PNG transparan (transparansi dipertahankan) dengan pilihan warna latar.
+- Galeri Media: unggah banyak file sekaligus.

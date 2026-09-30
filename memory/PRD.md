@@ -167,3 +167,13 @@ Build a landing page for a nonprofit entity (Yayasan Gerakan Otak Sehat Indonesi
 - Fix di lib/CropUpload.js: sumber PNG/WebP/GIF diekspor PNG (alpha dipertahankan); preview cropper berlatar checkerboard terang (bukan navy); opsi "Latar PNG" untuk file ber-alpha: Transparan (asli, default) / Putih / color picker kustom (di-fill di canvas sebelum draw); sumber JPEG tetap JPEG
 - Verified: iteration_14.json 5/5 pixel-level (alpha=0 di sudut transparan, putih 255, warna kustom cocok, tanpa-crop byte-identical); file uji dibersihkan
 - Catatan minor: objstore preview kadang 500 transien saat upload (retry manual berhasil); backlog opsional: tambah 1x retry di backend upload
+
+## Implemented (Iteration 21 - September 2026): Nama Benar + CMS Super Dinamis (opsi 1-5 disetujui user)
+- GESOI = "Gerakan Sehat Otak Indonesia" diganti di seluruh site (17 kemunculan; termasuk title tab, meta, footer, NewsDetail; slogan jadi "Salam Sehat Otak, Indonesia Cerdas")
+- Section CMS baru "SEO & Browser" per bahasa (seo.title/description) -> runtime document.title + meta + og
+- sharedDefaults baru: logo (global navbar/footer/NewsDetail), favicon, ogImage, theme{navy,emerald,gold}, sections[11 x {key,visible}]
+- Warna tema via CSS vars --g-navy/--g-emerald/--g-gold (hex arbitrary Tailwind di-convert via perl; nilai dengan modifier opacity /NN tetap hex statis); color picker di editor (field-shared-theme-*)
+- SectionsField di editorFields: urutkan (panah) + tampil/sembunyikan (mata) 11 section; Landing render via sectionMap + order; Hero selalu di atas
+- Footer editable: email, closing, adminLabel, rights
+- Panduan admin (AdminHelp + docs) diperbarui
+- Tested: iteration_15.json backend 51/51, frontend 8/8; konten preview di-reset ke default

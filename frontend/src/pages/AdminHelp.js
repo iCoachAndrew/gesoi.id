@@ -89,7 +89,10 @@ export default function AdminHelp() {
         </ul>
         <p className="font-semibold text-[#0B1F3A] pt-2">Jenis kolom:</p>
         <ul className="space-y-2">
-          <Li label="Gambar/Foto">tempel URL atau unggah file dari komputer (ada pengatur skala). URL file lama bisa disalin dari Galeri Media.</Li>
+          <Li label="SEO & Browser">section baru untuk judul tab browser (ID/EN), deskripsi meta Google. Ikon tab (favicon), gambar saat link dibagikan (OG), dan logo website ada di section "Pengaturan Situs & Tokoh (Global)".</Li>
+          <Li label="Warna Tema">tiga color picker (navy, hijau, emas) di section Global; berlaku ke seluruh website. Hati-hati memilih warna agar teks tetap terbaca.</Li>
+          <Li label="Susunan & Tampil Section">di section Global: geser urutan section landing page (panah atas/bawah) dan tampil/sembunyikan section (ikon mata). Hero selalu di atas.</Li>
+          <Li label="Gambar/Foto">tempel URL atau unggah file dari komputer; saat unggah muncul jendela crop (pilih area, zoom, rasio, dan latar untuk PNG transparan). URL file lama bisa disalin dari Galeri Media.</Li>
           <Li label="Ikon">pilih dari daftar, atau "Ikon kustom (unggahan)" untuk gambar sendiri.</Li>
           <Li label="Tata Letak / Template">Ekosistem (Orbit / Grid), Pilar Misi (Baris Editorial / Grid Kartu dengan Gambar), Program (Kartu Ikon / Kartu dengan Gambar), Peta Jalan (Garis Waktu / Garis Waktu dengan Foto). Setiap item punya kolom gambar sendiri.</Li>
           <Li label="Daftar Item">tambah, hapus, dan edit konten berulang (pilar, program, berita, tokoh, dsb.).</Li>
