@@ -11,12 +11,12 @@ const PillarRow = ({ item, i }) => (
     className="group grid grid-cols-12 gap-4 items-baseline py-10 lg:py-14 border-b border-slate-200"
     data-testid={`pillar-item-${item.num}`}
   >
-    <span className="col-span-2 lg:col-span-1 font-serif-display italic text-2xl lg:text-3xl text-[#B45309]">{item.num}</span>
+    <span className="col-span-2 lg:col-span-1 font-serif-display italic text-2xl lg:text-3xl text-[var(--g-gold)]">{item.num}</span>
     <div className="col-span-10 lg:col-span-4 flex items-start gap-4">
       {item.image && (
         <img src={item.image} alt={item.title} loading="lazy" className="w-14 h-14 rounded-full object-cover shrink-0" />
       )}
-      <h3 className="font-serif-display font-light text-3xl lg:text-4xl text-[#0A192F] group-hover:text-emerald-700 transition-colors duration-300">
+      <h3 className="font-serif-display font-light text-3xl lg:text-4xl text-[var(--g-navy)] group-hover:text-emerald-700 transition-colors duration-300">
         {item.title}
       </h3>
     </div>
@@ -46,8 +46,8 @@ const PillarCard = ({ item, i }) => (
       </div>
     )}
     <div className="p-7">
-      <span className="font-serif-display italic text-lg text-[#B45309]">{item.num}</span>
-      <h3 className="font-serif-display text-2xl text-[#0A192F] mt-1 mb-3 group-hover:text-emerald-700 transition-colors duration-300">{item.title}</h3>
+      <span className="font-serif-display italic text-lg text-[var(--g-gold)]">{item.num}</span>
+      <h3 className="font-serif-display text-2xl text-[var(--g-navy)] mt-1 mb-3 group-hover:text-emerald-700 transition-colors duration-300">{item.title}</h3>
       <p className="text-sm text-slate-500 font-light leading-relaxed">{item.desc}</p>
     </div>
   </motion.div>

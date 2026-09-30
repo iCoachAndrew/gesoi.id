@@ -19,10 +19,10 @@ export const Roadmap = ({ t }) => (
             className="relative grid grid-cols-1 lg:grid-cols-2 gap-6 pb-16 last:pb-0"
             data-testid={`roadmap-item-${i}`}
           >
-            <span className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-2.5 w-3 h-3 rounded-full bg-white border-2 border-[#B45309]" />
+            <span className="absolute left-6 lg:left-1/2 -translate-x-1/2 top-2.5 w-3 h-3 rounded-full bg-white border-2 border-[var(--g-gold)]" />
             <div className={`pl-16 lg:pl-0 ${i % 2 === 0 ? "lg:pr-16 lg:text-right" : "lg:col-start-2 lg:pl-16"}`}>
-              <p className="font-serif-display italic text-[#B45309] text-4xl lg:text-5xl mb-3">{item.year}</p>
-              <h3 className="text-[#0A192F] text-xl font-medium mb-3">{item.title}</h3>
+              <p className="font-serif-display italic text-[var(--g-gold)] text-4xl lg:text-5xl mb-3">{item.year}</p>
+              <h3 className="text-[var(--g-navy)] text-xl font-medium mb-3">{item.title}</h3>
               <p className="text-slate-500 font-light leading-relaxed max-w-md inline-block">{item.desc}</p>
             </div>
             {t.layout === "photos" && item.image && (

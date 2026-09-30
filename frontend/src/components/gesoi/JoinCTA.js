@@ -46,7 +46,7 @@ export const JoinCTA = ({ t, bg, lang }) => {
   };
 
   const inputCls =
-    "w-full border-b border-slate-200 bg-transparent px-1 py-3.5 text-[#0A192F] placeholder:text-slate-400 text-sm font-light focus:outline-none focus:border-emerald-600 transition-colors duration-300";
+    "w-full border-b border-slate-200 bg-transparent px-1 py-3.5 text-[var(--g-navy)] placeholder:text-slate-400 text-sm font-light focus:outline-none focus:border-emerald-600 transition-colors duration-300";
 
   return (
     <section id="join" className="py-24 lg:py-32 bg-white relative overflow-hidden" data-testid="join-section">
@@ -72,8 +72,8 @@ export const JoinCTA = ({ t, bg, lang }) => {
             <span className="inline-flex w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 items-center justify-center mb-6">
               <CheckCircle2 size={26} className="text-emerald-600" />
             </span>
-            <h3 className="font-serif-display font-light text-3xl text-[#0A192F] mb-4">{t.form.registeredTitle}</h3>
-            <span className="block w-10 h-px bg-[#B45309] mb-6" />
+            <h3 className="font-serif-display font-light text-3xl text-[var(--g-navy)] mb-4">{t.form.registeredTitle}</h3>
+            <span className="block w-10 h-px bg-[var(--g-gold)] mb-6" />
             <p className="text-slate-600 font-light leading-relaxed" data-testid="join-registered-message">
               {t.form.registeredMsg.replace(
                 "{date}",
@@ -110,7 +110,7 @@ export const JoinCTA = ({ t, bg, lang }) => {
                   data-testid={`join-interest-${opt.value}`}
                   className={`px-4 py-2 rounded-full text-xs uppercase tracking-wider border transition-colors duration-300 ${
                     form.interest === opt.value
-                      ? "bg-[#059669] border-[#059669] text-white"
+                      ? "bg-[var(--g-emerald)] border-[var(--g-emerald)] text-white"
                       : "border-slate-200 text-slate-500 hover:border-emerald-600 hover:text-emerald-700"
                   }`}
                 >
@@ -124,7 +124,7 @@ export const JoinCTA = ({ t, bg, lang }) => {
             type="submit"
             disabled={sending}
             data-testid="join-submit-btn"
-            className="w-full py-4 rounded-full bg-[#0A192F] text-white text-sm uppercase tracking-[0.2em] font-medium hover:bg-[#059669] transition-colors duration-300 disabled:opacity-60"
+            className="w-full py-4 rounded-full bg-[var(--g-navy)] text-white text-sm uppercase tracking-[0.2em] font-medium hover:bg-[var(--g-emerald)] transition-colors duration-300 disabled:opacity-60"
           >
             {sending ? t.form.sending : t.form.submit}
           </button>

@@ -14,10 +14,10 @@ const CardInner = ({ item, large }) => (
     <div className="absolute inset-0 bg-gradient-to-t from-[#0A192F]/25 to-transparent" />
     <div className="absolute bottom-4 left-4 right-10 bg-white p-4 shadow-lg">
       <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-emerald-700 font-semibold mb-1.5">
-        <span className="w-2 h-2 bg-[#B45309]" /> {item.category}
+        <span className="w-2 h-2 bg-[var(--g-gold)]" /> {item.category}
         {item.date && <span className="text-slate-400 normal-case tracking-normal font-light ml-auto">{item.date}</span>}
       </p>
-      <h3 className={`text-[#0A192F] font-medium leading-snug ${large ? "text-base md:text-lg" : "text-sm"}`}>{item.title}</h3>
+      <h3 className={`text-[var(--g-navy)] font-medium leading-snug ${large ? "text-base md:text-lg" : "text-sm"}`}>{item.title}</h3>
     </div>
   </>
 );

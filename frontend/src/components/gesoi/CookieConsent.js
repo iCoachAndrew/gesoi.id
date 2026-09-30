@@ -22,7 +22,7 @@ export const CookieConsent = ({ t }) => {
           className="fixed bottom-4 inset-x-4 sm:left-6 sm:right-auto sm:max-w-sm z-[60] rounded-2xl bg-white border border-slate-200 p-6 shadow-[0_16px_48px_rgba(10,25,47,0.16)]"
           data-testid="cookie-banner"
         >
-          <div className="flex items-center gap-2 mb-3 text-[#B45309]">
+          <div className="flex items-center gap-2 mb-3 text-[var(--g-gold)]">
             <Cookie size={16} />
             <span className="text-[10px] font-bold uppercase tracking-[0.25em]">Cookies</span>
           </div>
@@ -38,14 +38,14 @@ export const CookieConsent = ({ t }) => {
             <button
               onClick={() => choose("accepted")}
               data-testid="cookie-accept-btn"
-              className="flex-1 py-2.5 rounded-full bg-[#059669] text-white text-xs uppercase tracking-wider font-semibold hover:bg-[#047857] transition-colors duration-300"
+              className="flex-1 py-2.5 rounded-full bg-[var(--g-emerald)] text-white text-xs uppercase tracking-wider font-semibold hover:bg-[#047857] transition-colors duration-300"
             >
               {t.accept}
             </button>
             <button
               onClick={() => choose("declined")}
               data-testid="cookie-decline-btn"
-              className="flex-1 py-2.5 rounded-full border border-slate-200 text-slate-500 text-xs uppercase tracking-wider hover:border-slate-400 hover:text-[#0A192F] transition-colors duration-300"
+              className="flex-1 py-2.5 rounded-full border border-slate-200 text-slate-500 text-xs uppercase tracking-wider hover:border-slate-400 hover:text-[var(--g-navy)] transition-colors duration-300"
             >
               {t.decline}
             </button>
@@ -58,8 +58,8 @@ export const CookieConsent = ({ t }) => {
           <div className="absolute inset-0 bg-[#0A192F]/40 backdrop-blur-sm" onClick={() => setShowPolicy(false)} />
           <div className="relative bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
             <div className="flex items-center justify-between p-6 border-b border-slate-100">
-              <h3 className="font-serif-display text-2xl text-[#0A192F]" data-testid="privacy-modal-title">{t.policyTitle}</h3>
-              <button onClick={() => setShowPolicy(false)} data-testid="privacy-close-btn" className="text-slate-400 hover:text-[#0A192F]" aria-label="Tutup">
+              <h3 className="font-serif-display text-2xl text-[var(--g-navy)]" data-testid="privacy-modal-title">{t.policyTitle}</h3>
+              <button onClick={() => setShowPolicy(false)} data-testid="privacy-close-btn" className="text-slate-400 hover:text-[var(--g-navy)]" aria-label="Tutup">
                 <X size={18} />
               </button>
             </div>

@@ -41,7 +41,7 @@ export const Publications = ({ t }) => {
   };
 
   const inputCls =
-    "w-full border-b border-slate-200 bg-transparent px-1 py-3 text-sm text-[#0A192F] placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 transition-colors duration-200";
+    "w-full border-b border-slate-200 bg-transparent px-1 py-3 text-sm text-[var(--g-navy)] placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 transition-colors duration-200";
 
   return (
     <section id="publications" className="py-24 lg:py-32 bg-[#FAFAFA]" data-testid="publications-section">
@@ -62,21 +62,21 @@ export const Publications = ({ t }) => {
             >
               <div className="flex items-center justify-between mb-6">
                 <span className="w-11 h-11 rounded-full bg-[#FAFAFA] border border-slate-200 flex items-center justify-center">
-                  <FileText size={18} className="text-[#B45309]" />
+                  <FileText size={18} className="text-[var(--g-gold)]" />
                 </span>
                 <span className="flex items-center gap-1.5 text-slate-400 text-[10px] uppercase tracking-[0.2em]">
                   <Lock size={11} /> {item.year}
                 </span>
               </div>
-              <h3 className="font-serif-display text-[#0A192F] text-2xl leading-snug mb-3">{item.title}</h3>
+              <h3 className="font-serif-display text-[var(--g-navy)] text-2xl leading-snug mb-3">{item.title}</h3>
               <p className="text-slate-500 text-sm font-light mb-6">{item.authors}</p>
               <div className="mt-auto">
-                <p className="font-serif-display text-[#0A192F] text-3xl">{item.price}</p>
+                <p className="font-serif-display text-[var(--g-navy)] text-3xl">{item.price}</p>
                 <p className="text-slate-400 text-xs font-light mt-1 mb-5">{t.priceNote}</p>
                 <button
                   onClick={() => { setSelected(item); trackEvent("buy_click"); }}
                   data-testid={`publication-buy-btn-${i}`}
-                  className="w-full py-3 rounded-full bg-[#059669] text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-[#047857] transition-colors duration-300"
+                  className="w-full py-3 rounded-full bg-[var(--g-emerald)] text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-[#047857] transition-colors duration-300"
                 >
                   {t.buyLabel}
                 </button>
@@ -90,14 +90,14 @@ export const Publications = ({ t }) => {
         <div className="fixed inset-0 z-[70] flex items-center justify-center px-6 py-8" data-testid="checkout-modal">
           <div className="absolute inset-0 bg-[#0A192F]/40 backdrop-blur-sm" onClick={close} />
           <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-            <button onClick={close} data-testid="checkout-close-btn" className="absolute top-4 right-4 text-slate-400 hover:text-[#0A192F]" aria-label="Tutup">
+            <button onClick={close} data-testid="checkout-close-btn" className="absolute top-4 right-4 text-slate-400 hover:text-[var(--g-navy)]" aria-label="Tutup">
               <X size={18} />
             </button>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-700 mb-3">{t.modalTitle}</p>
-            <h3 className="font-serif-display text-2xl text-[#0A192F] mb-1">{selected.title}</h3>
+            <h3 className="font-serif-display text-2xl text-[var(--g-navy)] mb-1">{selected.title}</h3>
             <div className="flex items-baseline justify-between border-t border-b border-slate-100 py-3 my-4">
               <span className="text-sm text-slate-500">{t.priceNote}</span>
-              <span className="font-serif-display text-2xl text-[#0A192F]">{selected.price}</span>
+              <span className="font-serif-display text-2xl text-[var(--g-navy)]">{selected.price}</span>
             </div>
             <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5" data-testid="prototype-note">
               {t.prototypeNote}
@@ -112,7 +112,7 @@ export const Publications = ({ t }) => {
                   type="button"
                   onClick={close}
                   data-testid="checkout-cancel-btn"
-                  className="flex-1 py-3 rounded-full border border-slate-200 text-slate-500 text-xs uppercase tracking-wider hover:border-[#0A192F] hover:text-[#0A192F] transition-colors duration-300"
+                  className="flex-1 py-3 rounded-full border border-slate-200 text-slate-500 text-xs uppercase tracking-wider hover:border-[var(--g-navy)] hover:text-[var(--g-navy)] transition-colors duration-300"
                 >
                   {t.cancelLabel}
                 </button>
@@ -120,7 +120,7 @@ export const Publications = ({ t }) => {
                   type="submit"
                   disabled={sending}
                   data-testid="order-submit-btn"
-                  className="flex-1 py-3 rounded-full bg-[#0A192F] text-white text-xs uppercase tracking-wider font-semibold hover:bg-[#059669] transition-colors duration-300 disabled:opacity-60"
+                  className="flex-1 py-3 rounded-full bg-[var(--g-navy)] text-white text-xs uppercase tracking-wider font-semibold hover:bg-[var(--g-emerald)] transition-colors duration-300 disabled:opacity-60"
                 >
                   {sending ? t.form.sending : t.form.submit}
                 </button>

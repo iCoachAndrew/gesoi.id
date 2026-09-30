@@ -56,6 +56,38 @@ const Landing = () => {
   const shared = merged.shared;
 
   useEffect(() => {
+    if (!overrides) return;
+    document.title = t.seo.title;
+    const setMeta = (sel, val) => {
+      const el = document.querySelector(sel);
+      if (el && val) el.setAttribute("content", val);
+    };
+    setMeta('meta[name="description"]', t.seo.description);
+    setMeta('meta[property="og:title"]', t.seo.title);
+    setMeta('meta[property="og:description"]', t.seo.description);
+    if (shared.ogImage) {
+      setMeta('meta[property="og:image"]', shared.ogImage.startsWith("http") ? shared.ogImage : `${window.location.origin}${shared.ogImage}`);
+    }
+    if (shared.favicon) {
+      let icon = document.querySelector('link[rel="icon"]');
+      if (!icon) {
+        icon = document.createElement("link");
+        icon.rel = "icon";
+        document.head.appendChild(icon);
+      }
+      icon.href = shared.favicon;
+    }
+  }, [t, shared, overrides]);
+
+  useEffect(() => {
+    const th = shared.theme || {};
+    const root = document.documentElement;
+    if (th.navy) root.style.setProperty("--g-navy", th.navy);
+    if (th.emerald) root.style.setProperty("--g-emerald", th.emerald);
+    if (th.gold) root.style.setProperty("--g-gold", th.gold);
+  }, [shared]);
+
+  useEffect(() => {
     const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
     function raf(time) {
       lenis.raf(time);
@@ -68,22 +100,29 @@ const Landing = () => {
     return () => lenis.destroy();
   }, []);
 
+  const sectionMap = {
+    marquee: <MarqueeStrip items={t.marquee} />,
+    problem: <Problem t={t.problem} />,
+    ecosystem: <Ecosystem t={t.ecosystem} />,
+    pillars: <Pillars t={t.pillars} />,
+    programs: <Programs t={t.programs} image={shared.programsImage} />,
+    roadmap: <Roadmap t={t.roadmap} />,
+    governance: <Governance t={t.governance} people={shared.people} lang={lang} />,
+    news: <News t={t.news} />,
+    video: <VideoFeature t={t.video} />,
+    publications: <Publications t={t.publications} />,
+    join: <JoinCTA t={t.join} bg={shared.joinBg} lang={lang} />,
+  };
+  const order = shared.sections?.length ? shared.sections : sharedDefaults.sections;
+
   return (
     <div className="App bg-[#F9F9F7]">
-      <Navbar t={t} lang={lang} setLang={changeLang} />
+      <Navbar t={t} lang={lang} setLang={changeLang} logo={shared.logo} />
       <Hero t={t} bg={shared.heroBg} />
-      <MarqueeStrip items={t.marquee} />
-      <Problem t={t.problem} />
-      <Ecosystem t={t.ecosystem} />
-      <Pillars t={t.pillars} />
-      <Programs t={t.programs} image={shared.programsImage} />
-      <Roadmap t={t.roadmap} />
-      <Governance t={t.governance} people={shared.people} lang={lang} />
-      <News t={t.news} />
-      <VideoFeature t={t.video} />
-      <Publications t={t.publications} />
-      <JoinCTA t={t.join} bg={shared.joinBg} lang={lang} />
-      <Footer t={t} />
+      {order.filter((s) => s.visible !== false && sectionMap[s.key]).map((s) => (
+        <div key={s.key}>{sectionMap[s.key]}</div>
+      ))}
+      <Footer t={t} logo={shared.logo} />
       <CookieConsent t={t.privacy} />
       <Toaster position="bottom-right" richColors />
     </div>

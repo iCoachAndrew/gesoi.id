@@ -1,7 +1,7 @@
 import { useState, createElement } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Upload, Plus, Trash2 } from "lucide-react";
+import { Upload, Plus, Trash2, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react";
 import { ICONS, parseIcon, SectionIcon } from "./icons";
 import { CropModal } from "./CropUpload";
 
@@ -46,6 +46,11 @@ export const LABELS = {
   date: "Tanggal", backLabel: "Label Tombol Kembali", moreLabel: "Label Berita Lainnya",
   notFound: "Teks Berita Tidak Ditemukan", shareLabel: "Label Tombol Bagikan",
   registeredTitle: "Judul Sudah Terdaftar", registeredMsg: "Pesan Sudah Terdaftar ({date} = tanggal)",
+  seo: "SEO & Browser", description: "Deskripsi Meta (Google)", favicon: "Ikon Tab Browser (Favicon)",
+  ogImage: "Gambar Saat Link Dibagikan (OG)", logo: "Logo Website", theme: "Warna Tema",
+  navy: "Warna Utama (Navy)", emerald: "Warna Aksen Hijau", gold: "Warna Aksen Emas",
+  sections: "Susunan & Tampil Section", closing: "Salam Penutup", adminLabel: "Label Portal Admin",
+  email: "Email Kontak",
 };
 
 export const label = (k) => LABELS[k] || k;
@@ -75,7 +80,7 @@ const ITEM_KEY_INJECTIONS = [
   [/^news-items/, ["date", "body"]],
 ];
 const isLong = (k, v) => ["body", "desc", "sub", "note", "message", "quote", "banner", "policyText"].includes(k) || (typeof v === "string" && v.length > 90);
-const isImage = (k) => /photo|image|bg|poster/i.test(k);
+const isImage = (k) => /photo|image|bg|poster|logo|favicon/i.test(k);
 
 export const inputCls =
   "w-full rounded-lg border border-[#0B1F3A]/15 bg-white px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors duration-200";
@@ -306,8 +311,59 @@ function ArrayField({ value, onChange, path }) {
   );
 }
 
+const SECTION_NAMES = {
+  marquee: "Teks Berjalan", problem: "01 Urgensi", ecosystem: "02 Ekosistem",
+  pillars: "03 Pilar Misi", programs: "04 Program", roadmap: "05 Peta Jalan",
+  governance: "06 Kepemimpinan", news: "07 Kabar", video: "08 Video",
+  publications: "09 Publikasi", join: "10 Ajakan & Form",
+};
+
+function SectionsField({ value, onChange }) {
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= value.length) return;
+    const arr = [...value];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    onChange(arr);
+  };
+  const toggle = (i) => onChange(value.map((s, idx) => (idx === i ? { ...s, visible: s.visible === false } : s)));
+  return (
+    <div className="space-y-2" data-testid="sections-order-field">
+      <p className="text-[11px] text-[#9CA3AF] font-light">Atur urutan (panah) dan tampil/sembunyikan (mata) setiap bagian landing page. Hero selalu di atas.</p>
+      {value.map((s, i) => {
+        const hidden = s.visible === false;
+        return (
+          <div key={s.key} className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${hidden ? "border-[#0B1F3A]/10 bg-[#F9F9F7] opacity-60" : "border-[#0B1F3A]/15 bg-white"}`} data-testid={`section-row-${s.key}`}>
+            <span className="flex-1 text-sm text-[#0B1F3A]">{SECTION_NAMES[s.key] || s.key}</span>
+            <button type="button" onClick={() => toggle(i)} data-testid={`section-toggle-${s.key}`} title={hidden ? "Tampilkan" : "Sembunyikan"} className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors duration-200 ${hidden ? "text-[#9CA3AF] hover:text-[#0B1F3A]" : "text-emerald-600 hover:text-emerald-800"}`}>
+              {hidden ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
+            <button type="button" onClick={() => move(i, -1)} disabled={i === 0} data-testid={`section-up-${s.key}`} className="w-7 h-7 rounded-full flex items-center justify-center text-[#4B5563] hover:text-[#0B1F3A] disabled:opacity-25">
+              <ArrowUp size={15} />
+            </button>
+            <button type="button" onClick={() => move(i, 1)} disabled={i === value.length - 1} data-testid={`section-down-${s.key}`} className="w-7 h-7 rounded-full flex items-center justify-center text-[#4B5563] hover:text-[#0B1F3A] disabled:opacity-25">
+              <ArrowDown size={15} />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function Field({ k, value, onChange, path }) {
+  if (path === "shared-sections" && Array.isArray(value)) {
+    return createElement(SectionsField, { value, onChange });
+  }
   if (typeof value === "string") {
+    if (/^shared-theme-/.test(path)) {
+      return (
+        <div className="flex items-center gap-3">
+          <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="w-10 h-10 rounded-lg border border-[#0B1F3A]/15 cursor-pointer p-0.5 bg-white" data-testid={`field-${path}`} />
+          <input value={value} onChange={(e) => onChange(e.target.value)} className={`${inputCls} max-w-[140px]`} data-testid={`field-${path}-hex`} />
+        </div>
+      );
+    }
     if (isImage(k)) return <ImageField value={value} onChange={onChange} testId={`field-${path}`} />;
     if (k === "icon") return <IconField value={value} onChange={onChange} />;
     if (k === "url") return <VideoField value={value} onChange={onChange} testId={`field-${path}`} />;

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { trackEvent } from "../../lib/analytics";
 
-const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
+const DEFAULT_LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
 
 const links = (t) => [
   { href: "#problem", label: t.nav.problem },
@@ -14,7 +14,7 @@ const links = (t) => [
   { href: "#news", label: t.nav.news },
 ];
 
-export const Navbar = ({ t, lang, setLang }) => {
+export const Navbar = ({ t, lang, setLang, logo }) => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -36,7 +36,7 @@ export const Navbar = ({ t, lang, setLang }) => {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
         <a href="#top" className="flex items-center gap-2.5" data-testid="navbar-logo">
-          <img src={LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-8 w-auto" />
+          <img src={logo || DEFAULT_LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-8 w-auto" />
         </a>
         <nav className="hidden md:flex items-center gap-8">
           {links(t).map((l) => (
@@ -44,7 +44,7 @@ export const Navbar = ({ t, lang, setLang }) => {
               key={l.href}
               href={l.href}
               data-testid={`nav-link-${l.href.slice(1)}`}
-              className="text-slate-500 hover:text-[#0A192F] text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300"
+              className="text-slate-500 hover:text-[var(--g-navy)] text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300"
             >
               {l.label}
             </a>
@@ -58,7 +58,7 @@ export const Navbar = ({ t, lang, setLang }) => {
                 data-testid={`lang-btn-${l}`}
                 onClick={() => setLang(l)}
                 className={`px-3 py-1.5 uppercase tracking-wider transition-colors duration-300 ${
-                  lang === l ? "bg-[#0A192F] text-white" : "text-slate-400 hover:text-[#0A192F]"
+                  lang === l ? "bg-[var(--g-navy)] text-white" : "text-slate-400 hover:text-[var(--g-navy)]"
                 }`}
               >
                 {l}
@@ -69,14 +69,14 @@ export const Navbar = ({ t, lang, setLang }) => {
             href="#join"
             onClick={() => trackEvent("join_click")}
             data-testid="navbar-join-btn"
-            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-[#0A192F] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#059669] transition-colors duration-300"
+            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-[var(--g-navy)] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[var(--g-emerald)] transition-colors duration-300"
           >
             {t.nav.join}
           </a>
           <button
             data-testid="mobile-menu-btn"
             onClick={() => setOpen(!open)}
-            className="md:hidden w-9 h-9 flex items-center justify-center text-[#0A192F]"
+            className="md:hidden w-9 h-9 flex items-center justify-center text-[var(--g-navy)]"
             aria-label="Menu"
           >
             {open ? <X size={20} /> : <Menu size={20} />}

@@ -19,8 +19,8 @@ export const Problem = ({ t }) => (
             className="md:px-12 first:md:pl-0 last:md:pr-0"
             data-testid={`problem-stat-${i}`}
           >
-            <p className="font-serif-display font-light text-6xl lg:text-7xl text-[#0A192F]">{s.value}</p>
-            <span className="block w-10 h-px bg-[#B45309] my-5" />
+            <p className="font-serif-display font-light text-6xl lg:text-7xl text-[var(--g-navy)]">{s.value}</p>
+            <span className="block w-10 h-px bg-[var(--g-gold)] my-5" />
             <p className="text-sm font-light text-slate-500 leading-relaxed">{s.label}</p>
           </motion.div>
         ))}
@@ -53,7 +53,7 @@ export const Problem = ({ t }) => (
             ))}
           </div>
 
-          <div className="flex lg:flex-col items-center gap-4 text-[#B45309]" data-testid="paradigm-shift-label">
+          <div className="flex lg:flex-col items-center gap-4 text-[var(--g-gold)]" data-testid="paradigm-shift-label">
             <span className="hidden lg:block h-20 w-px bg-gradient-to-b from-transparent via-[#B45309]/50 to-transparent" />
             <span className="lg:hidden h-px w-16 bg-gradient-to-r from-transparent via-[#B45309]/50 to-transparent" />
             <MoveRight size={20} className="shrink-0" />
@@ -74,9 +74,9 @@ export const Problem = ({ t }) => (
                 viewport={{ once: true }}
                 className="flex items-baseline gap-5 mb-5 group"
               >
-                <span className="font-serif-display italic text-[#B45309] text-lg shrink-0 w-8">0{i + 1}</span>
+                <span className="font-serif-display italic text-[var(--g-gold)] text-lg shrink-0 w-8">0{i + 1}</span>
                 <div className="flex-1">
-                  <p className="font-serif-display font-light text-3xl lg:text-5xl text-[#0A192F] group-hover:text-emerald-700 transition-colors duration-500">{step}</p>
+                  <p className="font-serif-display font-light text-3xl lg:text-5xl text-[var(--g-navy)] group-hover:text-emerald-700 transition-colors duration-500">{step}</p>
                   {i < t.paradigmNew.steps.length - 1 && (
                     <span className="block mt-5 h-px w-full bg-slate-200" />
                   )}

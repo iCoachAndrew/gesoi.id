@@ -62,7 +62,7 @@ export const VideoFeature = ({ t }) => {
             viewport={{ once: true, margin: "-60px" }}
             className="lg:col-span-8"
           >
-            <div className="relative rounded-2xl overflow-hidden aspect-video bg-[#0A192F] shadow-[0_16px_48px_rgba(10,25,47,0.12)]">
+            <div className="relative rounded-2xl overflow-hidden aspect-video bg-[var(--g-navy)] shadow-[0_16px_48px_rgba(10,25,47,0.12)]">
               <video
                 ref={videoRef}
                 src={t.url}
@@ -94,16 +94,16 @@ export const VideoFeature = ({ t }) => {
             viewport={{ once: true, margin: "-60px" }}
             className="lg:col-span-4"
           >
-            <div className="border-l-2 border-[#B45309] pl-8">
-              <p className="font-serif-display italic font-light text-[#0A192F] text-2xl lg:text-3xl leading-relaxed" data-testid="video-quote">
+            <div className="border-l-2 border-[var(--g-gold)] pl-8">
+              <p className="font-serif-display italic font-light text-[var(--g-navy)] text-2xl lg:text-3xl leading-relaxed" data-testid="video-quote">
                 “{t.quote}”
               </p>
-              <p className="mt-6 text-[#0A192F] font-medium text-sm">{t.author}</p>
+              <p className="mt-6 text-[var(--g-navy)] font-medium text-sm">{t.author}</p>
               <p className="text-slate-500 text-xs font-light mt-1">{t.role}</p>
               <button
                 onClick={watch}
                 data-testid="video-watch-btn"
-                className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0A192F] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[#059669] transition-colors duration-300"
+                className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--g-navy)] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[var(--g-emerald)] transition-colors duration-300"
               >
                 {t.watchLabel} <Play size={13} fill="currentColor" />
               </button>

@@ -10,7 +10,7 @@ export const content = {
       join: "Bergabung",
     },
     hero: {
-      badge: "Yayasan Gerakan Otak Sehat Indonesia",
+      badge: "Yayasan Gerakan Sehat Otak Indonesia",
       lines: ["Membangun Fondasi", "Brain Energy", "Menuju Indonesia", "Emas 2045"],
       sub: "GESOI adalah gerakan nasional kesehatan otak yang mengubah paradigma dari mengobati penyakit menjadi mengoptimalkan potensi manusia Indonesia.",
       cta1: "Jadilah Arsitek Brain Energy",
@@ -18,7 +18,7 @@ export const content = {
       scroll: "Gulir untuk menjelajah",
       launch: "Grand Launching · 17 Agustus 2026",
     },
-    marquee: ["Salam Otak Sehat, Indonesia Cerdas", "Sosialisasi", "Edukasi", "Advokasi", "Riset", "Brain Energy", "Indonesia Emas 2045", "Gerakan Nasional", "Otak Sehat"],
+    marquee: ["Salam Sehat Otak, Indonesia Cerdas", "Sosialisasi", "Edukasi", "Advokasi", "Riset", "Brain Energy", "Indonesia Emas 2045", "Gerakan Nasional", "Otak Sehat"],
     problem: {
       kicker: "01 · Urgensi",
       title: "Realitas yang tersembunyi",
@@ -97,19 +97,19 @@ export const content = {
       items: [
         {
           category: "News",
-          title: "GESOI resmi dibentuk: fondasi gerakan otak sehat nasional diletakkan",
+          title: "GESOI resmi dibentuk: fondasi gerakan sehat otak nasional diletakkan",
           date: "12 Juni 2026",
           image: "https://images.unsplash.com/photo-1573164574572-cb89e39749b4?q=80&w=1200",
           link: "",
-          body: "Jakarta - Yayasan Gerakan Otak Sehat Indonesia (GESOI) resmi dibentuk sebagai wadah gerakan nasional untuk kesehatan otak. Pembentukan ini menandai langkah awal perjalanan panjang menuju **Indonesia Emas 2045** melalui paradigma Brain Energy.\n\n## Mengapa gerakan ini penting\n\nKesehatan otak selama ini dipandang semata urusan medis. GESOI hadir untuk mengubah cara pandang tersebut: dari mengobati penyakit menjadi mengoptimalkan potensi manusia Indonesia: di sekolah, tempat kerja, dan keluarga.\n\nDengan dukungan para tokoh nasional lintas sektor, GESOI akan menjalankan program edukasi, aktivasi komunitas, advokasi kebijakan, kolaborasi ekosistem, dan riset.",
+          body: "Jakarta - Yayasan Gerakan Sehat Otak Indonesia (GESOI) resmi dibentuk sebagai wadah gerakan nasional untuk kesehatan otak. Pembentukan ini menandai langkah awal perjalanan panjang menuju **Indonesia Emas 2045** melalui paradigma Brain Energy.\n\n## Mengapa gerakan ini penting\n\nKesehatan otak selama ini dipandang semata urusan medis. GESOI hadir untuk mengubah cara pandang tersebut: dari mengobati penyakit menjadi mengoptimalkan potensi manusia Indonesia: di sekolah, tempat kerja, dan keluarga.\n\nDengan dukungan para tokoh nasional lintas sektor, GESOI akan menjalankan program edukasi, aktivasi komunitas, advokasi kebijakan, kolaborasi ekosistem, dan riset.",
         },
         {
           category: "Event",
-          title: "Menuju Grand Launching 17 Agustus 2026: deklarasi Gerakan Otak Sehat Indonesia",
+          title: "Menuju Grand Launching 17 Agustus 2026: deklarasi Gerakan Sehat Otak Indonesia",
           date: "17 Agustus 2026",
           image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200",
           link: "",
-          body: "Gerakan Otak Sehat Indonesia akan dideklarasikan secara resmi pada **17 Agustus 2026**, bertepatan dengan Hari Kemerdekaan Republik Indonesia.\n\nMomentum ini dipilih sebagai simbol: kemerdekaan sejati dimulai dari otak yang sehat: generasi yang fokus, tangguh, dan teregulasi secara emosional.\n\nInformasi lengkap acara akan diumumkan melalui kanal resmi GESOI.",
+          body: "Gerakan Sehat Otak Indonesia akan dideklarasikan secara resmi pada **17 Agustus 2026**, bertepatan dengan Hari Kemerdekaan Republik Indonesia.\n\nMomentum ini dipilih sebagai simbol: kemerdekaan sejati dimulai dari otak yang sehat: generasi yang fokus, tangguh, dan teregulasi secara emosional.\n\nInformasi lengkap acara akan diumumkan melalui kanal resmi GESOI.",
         },
         {
           category: "News",
@@ -133,7 +133,7 @@ export const content = {
       kicker: "08 · Video",
       quote: "Kesehatan otak bukan hanya urusan medis, ia menentukan masa depan keluarga, produktivitas, dan daya saing bangsa. Itulah mengapa gerakan ini begitu mendesak.",
       author: "GESOI",
-      role: "Gerakan Otak Sehat Indonesia",
+      role: "Gerakan Sehat Otak Indonesia",
       watchLabel: "Tonton Video",
       url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
       poster: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?q=80&w=1600",
@@ -169,7 +169,7 @@ export const content = {
       decline: "Tolak",
       policyLink: "Kebijakan Privasi",
       policyTitle: "Kebijakan Privasi",
-      policyText: "Yayasan Gerakan Otak Sehat Indonesia (GESOI) menghormati privasi Anda.\n\n1. Data yang Kami Kumpulkan\nKami mengumpulkan data yang Anda berikan secara sukarela melalui formulir pendaftaran (nama, email, organisasi, minat, dan pesan) serta data teknis dasar seperti jenis peramban dan halaman yang dikunjungi melalui cookie.\n\n2. Penggunaan Data\nData digunakan untuk menghubungi Anda terkait keikutsertaan dalam gerakan, mengirim informasi program, serta meningkatkan kualitas layanan situs ini. Kami tidak menjual atau membagikan data pribadi Anda kepada pihak ketiga tanpa persetujuan.\n\n3. Cookie\nCookie digunakan untuk mengingat preferensi Anda dan menganalisis kunjungan secara agregat. Anda dapat menolak penggunaan cookie melalui banner persetujuan atau pengaturan peramban.\n\n4. Keamanan\nKami menerapkan langkah-langkah teknis yang wajar untuk melindungi data Anda.\n\n5. Hak Anda\nAnda berhak meminta akses, koreksi, atau penghapusan data pribadi Anda dengan menghubungi kami di info@gesoi.or.id.\n\nDengan menggunakan situs ini, Anda menyetujui kebijakan privasi ini. Kebijakan dapat diperbarui sewaktu-waktu.",
+      policyText: "Yayasan Gerakan Sehat Otak Indonesia (GESOI) menghormati privasi Anda.\n\n1. Data yang Kami Kumpulkan\nKami mengumpulkan data yang Anda berikan secara sukarela melalui formulir pendaftaran (nama, email, organisasi, minat, dan pesan) serta data teknis dasar seperti jenis peramban dan halaman yang dikunjungi melalui cookie.\n\n2. Penggunaan Data\nData digunakan untuk menghubungi Anda terkait keikutsertaan dalam gerakan, mengirim informasi program, serta meningkatkan kualitas layanan situs ini. Kami tidak menjual atau membagikan data pribadi Anda kepada pihak ketiga tanpa persetujuan.\n\n3. Cookie\nCookie digunakan untuk mengingat preferensi Anda dan menganalisis kunjungan secara agregat. Anda dapat menolak penggunaan cookie melalui banner persetujuan atau pengaturan peramban.\n\n4. Keamanan\nKami menerapkan langkah-langkah teknis yang wajar untuk melindungi data Anda.\n\n5. Hak Anda\nAnda berhak meminta akses, koreksi, atau penghapusan data pribadi Anda dengan menghubungi kami di info@gesoi.or.id.\n\nDengan menggunakan situs ini, Anda menyetujui kebijakan privasi ini. Kebijakan dapat diperbarui sewaktu-waktu.",
     },
     join: {
       kicker: "10 · Ajakan",
@@ -198,9 +198,16 @@ export const content = {
     footer: {
       tagline: "Membangun Fondasi Brain Energy Menuju Indonesia Emas 2045.",
       address: "Jl. Radio IV No. 5, Jakarta, Indonesia",
+      email: "info@gesoi.or.id",
       nav: "Navigasi",
       contact: "Kontak",
-      rights: "Yayasan Gerakan Otak Sehat Indonesia. Hak cipta dilindungi.",
+      rights: "Yayasan Gerakan Sehat Otak Indonesia. Hak cipta dilindungi.",
+      closing: "Salam Sehat Otak, Indonesia Cerdas",
+      adminLabel: "Portal Admin",
+    },
+    seo: {
+      title: "GESOI | Gerakan Sehat Otak Indonesia | Brain Energy Menuju Indonesia Emas 2045",
+      description: "Yayasan GESOI (Gerakan Sehat Otak Indonesia), gerakan nasional kesehatan otak: mengubah paradigma dari mengobati penyakit menjadi mengoptimalkan potensi menuju Indonesia Emas 2045.",
     },
   },
   en: {
@@ -222,7 +229,7 @@ export const content = {
       scroll: "Scroll to explore",
       launch: "Grand Launching · August 17, 2026",
     },
-    marquee: ["Salam Otak Sehat, Indonesia Cerdas", "Socialization", "Education", "Advocacy", "Research", "Brain Energy", "Golden Indonesia 2045", "National Movement", "Healthy Brains"],
+    marquee: ["Salam Sehat Otak, Indonesia Cerdas", "Socialization", "Education", "Advocacy", "Research", "Brain Energy", "Golden Indonesia 2045", "National Movement", "Healthy Brains"],
     problem: {
       kicker: "01 · Urgency",
       title: "The hidden reality",
@@ -373,7 +380,7 @@ export const content = {
       decline: "Decline",
       policyLink: "Privacy Policy",
       policyTitle: "Privacy Policy",
-      policyText: "Yayasan Gerakan Otak Sehat Indonesia (GESOI) respects your privacy.\n\n1. Data We Collect\nWe collect data you voluntarily provide through the registration form (name, email, organization, interest, and message) as well as basic technical data such as browser type and pages visited via cookies.\n\n2. Use of Data\nData is used to contact you regarding participation in the movement, send program information, and improve this site. We do not sell or share your personal data with third parties without consent.\n\n3. Cookies\nCookies are used to remember your preferences and analyze visits in aggregate. You may decline cookies via the consent banner or your browser settings.\n\n4. Security\nWe apply reasonable technical measures to protect your data.\n\n5. Your Rights\nYou may request access, correction, or deletion of your personal data by contacting info@gesoi.or.id.\n\nBy using this site you agree to this privacy policy. The policy may be updated from time to time.",
+      policyText: "Yayasan Gerakan Sehat Otak Indonesia (GESOI) respects your privacy.\n\n1. Data We Collect\nWe collect data you voluntarily provide through the registration form (name, email, organization, interest, and message) as well as basic technical data such as browser type and pages visited via cookies.\n\n2. Use of Data\nData is used to contact you regarding participation in the movement, send program information, and improve this site. We do not sell or share your personal data with third parties without consent.\n\n3. Cookies\nCookies are used to remember your preferences and analyze visits in aggregate. You may decline cookies via the consent banner or your browser settings.\n\n4. Security\nWe apply reasonable technical measures to protect your data.\n\n5. Your Rights\nYou may request access, correction, or deletion of your personal data by contacting info@gesoi.or.id.\n\nBy using this site you agree to this privacy policy. The policy may be updated from time to time.",
     },
     join: {
       kicker: "10 · Call to Action",
@@ -402,14 +409,38 @@ export const content = {
     footer: {
       tagline: "Building the Brain Energy Foundation Towards a Golden Indonesia 2045.",
       address: "Jl. Radio IV No. 5, Jakarta, Indonesia",
+      email: "info@gesoi.or.id",
       nav: "Navigation",
       contact: "Contact",
-      rights: "Yayasan Gerakan Otak Sehat Indonesia. All rights reserved.",
+      rights: "Yayasan Gerakan Sehat Otak Indonesia. All rights reserved.",
+      closing: "Salam Sehat Otak, Indonesia Cerdas",
+      adminLabel: "Admin Portal",
+    },
+    seo: {
+      title: "GESOI | Gerakan Sehat Otak Indonesia | Brain Energy Towards a Golden Indonesia 2045",
+      description: "GESOI Foundation (Indonesian Healthy Brain Movement), a national brain health movement: shifting the paradigm from treating disease to optimizing potential towards a Golden Indonesia 2045.",
     },
   },
 };
 
 export const sharedDefaults = {
+  logo: "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png",
+  favicon: "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png",
+  ogImage: "/hero-bg-light.webp",
+  theme: { navy: "#0A192F", emerald: "#059669", gold: "#B45309" },
+  sections: [
+    { key: "marquee", visible: true },
+    { key: "problem", visible: true },
+    { key: "ecosystem", visible: true },
+    { key: "pillars", visible: true },
+    { key: "programs", visible: true },
+    { key: "roadmap", visible: true },
+    { key: "governance", visible: true },
+    { key: "news", visible: true },
+    { key: "video", visible: true },
+    { key: "publications", visible: true },
+    { key: "join", visible: true },
+  ],
   heroBg: "/hero-bg-light.webp",
   programsImage: "https://images.unsplash.com/photo-1611087802810-046bb671e644?q=80&w=1200",
   joinBg: "https://images.pexels.com/photos/18772861/pexels-photo-18772861.jpeg",

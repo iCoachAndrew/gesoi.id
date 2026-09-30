@@ -17,7 +17,7 @@ const PersonCard = ({ p, i, lang }) => (
       )}
     </div>
     <div className="pt-4 pb-1">
-      <p className="font-medium text-[#0A192F] text-sm leading-snug whitespace-normal">{p.name}</p>
+      <p className="font-medium text-[var(--g-navy)] text-sm leading-snug whitespace-normal">{p.name}</p>
       <p className="text-xs text-slate-500 mt-1 font-light whitespace-normal">{lang === "id" ? p.role_id : p.role_en}</p>
     </div>
   </div>
@@ -54,7 +54,7 @@ export const Governance = ({ t, people, lang }) => (
           className="mt-10 text-sm text-slate-500 font-light flex items-center gap-3"
           data-testid="governance-note"
         >
-          <span className="w-8 h-px bg-[#B45309]" />
+          <span className="w-8 h-px bg-[var(--g-gold)]" />
           {t.note}
         </motion.p>
       )}

@@ -34,7 +34,7 @@ const OrbitNode = ({ node, i, featured }) => {
           <SectionIcon icon={node.icon} size={16} className={featured ? "text-emerald-700" : "text-slate-500"} />
         </span>
         <p className={`text-[9px] font-bold uppercase tracking-[0.2em] px-3 ${featured ? "text-emerald-700" : "text-slate-400"}`}>{node.role}</p>
-        <h3 className={`font-serif-display text-[#0A192F] ${featured ? "text-3xl" : "text-xl"}`}>{node.name}</h3>
+        <h3 className={`font-serif-display text-[var(--g-navy)] ${featured ? "text-3xl" : "text-xl"}`}>{node.name}</h3>
       </motion.div>
       <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-56 rounded-lg bg-white border border-slate-200 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20 shadow-xl">
         <p className="text-slate-500 text-xs font-light leading-relaxed">{node.desc}</p>
@@ -78,7 +78,7 @@ const GridCards = ({ nodes, className }) => (
             <SectionIcon icon={node.icon} size={18} className={featured ? "text-emerald-700" : "text-slate-500"} />
           </span>
           <p className={`text-[10px] font-bold uppercase tracking-[0.25em] mb-2 ${featured ? "text-emerald-700" : "text-slate-400"}`}>{node.role}</p>
-          <h3 className="font-serif-display text-[#0A192F] text-2xl mb-3">{node.name}</h3>
+          <h3 className="font-serif-display text-[var(--g-navy)] text-2xl mb-3">{node.name}</h3>
           <p className="text-slate-500 text-sm font-light leading-relaxed">{node.desc}</p>
         </motion.div>
       );
@@ -93,7 +93,7 @@ export const Ecosystem = ({ t }) => (
 
       {t.cooperation && (
         <div className="mt-10 flex flex-wrap items-center gap-3" data-testid="cooperation-pillars">
-          <span className="text-[#B45309] text-xs font-bold uppercase tracking-[0.25em] mr-2">{t.coopLabel}</span>
+          <span className="text-[var(--g-gold)] text-xs font-bold uppercase tracking-[0.25em] mr-2">{t.coopLabel}</span>
           {t.cooperation.map((c) => (
             <span key={c} className="px-4 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600 text-xs uppercase tracking-wider hover:border-emerald-600 hover:text-emerald-700 transition-colors duration-300">
               {c}

@@ -50,7 +50,7 @@ export const Programs = ({ t, image }) => (
                       <SectionIcon icon={item.icon} size={18} className="text-emerald-700" />
                     </span>
                   )}
-                  <h3 className="text-lg font-medium text-[#0A192F] mb-2">{item.title}</h3>
+                  <h3 className="text-lg font-medium text-[var(--g-navy)] mb-2">{item.title}</h3>
                   <p className="text-sm text-slate-500 font-light leading-relaxed">{item.desc}</p>
                 </div>
               </motion.div>

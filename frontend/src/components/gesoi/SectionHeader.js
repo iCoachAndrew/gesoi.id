@@ -26,7 +26,7 @@ export const SectionHeader = ({ kicker, title, body, dark = false, testId }) => 
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
-      className={`font-serif-display font-light text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight ${dark ? "text-white" : "text-[#0A192F]"}`}
+      className={`font-serif-display font-light text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight ${dark ? "text-white" : "text-[var(--g-navy)]"}`}
     >
       {title}
     </motion.h2>

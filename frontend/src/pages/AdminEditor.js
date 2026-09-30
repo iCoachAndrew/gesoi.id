@@ -9,7 +9,8 @@ import { Field, label, authConfig } from "../lib/editorFields";
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const SECTIONS = [
-  { key: "shared", label: "Gambar & Tokoh (Global)" },
+  { key: "shared", label: "Pengaturan Situs & Tokoh (Global)" },
+  { key: "seo", label: "SEO & Browser" },
   { key: "nav", label: "Navigasi" },
   { key: "hero", label: "Hero" },
   { key: "marquee", label: "Teks Berjalan" },
