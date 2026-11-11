@@ -6,7 +6,7 @@ import { content as defaultContent, sharedDefaults } from "../i18n";
 import { deepMerge } from "../lib/merge";
 import { Field, label, authConfig } from "../lib/editorFields";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const SECTIONS = [
   { key: "shared", label: "Pengaturan Situs & Tokoh (Global)" },

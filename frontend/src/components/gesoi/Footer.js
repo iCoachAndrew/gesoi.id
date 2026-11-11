@@ -1,6 +1,6 @@
 import { MapPin, Mail } from "lucide-react";
 
-const DEFAULT_LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
+const DEFAULT_LOGO = "/logo.png";
 
 export const Footer = ({ t, logo }) => (
   <footer className="bg-[#FAFAFA] border-t border-slate-200 pt-20 pb-10" data-testid="main-footer">

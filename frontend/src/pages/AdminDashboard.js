@@ -9,9 +9,9 @@ import AdminAnalytics from "./AdminAnalytics";
 import AdminHelp from "./AdminHelp";
 import { Toaster } from "sonner";
 
-const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
+const LOGO = "/logo.png";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const interestLabels = {
   volunteer: { label: "Relawan", cls: "bg-emerald-100 text-emerald-800" },

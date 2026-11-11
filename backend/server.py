@@ -192,6 +192,7 @@ async def root():
 
 STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
 APP_NAME = "gesoi"
+LOCAL_UPLOADS_DIR = ROOT_DIR.parent / "frontend" / "public" / "api" / "uploads"
 storage_key = None
 
 
@@ -199,7 +200,11 @@ def init_storage():
     global storage_key
     if storage_key:
         return storage_key
-    resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": os.environ["EMERGENT_LLM_KEY"]}, timeout=30)
+    emergent_key = os.environ.get("EMERGENT_LLM_KEY", "").strip()
+    if not emergent_key:
+        LOCAL_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+        return None
+    resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": emergent_key}, timeout=30)
     resp.raise_for_status()
     storage_key = resp.json()["storage_key"]
     return storage_key
@@ -207,6 +212,11 @@ def init_storage():
 
 def put_object(path: str, data: bytes, content_type: str) -> dict:
     key = init_storage()
+    if not key:
+        LOCAL_UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+        dest = LOCAL_UPLOADS_DIR / Path(path).name
+        dest.write_bytes(data)
+        return {"path": path, "size": len(data)}
     resp = requests.put(
         f"{STORAGE_URL}/objects/{path}",
         headers={"X-Storage-Key": key, "Content-Type": content_type},
@@ -218,6 +228,11 @@ def put_object(path: str, data: bytes, content_type: str) -> dict:
 
 def get_object(path: str):
     key = init_storage()
+    if not key:
+        dest = LOCAL_UPLOADS_DIR / Path(path).name
+        if not dest.is_file():
+            raise HTTPException(status_code=404, detail="File not found")
+        return dest.read_bytes(), "application/octet-stream"
     resp = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
     resp.raise_for_status()
     return resp.content, resp.headers.get("Content-Type", "application/octet-stream")

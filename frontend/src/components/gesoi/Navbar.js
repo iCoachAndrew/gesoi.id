@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { trackEvent } from "../../lib/analytics";
 
-const DEFAULT_LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
+const DEFAULT_LOGO = "/logo.png";
 
 const links = (t) => [
   { href: "#problem", label: t.nav.problem },

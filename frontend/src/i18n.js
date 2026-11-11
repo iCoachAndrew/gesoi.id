@@ -424,8 +424,8 @@ export const content = {
 };
 
 export const sharedDefaults = {
-  logo: "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png",
-  favicon: "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png",
+  logo: "/logo.png",
+  favicon: "/logo.png",
   ogImage: "/hero-bg-light.webp",
   theme: { navy: "#0A192F", emerald: "#059669", gold: "#B45309" },
   sections: [

@@ -4,7 +4,7 @@ import { Eye, Users, MousePointerClick, Send, ShoppingCart } from "lucide-react"
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { authConfig } from "../lib/editorFields";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const RANGES = [["7", "7 Hari"], ["30", "30 Hari"], ["90", "90 Hari"]];
 

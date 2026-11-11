@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { SectionHeader, fadeUp } from "./SectionHeader";
 import { trackEvent } from "../../lib/analytics";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 const emptyBuyer = { name: "", email: "", phone: "", organization: "" };
 
 export const Publications = ({ t }) => {

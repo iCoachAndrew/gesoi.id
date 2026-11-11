@@ -1,0 +1,68 @@
+name: Build & Deploy GESOI ke Hostinger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Build React & Deploy via FTPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install --legacy-peer-deps
+
+      - name: Build production bundle
+        working-directory: frontend
+        env:
+          CI: "false"
+          REACT_APP_BACKEND_URL: ""
+        run: npm run build
+
+      - name: Cek kredensial FTP Hostinger
+        id: ftp_check
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          if [ -n "$FTP_SERVER" ] && [ -n "$FTP_USERNAME" ] && [ -n "$FTP_PASSWORD" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Build React berhasil. Upload ke Hostinger dilewati karena secrets FTP_SERVER, FTP_USERNAME, dan FTP_PASSWORD belum diisi di GitHub Settings -> Secrets and variables -> Actions."
+          fi
+
+      - name: Deploy build ke Hostinger (FTPS)
+        if: steps.ftp_check.outputs.ready == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          security: loose
+          port: 21
+          local-dir: ./frontend/build/
+          server-dir: ${{ vars.FTP_SERVER_DIR || './' }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/config.php
+            api/uploads/**
+            api/uploads/**/*

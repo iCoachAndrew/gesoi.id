@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Copy, Trash2, Film, ImageIcon, Upload } from "lucide-react";
 import { authConfig } from "../lib/editorFields";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
 
 const fmtSize = (b) => (b >= 1024 * 1024 ? `${(b / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`);

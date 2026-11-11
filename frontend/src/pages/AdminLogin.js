@@ -4,9 +4,9 @@ import axios from "axios";
 import { Lock, ArrowLeft } from "lucide-react";
 import { Toaster } from "sonner";
 
-const LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
+const LOGO = "/logo.png";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 function formatApiErrorDetail(detail) {
   if (detail == null) return "Terjadi kesalahan. Coba lagi.";

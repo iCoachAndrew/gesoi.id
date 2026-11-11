@@ -26,7 +26,7 @@ import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import NewsDetail from "@/pages/NewsDetail";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 const defaults = { ...content, shared: sharedDefaults };
 
 const Landing = () => {

@@ -92,3 +92,9 @@ frontend/node_modules/.cache/default-development/1.pack
 frontend/node_modules/.cache/default-development/3.pack
 frontend/node_modules/.cache/default-development/5.pack_
 frontend/node_modules/.cache/default-development/5.pack
+
+# Hostinger & PHP runtime secrets / uploads / SQL dumps
+frontend/public/api/config.php
+frontend/public/api/uploads/*
+!frontend/public/api/uploads/.htaccess
+hostinger/gesoi_data_dump.sql

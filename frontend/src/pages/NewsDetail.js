@@ -8,8 +8,8 @@ import { newsUrl, newsIndexFromSlug } from "../lib/slug";
 import { trackPageview, trackEvent } from "../lib/analytics";
 import { Footer } from "../components/gesoi/Footer";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-const DEFAULT_LOGO = "https://customer-assets.emergentagent.com/job_social-impact-web-2/artifacts/e6k8en9x_image.png";
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
+const DEFAULT_LOGO = "/logo.png";
 const defaults = { ...content, shared: sharedDefaults };
 
 const WhatsAppIcon = ({ size = 16 }) => (
@@ -18,7 +18,7 @@ const WhatsAppIcon = ({ size = 16 }) => (
   </svg>
 );
 
-const isImgLine = (l) => /^https?:\/\/\S+\.(png|jpe?g|webp|gif)(\?\S*)?$/i.test(l.trim());
+const isImgLine = (l) => /^(https?:\/\/|\/)\S+\.(png|jpe?g|webp|gif)(\?\S*)?$/i.test(l.trim());
 
 const renderInline = (text) =>
   text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>

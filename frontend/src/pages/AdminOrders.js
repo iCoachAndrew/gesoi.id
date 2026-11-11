@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Download, Phone, Mail } from "lucide-react";
 import { authConfig } from "../lib/editorFields";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const STATUS = {
   pending: { label: "Baru", cls: "bg-amber-100 text-amber-800" },
