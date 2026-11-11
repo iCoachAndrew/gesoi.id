@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-and-deploy:
-    name: Build React & Deploy via FTPS
+    name: Build React & Deploy ke Hostinger
     runs-on: ubuntu-latest
 
     steps:
@@ -48,21 +48,128 @@ jobs:
             echo "::notice::Build React berhasil. Upload ke Hostinger dilewati karena secrets FTP_SERVER, FTP_USERNAME, dan FTP_PASSWORD belum diisi di GitHub Settings -> Secrets and variables -> Actions."
           fi
 
-      - name: Deploy build ke Hostinger (FTPS)
+      - name: Install lftp
         if: steps.ftp_check.outputs.ready == 'true'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          security: loose
-          port: 21
-          local-dir: ./frontend/build/
-          server-dir: ${{ vars.FTP_SERVER_DIR || './' }}
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/config.php
-            api/uploads/**
-            api/uploads/**/*
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy build ke Hostinger via lftp
+        if: steps.ftp_check.outputs.ready == 'true'
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
+        run: |
+          python3 - << 'PY'
+          import os
+          import pathlib
+          import subprocess
+          import sys
+
+          server = os.environ["FTP_SERVER"].strip()
+          for prefix in ("ftps://", "ftp://"):
+              if server.lower().startswith(prefix):
+                  server = server[len(prefix):]
+          server = server.rstrip("/").split(":")[0].strip()
+
+          username = os.environ["FTP_USERNAME"].strip()
+          password = os.environ["FTP_PASSWORD"]
+          explicit_dir = os.environ.get("FTP_SERVER_DIR", "").strip()
+
+          lftp_dir = pathlib.Path.home() / ".lftp"
+          lftp_dir.mkdir(parents=True, exist_ok=True)
+          rc_file = lftp_dir / "rc"
+
+          common_settings = [
+              "set cmd:fail-exit true",
+              "set net:timeout 30",
+              "set net:max-retries 2",
+              "set net:reconnect-interval-base 3",
+              "set ftp:passive-mode true",
+              "set ftp:list-options -a",
+              "set ssl:verify-certificate no",
+              'set ssl:priority "NORMAL:-VERS-TLS1.3"',
+          ]
+
+          profiles = [
+              (
+                  "FTPS (TLS 1.2 + data terenkripsi)",
+                  [
+                      "set ftp:ssl-allow true",
+                      "set ftp:ssl-force true",
+                      "set ftp:ssl-protect-data true",
+                  ],
+              ),
+              (
+                  "FTPS (login TLS + data channel non-TLS)",
+                  [
+                      "set ftp:ssl-allow true",
+                      "set ftp:ssl-force true",
+                      "set ftp:ssl-protect-data false",
+                  ],
+              ),
+              (
+                  "Plain FTP (fallback)",
+                  [
+                      "set ftp:ssl-allow false",
+                      "set ftp:ssl-force false",
+                  ],
+              ),
+          ]
+
+          def run_lftp(tls_opts, commands):
+              # Tulis ~/.lftp/rc agar opsi TLS aktif sebelum lftp terhubung ke server
+              rc_file.write_text("\n".join(common_settings + tls_opts) + "\n", encoding="utf-8")
+              script = "\n".join(commands) + "\nbye\n"
+              return subprocess.run(
+                  ["lftp", "-u", f"{username},{password}", f"ftp://{server}:21"],
+                  input=script,
+                  text=True,
+                  check=False,
+              )
+
+          for label, tls_opts in profiles:
+              print(f"=== Mencoba mode: {label} ===")
+
+              # 1. Tentukan folder tujuan (auto-deteksi public_html jika FTP_SERVER_DIR kosong)
+              if explicit_dir:
+                  probe = run_lftp(tls_opts, [f"cd {explicit_dir}", "cls"])
+                  if probe.returncode != 0:
+                      print(f"Gagal akses '{explicit_dir}' pada mode {label}, mencoba mode berikutnya...")
+                      continue
+                  target_dir = explicit_dir.rstrip("/") or "."
+              else:
+                  probe = run_lftp(tls_opts, ["cd public_html", "cls"])
+                  if probe.returncode == 0:
+                      target_dir = "public_html"
+                  else:
+                      root_probe = run_lftp(tls_opts, ["cls"])
+                      if root_probe.returncode != 0:
+                          print(f"Gagal konek pada mode {label}, mencoba mode berikutnya...")
+                          continue
+                      target_dir = "."
+
+              print(f"Target folder di Hostinger: {target_dir}")
+
+              cmds = ["lcd frontend/build"]
+              if target_dir != ".":
+                  cmds.append(f"cd {target_dir}")
+              cmds.append(
+                  "mirror -R --delete --verbose --parallel=2 "
+                  "-x '(^|/)api/config[.]php$' "
+                  "-x '(^|/)api/uploads/' "
+                  "-x '^[.]well-known/' "
+                  "-x '^cgi-bin/' "
+                  "-x '^[.]ftp-deploy-sync-state[.]json$' "
+                  ". ."
+              )
+              res = run_lftp(tls_opts, cmds)
+              if res.returncode == 0:
+                  print(f"Deploy berhasil menggunakan mode: {label} ke folder '{target_dir}'")
+                  sys.exit(0)
+
+              print(f"Mode {label} gagal (exit={res.returncode}), mencoba mode berikutnya...")
+
+          print("Semua mode FTP/FTPS gagal.", file=sys.stderr)
+          sys.exit(1)
+          PY
