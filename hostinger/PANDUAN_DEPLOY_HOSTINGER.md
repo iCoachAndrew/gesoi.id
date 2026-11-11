@@ -24,16 +24,17 @@ Seluruh perubahan kode sumber telah disiapkan agar **database (MySQL/MariaDB)** 
 ## Langkah Deploy di hPanel Hostinger (5 Menit)
 
 ### Langkah 1: Buat Database MySQL di hPanel
-1. Masuk ke **hPanel Hostinger** -> pilih menu **Databases** -> **Management (MySQL Databases)**.
-2. Buat database baru:
+1. Masuk ke **hPanel Hostinger** -> buka menu **Websites** (**Website**) -> klik **Manage** / **Dashboard** (**Kelola**) di sebelah domain Anda *(jika domain/website belum dibuat di hosting, klik **Add Website** terlebih dahulu)*.
+2. Di sidebar dashboard website tersebut, buka menu **Databases** (**Database**) -> **Management** (**Pengelolaan**) / **MySQL Databases**.
+3. Buat database baru:
    - **MySQL Database Name**: mis. `u123456789_gesoi`
    - **MySQL Username**: mis. `u123456789_gesoi`
    - **Password**: buat password kuat dan catat.
-3. Klik **Enter phpMyAdmin** di samping database yang baru dibuat, buka tab **Import**, lalu pilih dan impor file **`hostinger/schema.sql`** (opsional: tabel juga otomatis dibuat saat login pertama jika belum diimpor).
-4. Jika Anda memiliki dump data dari MongoDB (`hostinger/gesoi_data_dump.sql`), impor juga file tersebut setelah `schema.sql`.
+4. Di daftar database yang muncul di bagian bawah (**List of Current MySQL Databases and Users**), klik **Enter phpMyAdmin** (**Masuk phpMyAdmin**) di sebelah database tersebut, buka tab **Import**, lalu pilih dan impor file **`hostinger/schema.sql`** (opsional: tabel juga otomatis dibuat saat login pertama jika belum diimpor).
+5. Jika Anda memiliki dump data dari MongoDB (`hostinger/gesoi_data_dump.sql`), impor juga file tersebut setelah `schema.sql`.
 
 ### Langkah 2: Unggah Website ke `public_html`
-1. Buka **hPanel Hostinger** -> **Files** -> **File Manager**.
+1. Masih dari dashboard website (**Websites -> Manage / Kelola**), buka menu **Files** (**File**) -> **File Manager**.
 2. Masuk ke folder **`public_html`** (hapus file `default.php` bawaan Hostinger jika ada).
 3. Unggah file **`hostinger/public_html_gesoi.zip`** ke dalam `public_html`, lalu klik kanan -> **Extract** langsung di dalam `public_html` (pastikan `index.html`, `.htaccess`, dan folder `api/` berada langsung di dalam `public_html/`).
 
@@ -59,7 +60,7 @@ Seluruh perubahan kode sumber telah disiapkan agar **database (MySQL/MariaDB)** 
    *(Tips keamanan ekstra: Anda juga dapat memindahkan `config.php` ke satu folder di atas `public_html` dengan nama `gesoi_config.php`, yaitu `/domains/domainanda.com/gesoi_config.php`, karena `api/index.php` otomatis membacanya lebih dulu).*
 
 ### Langkah 4: Pastikan PHP 8.1+ & SSL Aktif
-1. Di hPanel -> **Advanced** -> **PHP Configuration**: pastikan versi PHP adalah **PHP 8.1 / 8.2 / 8.3** dan ekstensi `pdo_mysql` aktif (aktif secara bawaan di Hostinger).
+1. Dari dashboard website (**Websites -> Manage / Kelola**), buka **Advanced** (**Tingkat Lanjut**) -> **PHP Configuration** (**Konfigurasi PHP**): pastikan versi PHP adalah **PHP 8.1 / 8.2 / 8.3** dan ekstensi `pdo_mysql` aktif (aktif secara bawaan di Hostinger).
 2. Pada tab **PHP Options**, pastikan `upload_max_filesize` dan `post_max_size` minimal **64M** (agar fitur upload video hingga 60MB di CMS berjalan lancar).
 3. Pastikan **SSL (HTTPS)** aktif untuk domain Anda di hPanel.
 
