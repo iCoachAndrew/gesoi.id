@@ -17,8 +17,20 @@
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Fallback SPA React Router (/admin, /admin/login, /berita/...) ke index.html
+  # Jangan fallback file aset statis (.js, .css, gambar, video) ke index.html jika file sudah dihapus
+  RewriteRule ^static/ - [R=404,L]
+
+  # Fallback SPA React Router (/edukasi, /admin, /admin/login, /berita/...) ke index.html
   RewriteRule ^ index.html [L]
+</IfModule>
+
+# Pastikan index.html tidak di-cache browser agar setelah deploy selalu memuat bundle JS/CSS terbaru
+<IfModule mod_headers.c>
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
 </IfModule>
 
 # Lindungi file sensitif

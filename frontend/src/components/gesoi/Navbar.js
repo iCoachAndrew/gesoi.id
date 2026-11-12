@@ -37,14 +37,14 @@ export const Navbar = ({ t, lang, setLang, logo, activePage = "" }) => {
       }`}
       data-testid="main-navbar"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-        <a href={isSubpage ? "/" : "#top"} className="flex items-center gap-2.5" data-testid="navbar-logo">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
+        <a href={isSubpage ? "/" : "#top"} className="flex items-center gap-2.5 shrink-0" data-testid="navbar-logo">
           <img src={logo || DEFAULT_LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-8 w-auto" />
         </a>
-        <nav className="hidden md:flex items-center gap-7 lg:gap-8">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
           {links(t, isSubpage).map((l) => {
             const isActive = activePage === l.key;
-            const cls = `text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300 ${
+            const cls = `whitespace-nowrap text-[11px] xl:text-xs font-medium uppercase tracking-[0.13em] xl:tracking-[0.15em] transition-colors duration-300 ${
               isActive
                 ? "text-emerald-700 font-semibold"
                 : "text-slate-500 hover:text-[var(--g-navy)]"
@@ -70,7 +70,7 @@ export const Navbar = ({ t, lang, setLang, logo, activePage = "" }) => {
             );
           })}
         </nav>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           <div className="flex items-center rounded-full border border-slate-200 overflow-hidden text-xs" data-testid="language-toggle">
             {["id", "en"].map((l) => (
               <button
@@ -89,14 +89,14 @@ export const Navbar = ({ t, lang, setLang, logo, activePage = "" }) => {
             href={isSubpage ? "/#join" : "#join"}
             onClick={() => trackEvent("join_click")}
             data-testid="navbar-join-btn"
-            className="hidden sm:inline-flex px-5 py-2 rounded-full bg-[var(--g-navy)] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[var(--g-emerald)] transition-colors duration-300"
+            className="hidden sm:inline-flex whitespace-nowrap px-5 py-2 rounded-full bg-[var(--g-navy)] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[var(--g-emerald)] transition-colors duration-300"
           >
             {t.nav.join}
           </a>
           <button
             data-testid="mobile-menu-btn"
             onClick={() => setOpen(!open)}
-            className="md:hidden w-9 h-9 flex items-center justify-center text-[var(--g-navy)]"
+            className="lg:hidden w-9 h-9 flex items-center justify-center text-[var(--g-navy)]"
             aria-label="Menu"
           >
             {open ? <X size={20} /> : <Menu size={20} />}
@@ -104,7 +104,7 @@ export const Navbar = ({ t, lang, setLang, logo, activePage = "" }) => {
         </div>
       </div>
       {open && (
-        <nav className="md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
+        <nav className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
           {links(t, isSubpage).map((l) =>
             l.isRoute ? (
               <Link

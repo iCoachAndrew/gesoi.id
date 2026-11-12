@@ -106,7 +106,7 @@ export const content = {
           role: "Edukasi Publik Sehat Otak",
           duration: "02:45",
           desc: "Penjelasan ringan mengenai bagaimana otak bekerja mengelola energi, fokus, dan emosi, serta mengapa kelelahan mental sering kali berakar dari kebiasaan harian yang kurang ramah otak.",
-          url: "https://videos.pexels.com/video-files/5377684/5377684-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1559757175-5700dde675bc?q=80&w=1200",
         },
         {
@@ -116,7 +116,7 @@ export const content = {
           role: "Edukasi Publik Sehat Otak",
           duration: "03:10",
           desc: "Paparan berlebih terhadap layar dan notifikasi menguras dopamin serta menurunkan rentang perhatian. Pelajari langkah sederhana menjaga kebersihan saraf (Neuro-Hygiene) di rumah dan sekolah.",
-          url: "https://videos.pexels.com/video-files/4065924/4065924-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200",
         },
         {
@@ -126,7 +126,7 @@ export const content = {
           role: "Edukasi Publik Sehat Otak",
           duration: "02:55",
           desc: "Saat kita tidur nyenyak, sistem glimpatik otak membersihkan racun metabolik dan menata ulang memori. Ketahui cara membangun rutinitas tidur yang memulihkan kejernihan berpikir.",
-          url: "https://videos.pexels.com/video-files/3209828/3209828-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200",
         },
         {
@@ -136,7 +136,7 @@ export const content = {
           role: "Edukasi Publik Sehat Otak",
           duration: "03:30",
           desc: "Perkembangan pesat jaringan sinapsis anak terjadi sejak dalam kandungan hingga usia dua tahun. Panduan praktis nutrisi dan interaksi hangat orang tua untuk mencegah stunting kognitif.",
-          url: "https://videos.pexels.com/video-files/4440933/4440933-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1573164574572-cb89e39749b4?q=80&w=1200",
         },
         {
@@ -146,7 +146,7 @@ export const content = {
           role: "Ketua Dewan Pengurus GESOI",
           duration: "03:15",
           desc: "Produktivitas berkelanjutan tidak lahir dari tekanan tanpa henti, melainkan dari otak yang sehat, teregulasi secara emosional, dan memiliki ritme pemulihan yang terjaga.",
-          url: "https://videos.pexels.com/video-files/3195394/3195394-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200",
         },
       ],
@@ -397,7 +397,7 @@ export const content = {
           role: "Public Brain Health Education",
           duration: "02:45",
           desc: "A clear explanation of how the brain manages energy, focus, and emotion, and why mental fatigue often stems from daily habits that drain cognitive reserves.",
-          url: "https://videos.pexels.com/video-files/5377684/5377684-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1559757175-5700dde675bc?q=80&w=1200",
         },
         {
@@ -407,7 +407,7 @@ export const content = {
           role: "Public Brain Health Education",
           duration: "03:10",
           desc: "Excessive screen exposure and constant notifications deplete dopamine and shorten attention spans. Learn simple daily steps to practice Neuro-Hygiene at home and school.",
-          url: "https://videos.pexels.com/video-files/4065924/4065924-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200",
         },
         {
@@ -417,7 +417,7 @@ export const content = {
           role: "Public Brain Health Education",
           duration: "02:55",
           desc: "During deep sleep, the brain's glymphatic system clears metabolic waste and consolidates memory. Discover how to build a restorative sleep routine for mental clarity.",
-          url: "https://videos.pexels.com/video-files/3209828/3209828-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200",
         },
         {
@@ -427,7 +427,7 @@ export const content = {
           role: "Public Brain Health Education",
           duration: "03:30",
           desc: "Rapid synaptic growth occurs from pregnancy through age two. Practical guidance on nutrition and warm parental interaction to prevent cognitive stunting.",
-          url: "https://videos.pexels.com/video-files/4440933/4440933-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1573164574572-cb89e39749b4?q=80&w=1200",
         },
         {
@@ -437,7 +437,7 @@ export const content = {
           role: "Chair, Board of Management GESOI",
           duration: "03:15",
           desc: "Sustainable productivity comes not from relentless pressure, but from a healthy, emotionally regulated brain supported by intentional recovery rhythms.",
-          url: "https://videos.pexels.com/video-files/3195394/3195394-hd_1280_720_25fps.mp4",
+          url: "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
           poster: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200",
         },
       ],

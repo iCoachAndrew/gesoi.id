@@ -73,20 +73,19 @@ const VideoCardThumbnail = ({ item, isActive, onDurationDetected }) => {
               hovering && !isYt ? "opacity-0" : "opacity-95"
             }`}
           />
-          {!isYt && item.url && (
+          {!isYt && item.url && hovering && (
             <video
               ref={hoverVideoRef}
-              src={`${item.url}#t=0.5`}
+              src={item.url}
               muted
+              autoPlay
               playsInline
               preload="metadata"
               onLoadedMetadata={(e) => {
                 const d = formatDuration(e.currentTarget.duration);
                 if (d && onDurationDetected) onDurationDetected(d);
               }}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                hovering ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
+              className="absolute inset-0 w-full h-full object-cover"
             />
           )}
         </>
