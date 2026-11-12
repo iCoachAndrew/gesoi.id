@@ -97,6 +97,11 @@ export default function AdminHelp() {
           <Li label="Tata Letak / Template">Ekosistem (Orbit / Grid), Pilar Misi (Baris Editorial / Grid Kartu dengan Gambar), Program (Kartu Ikon / Kartu dengan Gambar), Peta Jalan (Garis Waktu / Garis Waktu dengan Foto). Setiap item punya kolom gambar sendiri.</Li>
           <Li label="Daftar Item">tambah, hapus, dan edit konten berulang (pilar, program, berita, tokoh, dsb.).</Li>
         </ul>
+        <p className="font-semibold text-[#0B1F3A] pt-2">Edukasi Publik (04B Edukasi):</p>
+        <ul className="space-y-2">
+          <Li>Mengatur halaman khusus <Code>/edukasi</Code> (di navigasi antara Program dan Peta Jalan) serta section Edukasi di beranda.</Li>
+          <Li label="Sinkronisasi Otomatis">video yang diunggah lewat tab Galeri Media otomatis tampil di halaman Edukasi. Anda juga bisa menekan tombol "Muat Video dari Galeri Media" di section 04B Edukasi untuk mengatur judul, kategori, pembicara (mis. Andrew Tani atau Karya Turag), serta deskripsi tiap video.</Li>
+        </ul>
         <p className="font-semibold text-[#0B1F3A] pt-2">Berita (07 Kabar/News):</p>
         <ul className="space-y-2">
           <Li>Tautan kosong = kartu membuka halaman detail internal dengan artikel lengkap + tombol Bagikan ke WhatsApp. Tautan diisi = membuka link eksternal.</Li>

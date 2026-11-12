@@ -98,3 +98,5 @@ frontend/public/api/config.php
 frontend/public/api/uploads/*
 !frontend/public/api/uploads/.htaccess
 hostinger/gesoi_data_dump.sql
+hostinger/gesoi_migrasi*.sql
+hostinger/migrated_uploads/

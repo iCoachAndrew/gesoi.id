@@ -541,11 +541,11 @@ if ($method === 'POST' && $route === '/admin/upload') {
     }
 
     $isVideo = in_array($ext, $allowedVideos, true);
-    $maxSize = $isVideo ? 60 * 1024 * 1024 : 8 * 1024 * 1024;
+    $maxSize = $isVideo ? 200 * 1024 * 1024 : 8 * 1024 * 1024;
     $size = (int)($file['size'] ?? 0);
     if ($size > $maxSize) {
         json_response([
-            'detail' => 'Ukuran file maksimal ' . ($isVideo ? '60MB untuk video' : '8MB untuk gambar') . '.',
+            'detail' => 'Ukuran file maksimal ' . ($isVideo ? '200MB untuk video' : '8MB untuk gambar') . '.',
         ], 400);
     }
 
@@ -594,6 +594,34 @@ if ($method === 'POST' && $route === '/admin/upload') {
         'url'  => "/api/files/$storagePath",
         'path' => $storagePath,
     ]);
+}
+
+// --- GET /api/videos (Publik: daftar video di Galeri Media) ---
+if ($method === 'GET' && $route === '/videos') {
+    try {
+        $stmt = $pdo->query("
+            SELECT id, storage_path, original_filename, content_type, size, created_at
+            FROM `files`
+            WHERE is_deleted = 0
+              AND (
+                content_type LIKE 'video/%'
+                OR LOWER(storage_path) LIKE '%.mp4'
+                OR LOWER(storage_path) LIKE '%.webm'
+                OR LOWER(storage_path) LIKE '%.mov'
+              )
+            ORDER BY created_at DESC
+            LIMIT 200
+        ");
+        $rows = $stmt->fetchAll();
+        foreach ($rows as &$r) {
+            $r['size'] = (int)$r['size'];
+            $r['url'] = '/api/files/' . $r['storage_path'];
+        }
+        unset($r);
+        json_response($rows);
+    } catch (PDOException) {
+        json_response([]);
+    }
 }
 
 // --- GET /api/admin/files (Admin) ---

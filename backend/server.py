@@ -249,9 +249,9 @@ async def upload_image(file: UploadFile = File(...), admin: dict = Depends(get_c
         raise HTTPException(status_code=400, detail="Format tidak didukung. Gunakan JPG, PNG, GIF, WEBP, MP4, WEBM, atau MOV.")
     data = await file.read()
     is_video = ext in ALLOWED_VIDEO_EXT
-    max_size = 60 * 1024 * 1024 if is_video else 8 * 1024 * 1024
+    max_size = 200 * 1024 * 1024 if is_video else 8 * 1024 * 1024
     if len(data) > max_size:
-        raise HTTPException(status_code=400, detail=f"Ukuran file maksimal {'60MB untuk video' if is_video else '8MB untuk gambar'}.")
+        raise HTTPException(status_code=400, detail=f"Ukuran file maksimal {'200MB untuk video' if is_video else '8MB untuk gambar'}.")
     path = f"{APP_NAME}/uploads/{uuid.uuid4()}.{ext}"
     default_ct = "video/mp4" if is_video else "image/jpeg"
     result = put_object(path, data, file.content_type or default_ct)
@@ -265,6 +265,23 @@ async def upload_image(file: UploadFile = File(...), admin: dict = Depends(get_c
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
     return {"url": f"/api/files/{result['path']}", "path": result["path"]}
+
+
+@api_router.get("/videos")
+async def list_public_videos():
+    docs = await db.files.find(
+        {
+            "is_deleted": False,
+            "$or": [
+                {"content_type": {"$regex": "^video/", "$options": "i"}},
+                {"storage_path": {"$regex": "\\.(mp4|webm|mov)$", "$options": "i"}},
+            ],
+        },
+        {"_id": 0, "is_deleted": 0},
+    ).sort("created_at", -1).to_list(200)
+    for d in docs:
+        d["url"] = f"/api/files/{d.get('storage_path', '')}"
+    return docs
 
 
 @api_router.get("/admin/files")

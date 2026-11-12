@@ -14,6 +14,7 @@ import { Problem } from "@/components/gesoi/Problem";
 import { Ecosystem } from "@/components/gesoi/Ecosystem";
 import { Pillars } from "@/components/gesoi/Pillars";
 import { Programs } from "@/components/gesoi/Programs";
+import { Education } from "@/components/gesoi/Education";
 import { Roadmap } from "@/components/gesoi/Roadmap";
 import { Governance } from "@/components/gesoi/Governance";
 import { JoinCTA } from "@/components/gesoi/JoinCTA";
@@ -25,6 +26,7 @@ import { Footer } from "@/components/gesoi/Footer";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import NewsDetail from "@/pages/NewsDetail";
+import EducationPage from "@/pages/EducationPage";
 
 const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 const defaults = { ...content, shared: sharedDefaults };
@@ -106,6 +108,7 @@ const Landing = () => {
     ecosystem: <Ecosystem t={t.ecosystem} />,
     pillars: <Pillars t={t.pillars} />,
     programs: <Programs t={t.programs} image={shared.programsImage} />,
+    education: <Education t={t.education} lang={lang} />,
     roadmap: <Roadmap t={t.roadmap} />,
     governance: <Governance t={t.governance} people={shared.people} lang={lang} />,
     news: <News t={t.news} />,
@@ -134,6 +137,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/edukasi" element={<EducationPage />} />
         <Route path="/berita/:slug" element={<NewsDetail />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />

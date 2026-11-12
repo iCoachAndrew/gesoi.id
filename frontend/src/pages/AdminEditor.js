@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Save, RotateCcw } from "lucide-react";
+import { Save, RotateCcw, Film, ExternalLink } from "lucide-react";
 import { content as defaultContent, sharedDefaults } from "../i18n";
 import { deepMerge } from "../lib/merge";
 import { Field, label, authConfig } from "../lib/editorFields";
+import { autoClassifyGalleryVideo } from "../lib/educationVideos";
 
-const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
+const API = `${BACKEND_URL}/api`;
 
 const SECTIONS = [
   { key: "shared", label: "Pengaturan Situs & Tokoh (Global)" },
@@ -18,6 +20,7 @@ const SECTIONS = [
   { key: "ecosystem", label: "02 · Ekosistem" },
   { key: "pillars", label: "03 · Pilar Misi" },
   { key: "programs", label: "04 · Program" },
+  { key: "education", label: "04B · Edukasi" },
   { key: "roadmap", label: "05 · Peta Jalan" },
   { key: "governance", label: "06 · Kepemimpinan" },
   { key: "news", label: "07 · Kabar / News" },
@@ -33,6 +36,55 @@ export default function AdminEditor() {
   const [langTab, setLangTab] = useState("id");
   const [section, setSection] = useState("hero");
   const [saving, setSaving] = useState(false);
+  const [syncingGallery, setSyncingGallery] = useState(false);
+
+  const syncGalleryVideos = async () => {
+    setSyncingGallery(true);
+    try {
+      const { data: res } = await axios.get(`${API}/admin/files`, authConfig());
+      const list = Array.isArray(res) ? res : res.files || [];
+      const vids = list.filter(
+        (f) => (f.content_type || "").startsWith("video/") || /\.(mp4|webm|mov)$/i.test(f.storage_path || "")
+      );
+      if (vids.length === 0) {
+        toast.info("Belum ada file video di Galeri Media.");
+        return;
+      }
+      const currentItems = Array.isArray(scope?.items) ? scope.items : [];
+      const existingUrls = new Set(currentItems.map((it) => (it.url || "").trim()));
+      const newItems = [];
+      for (const f of vids) {
+        const relUrl = f.url || `/api/files/${f.storage_path}`;
+        const fullUrl = `${BACKEND_URL}${relUrl}`;
+        if (!existingUrls.has(fullUrl) && !existingUrls.has(relUrl)) {
+          const classified = autoClassifyGalleryVideo({ ...f, url: fullUrl }, langTab);
+          newItems.push({
+            title: classified.title,
+            category: classified.category,
+            speaker: classified.speaker,
+            duration: classified.duration || "",
+            url: fullUrl,
+            poster: "",
+            desc: classified.desc,
+          });
+        }
+      }
+      const nonSampleExisting = currentItems.filter(
+        (it) => !/pexels\.com/i.test(it.url || "")
+      );
+      if (newItems.length === 0 && nonSampleExisting.length === currentItems.length) {
+        toast.info("Semua video dari Galeri Media sudah ada di daftar Edukasi.");
+        return;
+      }
+      const merged = [...newItems, ...(newItems.length > 0 ? nonSampleExisting : currentItems)];
+      setScope({ ...scope, items: merged });
+      toast.success(`${newItems.length} video dari Galeri Media berhasil dimuat ke daftar Edukasi. Klik Simpan Perubahan untuk menyimpan.`);
+    } catch {
+      toast.error("Gagal memuat video dari Galeri Media.");
+    } finally {
+      setSyncingGallery(false);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -112,19 +164,52 @@ export default function AdminEditor() {
 
         <div>
           {!isShared && (
-            <div className="flex items-center rounded-full border border-[#0B1F3A]/15 overflow-hidden text-xs w-fit mb-6" data-testid="editor-lang-toggle">
-              {["id", "en"].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLangTab(l)}
-                  data-testid={`editor-lang-${l}`}
-                  className={`px-4 py-2 uppercase tracking-wider transition-colors duration-200 ${
-                    langTab === l ? "bg-[#0B1F3A] text-white" : "text-[#4B5563]"
-                  }`}
-                >
-                  {l === "id" ? "Indonesia" : "English"}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div className="flex items-center rounded-full border border-[#0B1F3A]/15 overflow-hidden text-xs w-fit" data-testid="editor-lang-toggle">
+                {["id", "en"].map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => setLangTab(l)}
+                    data-testid={`editor-lang-${l}`}
+                    className={`px-4 py-2 uppercase tracking-wider transition-colors duration-200 ${
+                      langTab === l ? "bg-[#0B1F3A] text-white" : "text-[#4B5563]"
+                    }`}
+                  >
+                    {l === "id" ? "Indonesia" : "English"}
+                  </button>
+                ))}
+              </div>
+
+              {section === "education" && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={syncGalleryVideos}
+                    disabled={syncingGallery}
+                    data-testid="education-sync-gallery-btn"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0B1F3A] text-white text-xs font-medium hover:bg-emerald-600 transition-colors duration-200 disabled:opacity-60"
+                  >
+                    <Film size={13} />
+                    {syncingGallery ? "Memuat..." : "Muat Video dari Galeri Media"}
+                  </button>
+                  <a
+                    href="/edukasi"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#0B1F3A]/15 text-xs text-[#0B1F3A] hover:border-emerald-500 hover:text-emerald-700 transition-colors duration-200"
+                  >
+                    Lihat Halaman /edukasi <ExternalLink size={12} />
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
+          {section === "education" && (
+            <div className="mb-5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 px-4 py-3 text-xs text-[#0B1F3A] leading-relaxed">
+              <strong className="font-semibold text-emerald-800">Tips Halaman Edukasi:</strong> Semua video yang diunggah ke{" "}
+              <strong className="font-semibold">Galeri Media</strong> akan otomatis tampil di halaman <code className="px-1.5 py-0.5 rounded bg-white border border-emerald-200">/edukasi</code> dan bagian <strong className="font-semibold">Edukasi</strong> di beranda. Gunakan tombol{" "}
+              <strong className="font-semibold">&ldquo;Muat Video dari Galeri Media&rdquo;</strong> di atas untuk menarik daftar video ke bawah ini agar Anda bisa menyesuaikan judul, nama pembicara (mis. Andrew Tani / Karya Turag), kategori topik, dan deskripsinya.
             </div>
           )}
 

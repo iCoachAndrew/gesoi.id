@@ -1,7 +1,7 @@
 import { useState, createElement } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Upload, Plus, Trash2, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react";
+import { Upload, Plus, Trash2, Eye, EyeOff, ArrowUp, ArrowDown, Film } from "lucide-react";
 import { ICONS, parseIcon, SectionIcon } from "./icons";
 import { CropModal } from "./CropUpload";
 
@@ -30,11 +30,17 @@ export const LABELS = {
   message: "Pesan", submit: "Tombol Kirim", sending: "Teks Mengirim",
   success: "Pesan Sukses", error: "Pesan Gagal", interest: "Label Minat",
   organization: "Organisasi", nav: "Navigasi", problem: "Urgensi",
-  ecosystem: "Ekosistem", pillars: "Pilar", programs: "Program",
+  ecosystem: "Ekosistem", pillars: "Pilar", programs: "Program", education: "Edukasi",
   roadmap: "Peta Jalan", join: "Bergabung", news: "Kabar",
   category: "Kategori", link: "Tautan (opsional)", image: "Gambar",
-  authors: "Penulis", price: "Harga", url: "URL Video (.mp4)",
-  poster: "Gambar Poster Video", quote: "Kutipan", author: "Nama Narasumber",
+  authors: "Penulis", price: "Harga", url: "URL Video (.mp4 / YouTube)",
+  poster: "Gambar Poster Video (opsional)", quote: "Kutipan", author: "Nama Narasumber",
+  speaker: "Pembicara / Kreator", duration: "Durasi (opsional, mis. 03:20)",
+  ctaPageLabel: "Label Tombol Halaman Edukasi", searchPlaceholder: "Placeholder Pencarian",
+  allCategoriesLabel: "Label Semua Topik", freeBadge: "Badge Gratis",
+  nowPlayingLabel: "Label Sedang Diputar", upNextLabel: "Judul Daftar Putar",
+  autoPlayLabel: "Label Lanjut Otomatis", watchNowLabel: "Label Putar Video",
+  backHomeLabel: "Label Kembali ke Beranda", emptyFilterText: "Teks Saat Filter Kosong",
   watchLabel: "Label Tombol Tonton", buyLabel: "Label Tombol Beli",
   priceNote: "Keterangan Harga", modalTitle: "Judul Checkout",
   payLabel: "Label Tombol Bayar", cancelLabel: "Label Tombol Batal",
@@ -78,6 +84,7 @@ const IMAGE_ITEM_PATHS = /^(pillars-items|programs-items|roadmap-items)/;
 const ITEM_KEY_INJECTIONS = [
   [IMAGE_ITEM_PATHS, ["image"]],
   [/^news-items/, ["date", "body"]],
+  [/^education-items/, ["title", "category", "speaker", "duration", "url", "poster", "desc"]],
 ];
 const isLong = (k, v) => ["body", "desc", "sub", "note", "message", "quote", "banner", "policyText"].includes(k) || (typeof v === "string" && v.length > 90);
 const isImage = (k) => /photo|image|bg|poster|logo|favicon/i.test(k);
@@ -207,27 +214,89 @@ export const IconField = ({ value, onChange }) => {
 
 export const VideoField = ({ value, onChange, testId }) => {
   const [uploading, setUploading] = useState(false);
+  const [galleryVideos, setGalleryVideos] = useState(null);
+  const [loadingGallery, setLoadingGallery] = useState(false);
+
+  const openGalleryPicker = async () => {
+    if (galleryVideos !== null) {
+      setGalleryVideos(null);
+      return;
+    }
+    setLoadingGallery(true);
+    try {
+      const { data } = await axios.get(`${API}/admin/files`, authConfig());
+      const list = Array.isArray(data) ? data : data.files || [];
+      const vids = list.filter(
+        (f) => (f.content_type || "").startsWith("video/") || /\.(mp4|webm|mov)$/i.test(f.storage_path || "")
+      );
+      setGalleryVideos(vids);
+    } catch {
+      toast.error("Gagal memuat daftar video dari Galeri Media");
+    } finally {
+      setLoadingGallery(false);
+    }
+  };
 
   return (
     <div className="space-y-2">
-      {value && (
+      {value && !/youtube\.com|youtu\.be/i.test(value) && (
         <video src={value} muted className="w-48 rounded-lg border border-[#0B1F3A]/10 bg-black" preload="metadata" />
       )}
-      <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="URL video (.mp4 / .webm)" className={inputCls} data-testid={testId} />
-      <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B1F3A] text-white text-xs cursor-pointer hover:bg-[#1B3A63] transition-colors duration-200">
-        <Upload size={12} /> {uploading ? "Mengunggah video..." : "Unggah Video (maks 60MB)"}
-        <input
-          type="file"
-          accept="video/mp4,video/webm,video/quicktime"
-          className="hidden"
-          disabled={uploading}
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) uploadFile(f, onChange, setUploading);
-            e.target.value = "";
-          }}
-        />
-      </label>
+      <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="URL video (.mp4 / .webm / YouTube)" className={inputCls} data-testid={testId} />
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B1F3A] text-white text-xs cursor-pointer hover:bg-[#1B3A63] transition-colors duration-200">
+          <Upload size={12} /> {uploading ? "Mengunggah video..." : "Unggah Video (maks 200MB)"}
+          <input
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) uploadFile(f, onChange, setUploading);
+              e.target.value = "";
+            }}
+          />
+        </label>
+        <button
+          type="button"
+          onClick={openGalleryPicker}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#0B1F3A]/20 bg-white text-[#0B1F3A] text-xs hover:border-emerald-500 hover:text-emerald-700 transition-colors duration-200"
+        >
+          <Film size={12} /> {loadingGallery ? "Memuat..." : galleryVideos !== null ? "Tutup Galeri" : "Pilih dari Galeri Media"}
+        </button>
+      </div>
+      {galleryVideos !== null && (
+        <div className="rounded-lg border border-[#0B1F3A]/15 bg-white p-2.5 max-h-48 overflow-y-auto space-y-1">
+          {galleryVideos.length === 0 ? (
+            <p className="text-xs text-[#6B7280] py-2 text-center">Belum ada video di Galeri Media.</p>
+          ) : (
+            galleryVideos.map((v) => {
+              const relUrl = v.url || `/api/files/${v.storage_path}`;
+              const fullUrl = `${BACKEND_URL}${relUrl}`;
+              const fileName = v.original_filename || v.original_name || v.storage_path;
+              const active = value === fullUrl || value === relUrl;
+              return (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => {
+                    onChange(fullUrl);
+                    setGalleryVideos(null);
+                    toast.success(`Video "${fileName}" dipilih`);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-md text-xs flex items-center justify-between gap-2 transition-colors ${
+                    active ? "bg-emerald-50 text-emerald-800 font-medium" : "hover:bg-[#F8FAFC] text-[#0B1F3A]"
+                  }`}
+                >
+                  <span className="truncate">{fileName}</span>
+                  <span className="text-[10px] text-[#9CA3AF] shrink-0">{((v.size || 0) / (1024 * 1024)).toFixed(1)} MB</span>
+                </button>
+              );
+            })
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -313,9 +382,9 @@ function ArrayField({ value, onChange, path }) {
 
 const SECTION_NAMES = {
   marquee: "Teks Berjalan", problem: "01 Urgensi", ecosystem: "02 Ekosistem",
-  pillars: "03 Pilar Misi", programs: "04 Program", roadmap: "05 Peta Jalan",
-  governance: "06 Kepemimpinan", news: "07 Kabar", video: "08 Video",
-  publications: "09 Publikasi", join: "10 Ajakan & Form",
+  pillars: "03 Pilar Misi", programs: "04 Program", education: "04B Edukasi Publik",
+  roadmap: "05 Peta Jalan", governance: "06 Kepemimpinan", news: "07 Kabar",
+  video: "08 Video", publications: "09 Publikasi", join: "10 Ajakan & Form",
 };
 
 function SectionsField({ value, onChange }) {

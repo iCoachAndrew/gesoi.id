@@ -1,22 +1,25 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { trackEvent } from "../../lib/analytics";
 
 const DEFAULT_LOGO = "/logo.png";
 
-const links = (t) => [
-  { href: "#problem", label: t.nav.problem },
-  { href: "#ecosystem", label: t.nav.ecosystem },
-  { href: "#pillars", label: t.nav.pillars },
-  { href: "#programs", label: t.nav.programs },
-  { href: "#roadmap", label: t.nav.roadmap },
-  { href: "#news", label: t.nav.news },
+const links = (t, isSubpage = false) => [
+  { key: "problem", href: isSubpage ? "/#problem" : "#problem", label: t.nav.problem },
+  { key: "ecosystem", href: isSubpage ? "/#ecosystem" : "#ecosystem", label: t.nav.ecosystem },
+  { key: "pillars", href: isSubpage ? "/#pillars" : "#pillars", label: t.nav.pillars },
+  { key: "programs", href: isSubpage ? "/#programs" : "#programs", label: t.nav.programs },
+  { key: "education", href: "/edukasi", label: t.nav.education || "Edukasi", isRoute: true },
+  { key: "roadmap", href: isSubpage ? "/#roadmap" : "#roadmap", label: t.nav.roadmap },
+  { key: "news", href: isSubpage ? "/#news" : "#news", label: t.nav.news },
 ];
 
-export const Navbar = ({ t, lang, setLang, logo }) => {
+export const Navbar = ({ t, lang, setLang, logo, activePage = "" }) => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const isSubpage = Boolean(activePage);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -35,20 +38,37 @@ export const Navbar = ({ t, lang, setLang, logo }) => {
       data-testid="main-navbar"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2.5" data-testid="navbar-logo">
+        <a href={isSubpage ? "/" : "#top"} className="flex items-center gap-2.5" data-testid="navbar-logo">
           <img src={logo || DEFAULT_LOGO} alt="Gerakan Sehat Otak Indonesia" className="h-8 w-auto" />
         </a>
-        <nav className="hidden md:flex items-center gap-8">
-          {links(t).map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              data-testid={`nav-link-${l.href.slice(1)}`}
-              className="text-slate-500 hover:text-[var(--g-navy)] text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300"
-            >
-              {l.label}
-            </a>
-          ))}
+        <nav className="hidden md:flex items-center gap-7 lg:gap-8">
+          {links(t, isSubpage).map((l) => {
+            const isActive = activePage === l.key;
+            const cls = `text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300 ${
+              isActive
+                ? "text-emerald-700 font-semibold"
+                : "text-slate-500 hover:text-[var(--g-navy)]"
+            }`;
+            return l.isRoute ? (
+              <Link
+                key={l.key}
+                to={l.href}
+                data-testid={`nav-link-${l.key}`}
+                className={cls}
+              >
+                {l.label}
+              </Link>
+            ) : (
+              <a
+                key={l.key}
+                href={l.href}
+                data-testid={`nav-link-${l.key}`}
+                className={cls}
+              >
+                {l.label}
+              </a>
+            );
+          })}
         </nav>
         <div className="flex items-center gap-4">
           <div className="flex items-center rounded-full border border-slate-200 overflow-hidden text-xs" data-testid="language-toggle">
@@ -66,7 +86,7 @@ export const Navbar = ({ t, lang, setLang, logo }) => {
             ))}
           </div>
           <a
-            href="#join"
+            href={isSubpage ? "/#join" : "#join"}
             onClick={() => trackEvent("join_click")}
             data-testid="navbar-join-btn"
             className="hidden sm:inline-flex px-5 py-2 rounded-full bg-[var(--g-navy)] text-white text-xs uppercase tracking-[0.15em] font-medium hover:bg-[var(--g-emerald)] transition-colors duration-300"
@@ -85,18 +105,32 @@ export const Navbar = ({ t, lang, setLang, logo }) => {
       </div>
       {open && (
         <nav className="md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-100 px-6 py-6 flex flex-col gap-5" data-testid="mobile-menu">
-          {links(t).map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              data-testid={`mobile-nav-link-${l.href.slice(1)}`}
-              className="text-slate-600 text-sm uppercase tracking-[0.15em]"
-            >
-              {l.label}
-            </a>
-          ))}
-          <a href="#join" onClick={() => { setOpen(false); trackEvent("join_click"); }} data-testid="mobile-menu-join" className="text-emerald-700 font-semibold text-sm uppercase tracking-[0.15em]">
+          {links(t, isSubpage).map((l) =>
+            l.isRoute ? (
+              <Link
+                key={l.key}
+                to={l.href}
+                onClick={() => setOpen(false)}
+                data-testid={`mobile-nav-link-${l.key}`}
+                className={`text-sm uppercase tracking-[0.15em] ${
+                  activePage === l.key ? "text-emerald-700 font-semibold" : "text-slate-600"
+                }`}
+              >
+                {l.label}
+              </Link>
+            ) : (
+              <a
+                key={l.key}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                data-testid={`mobile-nav-link-${l.key}`}
+                className="text-slate-600 text-sm uppercase tracking-[0.15em]"
+              >
+                {l.label}
+              </a>
+            )
+          )}
+          <a href={isSubpage ? "/#join" : "#join"} onClick={() => { setOpen(false); trackEvent("join_click"); }} data-testid="mobile-menu-join" className="text-emerald-700 font-semibold text-sm uppercase tracking-[0.15em]">
             {t.nav.join}
           </a>
         </nav>

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { MapPin, Mail } from "lucide-react";
 
 const DEFAULT_LOGO = "/logo.png";
@@ -18,17 +19,24 @@ export const Footer = ({ t, logo }) => (
           <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-700 mb-6">{t.footer.nav}</h4>
           <ul className="space-y-3 text-sm text-slate-500 font-light">
             {[
-              ["#problem", t.nav.problem],
-              ["#ecosystem", t.nav.ecosystem],
-              ["#pillars", t.nav.pillars],
-              ["#programs", t.nav.programs],
-              ["#roadmap", t.nav.roadmap],
-              ["#join", t.nav.join],
-            ].map(([href, label]) => (
-              <li key={href}>
-                <a href={href} className="hover:text-[var(--g-navy)] transition-colors duration-300" data-testid={`footer-link-${href.slice(1)}`}>
-                  {label}
-                </a>
+              ["#problem", t.nav.problem, "problem"],
+              ["#ecosystem", t.nav.ecosystem, "ecosystem"],
+              ["#pillars", t.nav.pillars, "pillars"],
+              ["#programs", t.nav.programs, "programs"],
+              ["/edukasi", t.nav.education || "Edukasi", "education", true],
+              ["#roadmap", t.nav.roadmap, "roadmap"],
+              ["#join", t.nav.join, "join"],
+            ].map(([href, label, key, isRoute]) => (
+              <li key={key}>
+                {isRoute ? (
+                  <Link to={href} className="hover:text-[var(--g-navy)] transition-colors duration-300" data-testid={`footer-link-${key}`}>
+                    {label}
+                  </Link>
+                ) : (
+                  <a href={href} className="hover:text-[var(--g-navy)] transition-colors duration-300" data-testid={`footer-link-${key}`}>
+                    {label}
+                  </a>
+                )}
               </li>
             ))}
           </ul>
