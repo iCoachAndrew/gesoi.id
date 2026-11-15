@@ -840,81 +840,48 @@ export const Education = ({
     }
   }, [shareText, shareUrl, safeActiveIdx, handleCopyLink]);
 
+  const shareLinks = useMemo(() => {
+    const isAndroid = typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent || "");
+    const isMobile = typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+    const encodedPayload = encodeURIComponent(`${shareText}\n\n${shareUrl}`);
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedText = encodeURIComponent(shareText);
+
+    let waHref = `https://wa.me/?text=${encodedPayload}`;
+    let tgHref = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+    let fbHref = `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`;
+    let igHref = "https://instagram.com/direct/inbox/";
+
+    if (isAndroid) {
+      waHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=com.whatsapp;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=${encodeURIComponent(`https://wa.me/?text=${encodedPayload}`)};end`;
+      tgHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=org.telegram.messenger;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=${encodeURIComponent(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`)};end`;
+      fbHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=com.facebook.orca;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=${encodeURIComponent(`https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`)};end`;
+      igHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=com.instagram.android;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=https%3A%2F%2Finstagram.com%2Fdirect%2Finbox%2F;end`;
+    } else if (isMobile) {
+      waHref = `whatsapp://send?text=${encodedPayload}`;
+      tgHref = `tg://msg_url?url=${encodedUrl}&text=${encodedText}`;
+      fbHref = `fb-messenger://share/?link=${encodedUrl}`;
+      igHref = "instagram://direct-inbox";
+    }
+
+    return { waHref, tgHref, fbHref, igHref, isMobile };
+  }, [shareText, shareUrl]);
+
   const handleShareToWhatsApp = useCallback(() => {
     trackEvent("edu_share_whatsapp", String(safeActiveIdx));
-    const encodedText = encodeURIComponent(`${shareText}\n\n${shareUrl}`);
-    const isAndroid = /Android/i.test(navigator.userAgent || "");
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-    if (isAndroid) {
-      window.location.href = `intent://send?text=${encodedText}#Intent;package=com.whatsapp;scheme=whatsapp;S.browser_fallback_url=${encodeURIComponent(`https://wa.me/?text=${encodedText}`)};end`;
-    } else if (isMobile) {
-      window.location.href = `whatsapp://send?text=${encodedText}`;
-      setTimeout(() => {
-        window.open(`https://wa.me/?text=${encodedText}`, "_blank", "noopener,noreferrer");
-      }, 1000);
-    } else {
-      const url = `https://wa.me/?text=${encodedText}`;
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-  }, [shareText, shareUrl, safeActiveIdx]);
+  }, [safeActiveIdx]);
 
   const handleShareToTelegram = useCallback(() => {
     trackEvent("edu_share_telegram", String(safeActiveIdx));
-    const encodedUrl = encodeURIComponent(shareUrl);
-    const encodedText = encodeURIComponent(shareText);
-    const isAndroid = /Android/i.test(navigator.userAgent || "");
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-    if (isAndroid) {
-      window.location.href = `intent://share/url?url=${encodedUrl}&text=${encodedText}#Intent;scheme=https;package=org.telegram.messenger;S.browser_fallback_url=${encodeURIComponent(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`)};end`;
-    } else if (isMobile) {
-      window.location.href = `tg://msg_url?url=${encodedUrl}&text=${encodedText}`;
-      setTimeout(() => {
-        window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, "_blank", "noopener,noreferrer");
-      }, 1000);
-    } else {
-      window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, "_blank", "noopener,noreferrer");
-    }
-  }, [shareText, shareUrl, safeActiveIdx]);
+  }, [safeActiveIdx]);
 
   const handleShareToMessenger = useCallback(() => {
     trackEvent("edu_share_messenger", String(safeActiveIdx));
-    const isAndroid = /Android/i.test(navigator.userAgent || "");
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-    const encodedUrl = encodeURIComponent(shareUrl);
-    if (isAndroid) {
-      window.location.href = `intent://share/?link=${encodedUrl}#Intent;package=com.facebook.orca;scheme=fb-messenger;S.browser_fallback_url=${encodeURIComponent(`https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`)};end`;
-    } else if (isMobile) {
-      window.location.href = `fb-messenger://share/?link=${encodedUrl}`;
-      setTimeout(() => {
-        window.open(
-          `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`,
-          "_blank"
-        );
-      }, 1000);
-    } else {
-      window.open(
-        `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`,
-        "_blank"
-      );
-    }
-  }, [shareUrl, safeActiveIdx]);
+  }, [safeActiveIdx]);
 
   const handleShareToInstagram = useCallback(() => {
     trackEvent("edu_share_instagram", String(safeActiveIdx));
     handleCopyLink();
-    const isAndroid = /Android/i.test(navigator.userAgent || "");
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-    if (isAndroid) {
-      window.location.href =
-        "intent://direct-inbox#Intent;package=com.instagram.android;scheme=instagram;S.browser_fallback_url=https%3A%2F%2Finstagram.com%2Fdirect%2Finbox%2F;end";
-    } else if (isMobile) {
-      window.location.href = "instagram://direct-inbox";
-      setTimeout(() => {
-        window.open("https://instagram.com/direct/inbox/", "_blank");
-      }, 1000);
-    } else {
-      window.open("https://instagram.com/direct/inbox/", "_blank");
-    }
   }, [handleCopyLink, safeActiveIdx]);
 
   const handleShareToInstagramDM = handleShareToInstagram;
@@ -1375,55 +1342,63 @@ export const Education = ({
                       </button>
                     </div>
 
-                    {/* Platform Grid: WhatsApp, Telegram, Messenger, Instagram DM */}
+                    {/* Platform Grid: WhatsApp, Telegram, Messenger, Instagram */}
                     <div className="grid grid-cols-4 gap-2 mb-3">
                       {/* WhatsApp */}
-                      <button
-                        type="button"
+                      <a
+                        href={shareLinks.waHref}
                         onClick={handleShareToWhatsApp}
-                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#25D366]/20 active:scale-95 transition-all touch-manipulation group"
+                        target={shareLinks.isMobile ? undefined : "_blank"}
+                        rel={shareLinks.isMobile ? undefined : "noopener noreferrer"}
+                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#25D366]/20 active:scale-95 transition-all touch-manipulation group text-center cursor-pointer no-underline select-none"
                       >
                         <span className="w-11 h-11 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                           <WhatsAppIcon size={22} />
                         </span>
                         <span className="text-[10px] text-white/90 font-medium">WhatsApp</span>
-                      </button>
+                      </a>
 
                       {/* Telegram */}
-                      <button
-                        type="button"
+                      <a
+                        href={shareLinks.tgHref}
                         onClick={handleShareToTelegram}
-                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#24A1DE]/20 active:scale-95 transition-all touch-manipulation group"
+                        target={shareLinks.isMobile ? undefined : "_blank"}
+                        rel={shareLinks.isMobile ? undefined : "noopener noreferrer"}
+                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#24A1DE]/20 active:scale-95 transition-all touch-manipulation group text-center cursor-pointer no-underline select-none"
                       >
                         <span className="w-11 h-11 rounded-full bg-[#24A1DE] text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                           <TelegramIcon size={22} />
                         </span>
                         <span className="text-[10px] text-white/90 font-medium">Telegram</span>
-                      </button>
+                      </a>
 
                       {/* Messenger */}
-                      <button
-                        type="button"
+                      <a
+                        href={shareLinks.fbHref}
                         onClick={handleShareToMessenger}
-                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#0084FF]/20 active:scale-95 transition-all touch-manipulation group"
+                        target={shareLinks.isMobile ? undefined : "_blank"}
+                        rel={shareLinks.isMobile ? undefined : "noopener noreferrer"}
+                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#0084FF]/20 active:scale-95 transition-all touch-manipulation group text-center cursor-pointer no-underline select-none"
                       >
                         <span className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#00C6FF] to-[#0078FF] text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                           <MessengerIcon size={22} />
                         </span>
                         <span className="text-[10px] text-white/90 font-medium">Messenger</span>
-                      </button>
+                      </a>
 
                       {/* Instagram */}
-                      <button
-                        type="button"
+                      <a
+                        href={shareLinks.igHref}
                         onClick={handleShareToInstagram}
-                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#E1306C]/20 active:scale-95 transition-all touch-manipulation group"
+                        target={shareLinks.isMobile ? undefined : "_blank"}
+                        rel={shareLinks.isMobile ? undefined : "noopener noreferrer"}
+                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#E1306C]/20 active:scale-95 transition-all touch-manipulation group text-center cursor-pointer no-underline select-none"
                       >
                         <span className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                           <InstagramIcon size={22} />
                         </span>
                         <span className="text-[10px] text-white/90 font-medium">Instagram</span>
-                      </button>
+                      </a>
                     </div>
 
                     {/* Copy Link & Native Share Actions */}
