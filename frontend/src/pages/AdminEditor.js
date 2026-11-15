@@ -207,7 +207,7 @@ export default function AdminEditor() {
 
           {section === "education" && (
             <div className="mb-5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 px-4 py-3 text-xs text-[#0B1F3A] leading-relaxed">
-              <strong className="font-semibold text-emerald-800">Tips Halaman Edukasi:</strong> Semua video yang diunggah ke{" "}
+              <strong className="font-semibold text-emerald-800">Tips Halaman Edukasi (Shorts 9:16):</strong> Format video didesain khusus vertikal 9:16 (Shorts/Reels) agar pas di layar ponsel maupun desktop tanpa terpotong. Semua video yang diunggah ke{" "}
               <strong className="font-semibold">Galeri Media</strong> akan otomatis tampil di halaman <code className="px-1.5 py-0.5 rounded bg-white border border-emerald-200">/edukasi</code> dan bagian <strong className="font-semibold">Edukasi</strong> di beranda. Gunakan tombol{" "}
               <strong className="font-semibold">&ldquo;Muat Video dari Galeri Media&rdquo;</strong> di atas untuk menarik daftar video ke bawah ini agar Anda bisa menyesuaikan judul, nama pembicara (mis. Andrew Tani / Karya Turag), kategori topik, dan deskripsinya.
             </div>

@@ -1,0 +1,12 @@
+# Exclude legacy agent logs, test reports, and build/temp artifacts from codebase-memory graph
+.emergent/
+test_reports/
+test_result.md
+frontend/build/
+hostinger/migrated_uploads/
+hostinger/__pycache__/
+*.zip
+*.webp
+*.jpg
+*.png
+*.mp4

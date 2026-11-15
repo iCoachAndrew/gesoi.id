@@ -240,7 +240,7 @@ export const VideoField = ({ value, onChange, testId }) => {
   return (
     <div className="space-y-2">
       {value && !/youtube\.com|youtu\.be/i.test(value) && (
-        <video src={value} muted className="w-48 rounded-lg border border-[#0B1F3A]/10 bg-black" preload="metadata" />
+        <video src={value} muted className="max-w-[160px] aspect-[9/16] object-cover rounded-lg border border-[#0B1F3A]/10 bg-black shadow-sm" preload="metadata" />
       )}
       <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="URL video (.mp4 / .webm / YouTube)" className={inputCls} data-testid={testId} />
       <div className="flex flex-wrap items-center gap-2">
