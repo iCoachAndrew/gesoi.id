@@ -9,6 +9,12 @@ const SAMPLE_URLS = new Set([
 
 export const isSampleVideoUrl = (url = "") => SAMPLE_URLS.has((url || "").trim());
 
+// Rewrite /api/files/gesoi/uploads/<file> to direct static /api/uploads/<file> served by LiteSpeed/Apache
+export const toDirectMediaUrl = (url = "") =>
+  String(url || "")
+    .trim()
+    .replace(/^(https?:\/\/[^/]+)?\/api\/files\/gesoi\/uploads\//i, "$1/api/uploads/");
+
 export const formatDuration = (seconds) => {
   if (!Number.isFinite(seconds) || seconds <= 0) return "";
   const total = Math.round(seconds);
@@ -87,6 +93,7 @@ export const normalizeEducationItem = (item = {}, lang = "id") => {
 
   return {
     ...item,
+    url: item.url ? toDirectMediaUrl(item.url) : item.url,
     title,
     category,
     speaker,
@@ -154,7 +161,7 @@ export const videoItemFromGalleryFile = (file, lang = "id") => {
     role: "",
     duration: "",
     desc,
-    url: file.url || `/api/files/${file.storage_path}`,
+    url: toDirectMediaUrl(file.url || `/api/files/${file.storage_path}`),
     poster: "",
     _fromGallery: true,
     _fileId: file.id,
@@ -167,7 +174,8 @@ export const autoClassifyGalleryVideo = videoItemFromGalleryFile;
 const normalizeUrlKey = (u = "") =>
   String(u || "")
     .trim()
-    .replace(/^https?:\/\/[^/]+/i, "");
+    .replace(/^https?:\/\/[^/]+/i, "")
+    .replace(/^\/api\/uploads\//i, "/api/files/gesoi/uploads/");
 
 export const buildEducationVideoList = (cmsItems = [], galleryVideos = [], lang = "id") => {
   const safeCms = Array.isArray(cmsItems) ? cmsItems.filter((it) => it && it.url) : [];

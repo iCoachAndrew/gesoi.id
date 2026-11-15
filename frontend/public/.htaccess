@@ -7,6 +7,11 @@
   RewriteCond %{HTTP:Authorization} ^(.*)
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 
+  # Layani file media unggahan (/api/files/gesoi/uploads/*) langsung lewat LiteSpeed/Apache
+  # tanpa membebani PHP & MySQL agar streaming video 206 Byte-Range instan & bebas lag
+  RewriteCond %{DOCUMENT_ROOT}/api/uploads/$1 -f
+  RewriteRule ^api/files/gesoi/uploads/([a-zA-Z0-9._-]+)$ api/uploads/$1 [L]
+
   # Arahkan seluruh request /api dan /api/* ke router PHP
   RewriteRule ^api/?$ api/index.php [QSA,L]
   RewriteCond %{REQUEST_FILENAME} !-f
@@ -30,6 +35,10 @@
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
     Header set Expires "0"
+  </FilesMatch>
+  <FilesMatch "\.(mp4|webm|mov|webp|jpg|jpeg|png)$">
+    Header set Cache-Control "public, max-age=604800, immutable"
+    Header set Accept-Ranges "bytes"
   </FilesMatch>
 </IfModule>
 

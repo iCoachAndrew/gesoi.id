@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import Lenis from "lenis";
 import { Toaster } from "sonner";
 import { Brain, Heart, Sparkles, ArrowRight } from "lucide-react";
 import { content, sharedDefaults } from "../i18n";
@@ -110,20 +109,6 @@ export default function EducationPage() {
     if (th.emerald) root.style.setProperty("--g-emerald", th.emerald);
     if (th.gold) root.style.setProperty("--g-gold", th.gold);
   }, [shared]);
-
-  useEffect(() => {
-    const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
-    let frameId;
-    function raf(time) {
-      lenis.raf(time);
-      frameId = requestAnimationFrame(raf);
-    }
-    frameId = requestAnimationFrame(raf);
-    return () => {
-      cancelAnimationFrame(frameId);
-      lenis.destroy();
-    };
-  }, []);
 
   const guides = PILLARS_SUMMARY[lang] || PILLARS_SUMMARY.id;
 

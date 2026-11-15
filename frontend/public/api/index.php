@@ -615,7 +615,7 @@ if ($method === 'GET' && $route === '/videos') {
         $rows = $stmt->fetchAll();
         foreach ($rows as &$r) {
             $r['size'] = (int)$r['size'];
-            $r['url'] = '/api/files/' . $r['storage_path'];
+            $r['url'] = '/api/uploads/' . basename((string)$r['storage_path']);
         }
         unset($r);
         json_response($rows);
@@ -677,11 +677,14 @@ if ($method === 'GET' && preg_match('#^/files/(.+)$#', $route, $m)) {
 
     $mime = $record['content_type'] ?: 'application/octet-stream';
     $fileSize = filesize($realFile);
+    while (ob_get_level() > 0) {
+        @ob_end_clean();
+    }
     header('Content-Type: ' . $mime);
-    header('Cache-Control: public, max-age=86400');
+    header('Cache-Control: public, max-age=604800, immutable');
     header('Accept-Ranges: bytes');
 
-    // Dukungan HTTP Range untuk streaming video MP4/WebM
+    // Dukungan HTTP Range untuk streaming video MP4/WebM secara chunked (hemat RAM)
     if (isset($_SERVER['HTTP_RANGE']) && preg_match('/bytes=(\d+)-(\d*)/', (string)$_SERVER['HTTP_RANGE'], $rm)) {
         $start = (int)$rm[1];
         $end = $rm[2] !== '' ? (int)$rm[2] : ($fileSize - 1);
@@ -694,7 +697,18 @@ if ($method === 'GET' && preg_match('#^/files/(.+)$#', $route, $m)) {
             $fp = fopen($realFile, 'rb');
             if ($fp) {
                 fseek($fp, $start);
-                echo fread($fp, $length);
+                $remaining = $length;
+                $chunkSize = 65536;
+                while (!feof($fp) && $remaining > 0 && !connection_aborted()) {
+                    $readLen = min($chunkSize, $remaining);
+                    $buf = fread($fp, $readLen);
+                    if ($buf === false || $buf === '') {
+                        break;
+                    }
+                    echo $buf;
+                    $remaining -= strlen($buf);
+                    flush();
+                }
                 fclose($fp);
             }
             exit;
