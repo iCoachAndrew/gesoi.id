@@ -848,32 +848,57 @@ export const Education = ({
 
   const handleShareToTelegram = useCallback(() => {
     trackEvent("edu_share_telegram", String(safeActiveIdx));
-    const url = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedText = encodeURIComponent(shareText);
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+    if (isMobile) {
+      window.location.href = `tg://msg_url?url=${encodedUrl}&text=${encodedText}`;
+      setTimeout(() => {
+        window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, "_blank", "noopener,noreferrer");
+      }, 700);
+    } else {
+      window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, "_blank", "noopener,noreferrer");
+    }
   }, [shareText, shareUrl, safeActiveIdx]);
 
   const handleShareToMessenger = useCallback(() => {
     trackEvent("edu_share_messenger", String(safeActiveIdx));
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+    const encodedUrl = encodeURIComponent(shareUrl);
     if (isMobile) {
-      window.location.href = `fb-messenger://share/?link=${encodeURIComponent(shareUrl)}`;
+      window.location.href = `fb-messenger://share/?link=${encodedUrl}`;
       setTimeout(() => {
         window.open(
-          `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=291494419107518&redirect_uri=${encodeURIComponent(shareUrl)}`,
+          `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`,
           "_blank"
         );
       }, 700);
     } else {
       window.open(
-        `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=291494419107518&redirect_uri=${encodeURIComponent(shareUrl)}`,
+        `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`,
         "_blank"
       );
     }
   }, [shareUrl, safeActiveIdx]);
 
-  const handleShareToInstagramDM = useCallback(() => {
+  const handleShareToInstagram = useCallback(async () => {
+    trackEvent("edu_share_instagram", String(safeActiveIdx));
     handleCopyLink();
-    trackEvent("edu_share_instagram_dm", String(safeActiveIdx));
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      try {
+        await navigator.share({
+          title: shareText,
+          text: `${shareText}\n${shareUrl}`,
+          url: shareUrl,
+        });
+        setShowShareModal(false);
+        return;
+      } catch (err) {
+        if (err && err.name === "AbortError") {
+          return;
+        }
+      }
+    }
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
     if (isMobile) {
       window.location.href = "instagram://direct-inbox";
@@ -883,7 +908,9 @@ export const Education = ({
     } else {
       window.open("https://instagram.com/direct/inbox/", "_blank");
     }
-  }, [handleCopyLink, safeActiveIdx]);
+  }, [shareText, shareUrl, safeActiveIdx, handleCopyLink]);
+
+  const handleShareToInstagramDM = handleShareToInstagram;
 
   const scrollToDetails = () => {
     const el = document.getElementById("education-details-section");
@@ -1379,16 +1406,16 @@ export const Education = ({
                         <span className="text-[10px] text-white/90 font-medium">Messenger</span>
                       </button>
 
-                      {/* Instagram DM */}
+                      {/* Instagram */}
                       <button
                         type="button"
-                        onClick={handleShareToInstagramDM}
+                        onClick={handleShareToInstagram}
                         className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-white/5 hover:bg-[#E1306C]/20 active:scale-95 transition-all touch-manipulation group"
                       >
                         <span className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                           <InstagramIcon size={22} />
                         </span>
-                        <span className="text-[10px] text-white/90 font-medium">Instagram DM</span>
+                        <span className="text-[10px] text-white/90 font-medium">Instagram</span>
                       </button>
                     </div>
 
