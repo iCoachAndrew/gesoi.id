@@ -842,20 +842,35 @@ export const Education = ({
 
   const handleShareToWhatsApp = useCallback(() => {
     trackEvent("edu_share_whatsapp", String(safeActiveIdx));
-    const url = `https://wa.me/?text=${encodeURIComponent(`${shareText}\n\n${shareUrl}`)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    const encodedText = encodeURIComponent(`${shareText}\n\n${shareUrl}`);
+    const isAndroid = /Android/i.test(navigator.userAgent || "");
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+    if (isAndroid) {
+      window.location.href = `intent://send?text=${encodedText}#Intent;package=com.whatsapp;scheme=whatsapp;S.browser_fallback_url=${encodeURIComponent(`https://wa.me/?text=${encodedText}`)};end`;
+    } else if (isMobile) {
+      window.location.href = `whatsapp://send?text=${encodedText}`;
+      setTimeout(() => {
+        window.open(`https://wa.me/?text=${encodedText}`, "_blank", "noopener,noreferrer");
+      }, 1000);
+    } else {
+      const url = `https://wa.me/?text=${encodedText}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
   }, [shareText, shareUrl, safeActiveIdx]);
 
   const handleShareToTelegram = useCallback(() => {
     trackEvent("edu_share_telegram", String(safeActiveIdx));
     const encodedUrl = encodeURIComponent(shareUrl);
     const encodedText = encodeURIComponent(shareText);
+    const isAndroid = /Android/i.test(navigator.userAgent || "");
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-    if (isMobile) {
+    if (isAndroid) {
+      window.location.href = `intent://share/url?url=${encodedUrl}&text=${encodedText}#Intent;scheme=https;package=org.telegram.messenger;S.browser_fallback_url=${encodeURIComponent(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`)};end`;
+    } else if (isMobile) {
       window.location.href = `tg://msg_url?url=${encodedUrl}&text=${encodedText}`;
       setTimeout(() => {
         window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, "_blank", "noopener,noreferrer");
-      }, 700);
+      }, 1000);
     } else {
       window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`, "_blank", "noopener,noreferrer");
     }
@@ -863,16 +878,19 @@ export const Education = ({
 
   const handleShareToMessenger = useCallback(() => {
     trackEvent("edu_share_messenger", String(safeActiveIdx));
+    const isAndroid = /Android/i.test(navigator.userAgent || "");
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
     const encodedUrl = encodeURIComponent(shareUrl);
-    if (isMobile) {
+    if (isAndroid) {
+      window.location.href = `intent://share/?link=${encodedUrl}#Intent;package=com.facebook.orca;scheme=fb-messenger;S.browser_fallback_url=${encodeURIComponent(`https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`)};end`;
+    } else if (isMobile) {
       window.location.href = `fb-messenger://share/?link=${encodedUrl}`;
       setTimeout(() => {
         window.open(
           `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`,
           "_blank"
         );
-      }, 700);
+      }, 1000);
     } else {
       window.open(
         `https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`,
@@ -881,34 +899,23 @@ export const Education = ({
     }
   }, [shareUrl, safeActiveIdx]);
 
-  const handleShareToInstagram = useCallback(async () => {
+  const handleShareToInstagram = useCallback(() => {
     trackEvent("edu_share_instagram", String(safeActiveIdx));
     handleCopyLink();
-    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-      try {
-        await navigator.share({
-          title: shareText,
-          text: `${shareText}\n${shareUrl}`,
-          url: shareUrl,
-        });
-        setShowShareModal(false);
-        return;
-      } catch (err) {
-        if (err && err.name === "AbortError") {
-          return;
-        }
-      }
-    }
+    const isAndroid = /Android/i.test(navigator.userAgent || "");
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
-    if (isMobile) {
+    if (isAndroid) {
+      window.location.href =
+        "intent://direct-inbox#Intent;package=com.instagram.android;scheme=instagram;S.browser_fallback_url=https%3A%2F%2Finstagram.com%2Fdirect%2Finbox%2F;end";
+    } else if (isMobile) {
       window.location.href = "instagram://direct-inbox";
       setTimeout(() => {
         window.open("https://instagram.com/direct/inbox/", "_blank");
-      }, 700);
+      }, 1000);
     } else {
       window.open("https://instagram.com/direct/inbox/", "_blank");
     }
-  }, [shareText, shareUrl, safeActiveIdx, handleCopyLink]);
+  }, [handleCopyLink, safeActiveIdx]);
 
   const handleShareToInstagramDM = handleShareToInstagram;
 
