@@ -30,15 +30,42 @@ if (is_file($externalConfig)) {
 
 // 2. CORS Headers & Preflight
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowedOrigins = array_map('trim', explode(',', (string)($config['CORS_ORIGINS'] ?? '*')));
-if (in_array('*', $allowedOrigins, true)) {
-    header('Access-Control-Allow-Origin: ' . ($origin ?: '*'));
-} elseif ($origin && in_array($origin, $allowedOrigins, true)) {
-    header('Access-Control-Allow-Origin: ' . $origin);
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$allowedOrigins = array_map('trim', explode(',', (string)($config['CORS_ORIGINS'] ?? '')));
+
+$originHost = $origin ? (string)parse_url($origin, PHP_URL_HOST) : '';
+$originPort = $origin ? (int)parse_url($origin, PHP_URL_PORT) : 0;
+$originWithPort = $originHost . ($originPort ? ":$originPort" : '');
+
+// Allow credentials only for trusted origins (self-domain, host match, localhost dev, or explicit config)
+$isTrustedOrigin = false;
+if ($origin) {
+    if (
+        $originHost === 'gesoi.id' ||
+        $originHost === 'www.gesoi.id' ||
+        $originHost === 'localhost' ||
+        $originHost === '127.0.0.1' ||
+        ($host && ($originHost === $host || $originWithPort === $host)) ||
+        in_array($origin, $allowedOrigins, true)
+    ) {
+        $isTrustedOrigin = true;
+    }
 }
-header('Access-Control-Allow-Credentials: true');
+
+if ($isTrustedOrigin) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Credentials: true');
+    header('Vary: Origin');
+} else {
+    if (!$origin && in_array('*', $allowedOrigins, true)) {
+        header('Access-Control-Allow-Origin: *');
+    }
+}
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     http_response_code(200);
@@ -49,6 +76,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 function json_response(mixed $data, int $status = 200): never {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
     echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -106,13 +136,17 @@ function verify_jwt(string $token, string $secret): array {
         json_response(['detail' => 'Invalid token'], 401);
     }
     [$h64, $p64, $s64] = $parts;
+    $header = json_decode(b64url_decode($h64), true);
+    if (!is_array($header) || ($header['alg'] ?? '') !== 'HS256' || ($header['typ'] ?? '') !== 'JWT') {
+        json_response(['detail' => 'Invalid token algorithm'], 401);
+    }
     $expectedSig = b64url_encode(hash_hmac('sha256', "$h64.$p64", $secret, true));
     if (!hash_equals($expectedSig, $s64)) {
-        json_response(['detail' => 'Invalid token'], 401);
+        json_response(['detail' => 'Invalid token signature'], 401);
     }
     $payload = json_decode(b64url_decode($p64), true);
     if (!is_array($payload)) {
-        json_response(['detail' => 'Invalid token'], 401);
+        json_response(['detail' => 'Invalid token payload'], 401);
     }
     if (isset($payload['exp']) && time() >= (int)$payload['exp']) {
         json_response(['detail' => 'Token expired'], 401);
@@ -121,6 +155,33 @@ function verify_jwt(string $token, string $secret): array {
         json_response(['detail' => 'Invalid token type'], 401);
     }
     return $payload;
+}
+
+function check_rate_limit(PDO $pdo, string $prefix, int $maxAttempts = 10, int $windowSeconds = 600): void {
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    $identifier = $prefix . ':' . substr((string)$ip, 0, 45);
+    $stmt = $pdo->prepare('SELECT count, last_attempt FROM `login_attempts` WHERE identifier = ? LIMIT 1');
+    $stmt->execute([$identifier]);
+    $row = $stmt->fetch();
+    $now = time();
+    $nowIso = now_iso();
+    if ($row) {
+        $lastTs = strtotime((string)$row['last_attempt']) ?: 0;
+        if (($now - $lastTs) < $windowSeconds) {
+            if ((int)$row['count'] >= $maxAttempts) {
+                json_response(['detail' => 'Terlalu banyak permintaan. Silakan coba lagi nanti.'], 429);
+            }
+            $upd = $pdo->prepare('UPDATE `login_attempts` SET count = count + 1, last_attempt = ? WHERE identifier = ?');
+            $upd->execute([$nowIso, $identifier]);
+            return;
+        }
+    }
+    $upsert = $pdo->prepare('
+        INSERT INTO `login_attempts` (identifier, count, last_attempt)
+        VALUES (?, 1, ?)
+        ON DUPLICATE KEY UPDATE count = 1, last_attempt = VALUES(last_attempt)
+    ');
+    $upsert->execute([$identifier, $nowIso]);
 }
 
 function get_auth_header(): string {
@@ -373,6 +434,7 @@ if ($method === 'GET' && $route === '/auth/me') {
 
 // --- POST /api/contact (Publik) ---
 if ($method === 'POST' && $route === '/contact') {
+    check_rate_limit($pdo, 'contact', 10, 600);
     $body = read_json_body();
     $name = trim((string)($body['name'] ?? ''));
     $email = trim((string)($body['email'] ?? ''));
@@ -416,6 +478,7 @@ if ($method === 'GET' && ($route === '/contact' || $route === '/admin/contacts')
 
 // --- POST /api/orders (Publik) ---
 if ($method === 'POST' && $route === '/orders') {
+    check_rate_limit($pdo, 'order', 10, 600);
     $body = read_json_body();
     $pubTitle = trim((string)($body['publication_title'] ?? ''));
     $price = trim((string)($body['price'] ?? ''));
@@ -660,6 +723,9 @@ if ($method === 'DELETE' && preg_match('#^/admin/files/([^/]+)$#', $route, $m)) 
 // --- GET /api/files/{path} (Publik) ---
 if ($method === 'GET' && preg_match('#^/files/(.+)$#', $route, $m)) {
     $storagePath = $m[1];
+    if (str_contains($storagePath, "\0") || str_contains($storagePath, '..') || str_starts_with($storagePath, '/')) {
+        json_response(['detail' => 'Invalid path'], 400);
+    }
     $stmt = $pdo->prepare('SELECT storage_path, content_type FROM `files` WHERE storage_path = ? AND is_deleted = 0 LIMIT 1');
     $stmt->execute([$storagePath]);
     $record = $stmt->fetch();
@@ -722,6 +788,7 @@ if ($method === 'GET' && preg_match('#^/files/(.+)$#', $route, $m)) {
 
 // --- POST /api/track (Publik) ---
 if ($method === 'POST' && $route === '/track') {
+    check_rate_limit($pdo, 'track', 60, 60);
     $body = read_json_body();
     if (!isset($body['visitor_id']) || trim((string)$body['visitor_id']) === '') {
         json_response(['detail' => 'visitor_id wajib diisi'], 422);

@@ -6,8 +6,10 @@ import {
   Pause,
   Volume2,
   VolumeX,
-  SkipBack,
-  SkipForward,
+  RotateCcw,
+  RotateCw,
+  Maximize2,
+  Settings,
   Sparkles,
   Search,
   X,
@@ -15,10 +17,8 @@ import {
   ArrowUpRight,
   ChevronUp,
   ChevronDown,
-  RotateCcw,
-  RotateCw,
-  Maximize2,
   User,
+  Check,
 } from "lucide-react";
 import { trackEvent } from "../../lib/analytics";
 import {
@@ -31,7 +31,7 @@ import {
 
 const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
-const WhatsAppIcon = ({ size = 15 }) => (
+const WhatsAppIcon = ({ size = 16 }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
   </svg>
@@ -39,8 +39,7 @@ const WhatsAppIcon = ({ size = 15 }) => (
 
 /**
  * Lightweight 9:16 Card Thumbnail:
- * Does NOT mount <video> tags by default (avoiding 5-60 simultaneous 50MB video downloads & GPU decoders).
- * Only mounts a preview <video> if the user intentionally hovers a card on desktop for >220ms.
+ * Only mounts a preview <video> if the user hovers a card on desktop for >250ms.
  */
 const VideoCardThumbnail = memo(({ item, isActive, onDurationDetected }) => {
   const [mountPreview, setMountPreview] = useState(false);
@@ -50,7 +49,7 @@ const VideoCardThumbnail = memo(({ item, isActive, onDurationDetected }) => {
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
     hoverTimerRef.current = setTimeout(() => {
       setMountPreview(true);
-    }, 220);
+    }, 250);
   };
 
   const onLeave = () => {
@@ -150,15 +149,20 @@ export const Education = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [isGridExpanded, setIsGridExpanded] = useState(false);
 
-  // Player state (kept minimal; high-frequency currentTime is driven via DOM refs for 0 re-renders)
+  // Player state
   const [playing, setPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(1);
   const [durationSec, setDurationSec] = useState(0);
   const [autoPlayNext, setAutoPlayNext] = useState(true);
+  const [loopVideo, setLoopVideo] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [detectedDurations, setDetectedDurations] = useState({});
+
+  // In-video control visibility (fading after 5s of untouched playback)
+  const [showControls, setShowControls] = useState(true);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Gesture visual feedback
   const [seekRipple, setSeekRipple] = useState(null);
@@ -167,7 +171,6 @@ export const Education = ({
   const videoRef = useRef(null);
   const playerFrameRef = useRef(null);
   const playerSlideRef = useRef(null);
-  const stageRef = useRef(null);
   const scrubberRef = useRef(null);
   const currentTimeLabelRef = useRef(null);
   const miniProgressRef = useRef(null);
@@ -175,8 +178,9 @@ export const Education = ({
   const shouldAutoStartRef = useRef(Boolean(isFullPage));
   const pointerStartRef = useRef(null);
   const wheelCooldownRef = useRef(0);
-  const rightTapTimerRef = useRef(null);
+  const lastLeftTapRef = useRef(0);
   const lastRightTapRef = useRef(0);
+  const fadeTimerRef = useRef(null);
 
   useEffect(() => {
     axios
@@ -229,7 +233,6 @@ export const Education = ({
       });
   }, [allVideos, activeCategory, searchQuery]);
 
-  // Show up to 5 videos by default when collapsed
   const visibleVideos = useMemo(
     () => (isGridExpanded ? filteredVideos : filteredVideos.slice(0, 5)),
     [filteredVideos, isGridExpanded]
@@ -240,14 +243,14 @@ export const Education = ({
   const activeYtEmbed = activeVideo ? getYoutubeEmbedUrl(activeVideo.url) : null;
   const activeDirectUrl = activeVideo ? toDirectMediaUrl(activeVideo.url) : "";
 
-  // Next video direct URL for browser pre-warming
+  // Preload next Short
   const nextDirectUrl = useMemo(() => {
     if (allVideos.length < 2) return "";
     const nextItem = allVideos[(safeActiveIdx + 1) % allVideos.length];
     return nextItem && !getYoutubeEmbedUrl(nextItem.url) ? toDirectMediaUrl(nextItem.url) : "";
   }, [allVideos, safeActiveIdx]);
 
-  // Direct DOM updater for currentTime (0 React re-renders during playback)
+  // DOM scrubber updater (0 React re-renders during playback)
   const syncTimeDom = useCallback((sec, total) => {
     const safeSec = Number.isFinite(sec) && sec >= 0 ? sec : 0;
     const safeTotal = Number.isFinite(total) && total > 0 ? total : 0;
@@ -264,6 +267,35 @@ export const Education = ({
     }
   }, []);
 
+  // Fading control center: fades out after 5 seconds of continuous playback if untouched
+  const resetFadeTimer = useCallback(() => {
+    setShowControls(true);
+    if (fadeTimerRef.current) {
+      clearTimeout(fadeTimerRef.current);
+      fadeTimerRef.current = null;
+    }
+    if (videoRef.current && !videoRef.current.paused && !showSettingsModal) {
+      fadeTimerRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, 5000);
+    }
+  }, [showSettingsModal]);
+
+  useEffect(() => {
+    if (!playing || showSettingsModal) {
+      setShowControls(true);
+      if (fadeTimerRef.current) {
+        clearTimeout(fadeTimerRef.current);
+        fadeTimerRef.current = null;
+      }
+    } else {
+      resetFadeTimer();
+    }
+    return () => {
+      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    };
+  }, [playing, showSettingsModal, resetFadeTimer]);
+
   useEffect(() => {
     const el = videoRef.current;
     if (!el || !activeDirectUrl) return;
@@ -273,6 +305,7 @@ export const Education = ({
     el.playbackRate = playbackRate;
     el.volume = volume;
     el.muted = muted;
+    el.loop = loopVideo;
 
     if (shouldAutoStartRef.current) {
       shouldAutoStartRef.current = false;
@@ -309,10 +342,10 @@ export const Education = ({
     node.style.transform = "translate3d(0, 0, 0)";
     node.animate(
       [
-        { transform: `translate3d(0, ${dir > 0 ? 40 : -40}px, 0)`, opacity: 0.6 },
+        { transform: `translate3d(0, ${dir > 0 ? 36 : -36}px, 0)`, opacity: 0.7 },
         { transform: "translate3d(0, 0, 0)", opacity: 1 },
       ],
-      { duration: 150, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+      { duration: 160, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
     );
   }, []);
 
@@ -323,52 +356,57 @@ export const Education = ({
       shouldAutoStartRef.current = true;
       animateSlideTransition(dir);
       setActiveIdx(target);
+      setShowSettingsModal(false);
       trackEvent("edu_video_select", String(target));
-      if (scrollStage && stageRef.current) {
-        const rect = stageRef.current.getBoundingClientRect();
-        if (rect.top < -80 || rect.top > window.innerHeight * 0.45) {
-          stageRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+      if (scrollStage && playerFrameRef.current) {
+        playerFrameRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     },
     [allVideos.length, animateSlideTransition]
   );
 
-  const triggerSwipeBadge = useCallback((dir, label) => {
+  const triggerSwipeBadge = useCallback((label) => {
     const id = Date.now();
-    setSwipeFeedback({ dir, label, id });
+    setSwipeFeedback({ label, id });
     setTimeout(() => {
       setSwipeFeedback((curr) => (curr?.id === id ? null : curr));
-    }, 500);
+    }, 550);
   }, []);
+
+  /**
+   * YouTube Shorts Standard Swipe Navigation:
+   * Swipe UP (dragging finger up, wheel down, ArrowDown) -> NEXT video
+   * Swipe DOWN (dragging finger down, wheel up, ArrowUp) -> PREVIOUS video
+   */
+  const goNext = useCallback(() => {
+    if (!allVideos.length) return;
+    const next = (safeActiveIdx + 1) % allVideos.length;
+    triggerSwipeBadge(lang === "en" ? "Next Video" : "Video Selanjutnya");
+    selectAndPlay(next, false, 1);
+  }, [allVideos.length, safeActiveIdx, lang, selectAndPlay, triggerSwipeBadge]);
 
   const goPrev = useCallback(() => {
     if (!allVideos.length) return;
     const prev = (safeActiveIdx - 1 + allVideos.length) % allVideos.length;
-    triggerSwipeBadge("prev", lang === "en" ? "↑ Previous" : "↑ Sebelumnya");
+    triggerSwipeBadge(lang === "en" ? "Previous Video" : "Video Sebelumnya");
     selectAndPlay(prev, false, -1);
   }, [allVideos.length, safeActiveIdx, lang, selectAndPlay, triggerSwipeBadge]);
 
-  const goNext = useCallback(() => {
-    if (!allVideos.length) return;
-    const next = (safeActiveIdx + 1) % allVideos.length;
-    triggerSwipeBadge("next", lang === "en" ? "↓ Next" : "↓ Selanjutnya");
-    selectAndPlay(next, false, 1);
-  }, [allVideos.length, safeActiveIdx, lang, selectAndPlay, triggerSwipeBadge]);
-
+  // Instant 1-touch Play / Pause toggle
   const togglePlay = useCallback(() => {
     const el = videoRef.current;
     if (!el) return;
     if (el.paused) {
-      el.play()
-        .then(() => setPlaying(true))
-        .catch(() => {});
+      el.play().catch(() => {});
+      setPlaying(true);
     } else {
       el.pause();
       setPlaying(false);
     }
-  }, []);
+    resetFadeTimer();
+  }, [resetFadeTimer]);
 
+  // Seek by seconds (animated ripple)
   const seekBy = useCallback(
     (deltaSeconds) => {
       const el = videoRef.current;
@@ -391,9 +429,10 @@ export const Education = ({
       setSeekRipple({ side, label, id });
       setTimeout(() => {
         setSeekRipple((curr) => (curr?.id === id ? null : curr));
-      }, 500);
+      }, 550);
+      resetFadeTimer();
     },
-    [lang, durationSec, syncTimeDom]
+    [lang, durationSec, syncTimeDom, resetFadeTimer]
   );
 
   const handleTimelineScrub = (e) => {
@@ -402,6 +441,7 @@ export const Education = ({
     if (!el || Number.isNaN(val)) return;
     el.currentTime = val;
     syncTimeDom(val, el.duration || durationSec);
+    resetFadeTimer();
   };
 
   const toggleMute = () => {
@@ -409,18 +449,17 @@ export const Education = ({
     if (!el) return;
     el.muted = !el.muted;
     setMuted(el.muted);
+    resetFadeTimer();
   };
 
-  const handleVolumeChange = (e) => {
-    const val = parseFloat(e.target.value);
+  const handleVolumeChange = (newVol) => {
+    setVolume(newVol);
     const el = videoRef.current;
-    if (Number.isNaN(val)) return;
-    setVolume(val);
     if (el) {
-      el.volume = val;
-      el.muted = val === 0;
+      el.volume = newVol;
+      el.muted = newVol === 0;
     }
-    setMuted(val === 0);
+    setMuted(newVol === 0);
   };
 
   const changeSpeed = (rate) => {
@@ -428,6 +467,7 @@ export const Education = ({
     if (videoRef.current) {
       videoRef.current.playbackRate = rate;
     }
+    resetFadeTimer();
   };
 
   const toggleFullscreen = () => {
@@ -438,17 +478,35 @@ export const Education = ({
     } else {
       target.requestFullscreen?.().catch(() => {});
     }
+    resetFadeTimer();
   };
 
   const handleVideoEnded = () => {
     setPlaying(false);
+    if (loopVideo) {
+      const el = videoRef.current;
+      if (el) {
+        el.currentTime = 0;
+        el.play().catch(() => {});
+      }
+      return;
+    }
     if (autoPlayNext && allVideos.length > 1) {
       goNext();
     }
   };
 
-  // 60fps Direct-DOM Touch / Pointer Gesture Handlers on 9:16 Stage
+  /**
+   * Pointer & Touch Gestures:
+   * - Drag / Swipe UP (dy < 0) -> Next Video
+   * - Drag / Swipe DOWN (dy > 0) -> Previous Video
+   * - Single Tap Center (18% - 82%) -> Instant Play / Pause
+   * - Double Tap Left Edge (< 18%) -> Rewind 10s
+   * - Double Tap Right Edge (> 82%) -> Forward 10s
+   * - Single Tap Left/Right -> Wakes controls / toggles play (NEVER seeks by mistake)
+   */
   const onPointerDownStage = (e) => {
+    resetFadeTimer();
     const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
     pointerStartRef.current = {
@@ -459,21 +517,24 @@ export const Education = ({
   };
 
   const onPointerMoveStage = (e) => {
+    resetFadeTimer();
     if (!pointerStartRef.current || !playerSlideRef.current) return;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY;
     if (clientY === undefined) return;
     const dy = clientY - pointerStartRef.current.y;
-    if (Math.abs(dy) > 6) {
+    if (Math.abs(dy) > 10) {
       const damped = Math.max(-55, Math.min(55, dy * 0.35));
       playerSlideRef.current.style.transform = `translate3d(0, ${damped}px, 0)`;
     }
   };
 
   const onPointerUpStage = (e) => {
+    resetFadeTimer();
     if (playerSlideRef.current) {
       playerSlideRef.current.style.transform = "translate3d(0, 0, 0)";
     }
     if (!pointerStartRef.current) return;
+
     const endX = e.clientX ?? e.changedTouches?.[0]?.clientX ?? pointerStartRef.current.x;
     const endY = e.clientY ?? e.changedTouches?.[0]?.clientY ?? pointerStartRef.current.y;
     const dy = endY - pointerStartRef.current.y;
@@ -481,56 +542,64 @@ export const Education = ({
     const elapsed = performance.now() - pointerStartRef.current.time;
     pointerStartRef.current = null;
 
-    // Vertical swipe gesture (swipe down -> next, swipe up -> before)
-    if (Math.abs(dy) > 32 && Math.abs(dy) > Math.abs(dx) && elapsed < 900) {
-      if (dy > 0) {
+    // Vertical swipe gesture
+    if (Math.abs(dy) > 35 && Math.abs(dy) > Math.abs(dx) * 1.15 && elapsed < 800) {
+      if (dy < 0) {
+        // Swiped UP -> NEXT video
         goNext();
       } else {
+        // Swiped DOWN -> PREVIOUS video
         goPrev();
       }
       return;
     }
 
-    if (Math.abs(dy) > 12 || Math.abs(dx) > 12) return;
-
-    // Horizontal zone detection on the 9:16 video surface:
-    // - Left zone (0..35%): single click rewinds 10 seconds (-10s)
-    // - Right zone (65..100%): double click/tap forwards 10 seconds (+10s)
-    // - Center zone (35..65%): single click toggles Play / Pause
-    const rect = e.currentTarget.getBoundingClientRect();
-    const relX = rect.width > 0 ? (endX - rect.left) / rect.width : 0.5;
-
-    if (relX < 0.35) {
-      seekBy(-10);
-    } else if (relX > 0.65) {
+    // Tap Detection (minimal movement, quick contact)
+    if (Math.abs(dy) < 25 && Math.abs(dx) < 25 && elapsed < 450) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const relX = rect.width > 0 ? (endX - rect.left) / rect.width : 0.5;
       const now = performance.now();
-      if (now - lastRightTapRef.current < 320) {
-        if (rightTapTimerRef.current) {
-          clearTimeout(rightTapTimerRef.current);
-          rightTapTimerRef.current = null;
-        }
-        lastRightTapRef.current = 0;
-        seekBy(10);
-      } else {
-        lastRightTapRef.current = now;
-        rightTapTimerRef.current = setTimeout(() => {
+
+      // Outer Left Edge (< 18%): DOUBLE-TAP ONLY to seek backwards 10s
+      if (relX < 0.18) {
+        if (now - lastLeftTapRef.current < 320) {
+          lastLeftTapRef.current = 0;
+          seekBy(-10);
+        } else {
+          lastLeftTapRef.current = now;
           togglePlay();
-          rightTapTimerRef.current = null;
-        }, 230);
+        }
+        return;
       }
-    } else {
+
+      // Outer Right Edge (> 82%): DOUBLE-TAP ONLY to seek forwards 10s
+      if (relX > 0.82) {
+        if (now - lastRightTapRef.current < 320) {
+          lastRightTapRef.current = 0;
+          seekBy(10);
+        } else {
+          lastRightTapRef.current = now;
+          togglePlay();
+        }
+        return;
+      }
+
+      // Center (18% - 82%): Instant 1x Touch Play / Pause
       togglePlay();
     }
   };
 
   const onWheelStage = (e) => {
+    resetFadeTimer();
     if (Math.abs(e.deltaY) < 28) return;
     const now = performance.now();
     if (now - wheelCooldownRef.current < 420) return;
     wheelCooldownRef.current = now;
     if (e.deltaY > 0) {
+      // Wheel DOWN -> NEXT video
       goNext();
     } else {
+      // Wheel UP -> PREVIOUS video
       goPrev();
     }
   };
@@ -547,6 +616,13 @@ export const Education = ({
     return `${window.location.origin}/edukasi?v=${safeActiveIdx}`;
   }, [safeActiveIdx]);
 
+  const scrollToDetails = () => {
+    const el = document.getElementById("education-details-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   if (!t) return null;
 
   const formattedTotal =
@@ -558,8 +634,8 @@ export const Education = ({
     <section
       id="education"
       className={`${
-        isFullPage ? "pt-20 pb-20 lg:pt-24 lg:pb-24" : "py-24 lg:py-32"
-      } bg-[#FFFFFF] border-t border-slate-100`}
+        isFullPage ? "pt-0 pb-16" : "py-24 lg:py-32"
+      } bg-[#FFFFFF]`}
       data-testid="education-section"
     >
       {/* Pre-warm next Short when active video is playing */}
@@ -567,10 +643,10 @@ export const Education = ({
         <link rel="preload" as="video" href={nextDirectUrl} />
       )}
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        {/* Editorial Section Header ONLY on Homepage (On /edukasi we jump straight into the Immersive Shorts Stage) */}
-        {!isFullPage && (
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
+      {/* Editorial Section Header ONLY on Homepage */}
+      {!isFullPage && (
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 mb-14">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
             <div className="max-w-3xl" data-testid="education-header">
               <div className="flex flex-wrap items-center gap-3 mb-5">
                 <span className="text-xs font-bold uppercase tracking-[0.25em] text-emerald-700">
@@ -606,12 +682,22 @@ export const Education = ({
               </Link>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Immersive YouTube Shorts Stage + YouTube Control Tab */}
-        {activeVideo && (
+      {/* Immersive YouTube Shorts Screen (Full viewport height on /edukasi, 0 top padding) */}
+      {activeVideo && (
+        <div
+          ref={playerFrameRef}
+          className={`${
+            isFullPage
+              ? "relative min-h-[100dvh] flex flex-col items-center justify-between bg-[#060D17] py-4 sm:py-6 px-3 sm:px-6 select-none"
+              : "max-w-7xl mx-auto px-6 lg:px-10 mb-14"
+          }`}
+          data-testid="education-stage"
+        >
+          {/* Main 9:16 Video Player Container */}
           <div
-            ref={stageRef}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === "ArrowDown") {
@@ -631,469 +717,474 @@ export const Education = ({
                 togglePlay();
               }
             }}
-            className="scroll-mt-20 rounded-3xl bg-[#FAFAFA] border border-slate-200/90 p-4 sm:p-6 lg:p-8 shadow-[0_16px_48px_rgba(10,25,47,0.05)] mb-14 focus:outline-none"
-            data-testid="education-stage"
+            onWheel={onWheelStage}
+            className={`relative w-full ${
+              isFullPage
+                ? "max-w-[400px] h-[calc(100dvh-5.5rem)] sm:h-[calc(100dvh-6rem)]"
+                : "max-w-[360px] aspect-[9/16] mx-auto shadow-2xl"
+            } aspect-[9/16] rounded-3xl overflow-hidden bg-[#0A192F] shadow-[0_24px_60px_rgba(0,0,0,0.45)] border border-white/10 group focus:outline-none`}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Left: 9:16 Vertical YouTube Shorts Player + Vertical Swipe Navigation */}
-              <div className="lg:col-span-5 flex items-center justify-center gap-3">
+            {activeYtEmbed ? (
+              <iframe
+                src={activeYtEmbed}
+                title={activeVideo.title}
+                className="w-full h-full border-0 aspect-[9/16]"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                data-testid="education-active-iframe"
+              />
+            ) : (
+              <div
+                ref={playerSlideRef}
+                className="relative w-full h-full will-change-transform"
+              >
+                {/* Persistent single <video> element */}
+                <video
+                  ref={videoRef}
+                  src={activeDirectUrl}
+                  poster={activeVideo.poster || undefined}
+                  playsInline
+                  preload="auto"
+                  muted={muted}
+                  onPlay={() => {
+                    setPlaying(true);
+                    setIsBuffering(false);
+                  }}
+                  onPlaying={() => {
+                    setPlaying(true);
+                    setIsBuffering(false);
+                  }}
+                  onPause={() => setPlaying(false)}
+                  onWaiting={() => setIsBuffering(true)}
+                  onCanPlay={() => setIsBuffering(false)}
+                  onEnded={handleVideoEnded}
+                  onTimeUpdate={(e) => {
+                    const el = e.currentTarget;
+                    syncTimeDom(el.currentTime || 0, el.duration || durationSec);
+                  }}
+                  onLoadedMetadata={(e) => {
+                    const el = e.currentTarget;
+                    el.playbackRate = playbackRate;
+                    const dur = el.duration;
+                    if (Number.isFinite(dur) && dur > 0) {
+                      setDurationSec(dur);
+                      syncTimeDom(el.currentTime || 0, dur);
+                      const d = formatDuration(dur);
+                      if (d) recordDuration(safeActiveIdx, d);
+                    }
+                  }}
+                  className="w-full h-full object-cover bg-[#0A192F]"
+                  data-testid="education-active-video"
+                />
+
+                {/* Gesture Surface (Touch & Pointer events) */}
                 <div
-                  ref={playerFrameRef}
-                  data-lenis-prevent
-                  onWheel={onWheelStage}
-                  className="relative w-full max-w-[330px] sm:max-w-[355px] aspect-[9/16] rounded-3xl overflow-hidden bg-[#0A192F] shadow-[0_24px_60px_rgba(10,25,47,0.24)] border-2 border-slate-800/20 select-none"
-                >
-                  {activeYtEmbed ? (
-                    <iframe
-                      src={activeYtEmbed}
-                      title={activeVideo.title}
-                      className="w-full h-full border-0 aspect-[9/16]"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      data-testid="education-active-iframe"
-                    />
-                  ) : (
-                    <div
-                      ref={playerSlideRef}
-                      className="relative w-full h-full will-change-transform"
-                    >
-                      {/* Persistent single <video> element for instant decoder reuse across swipes */}
-                      <video
-                        ref={videoRef}
-                        src={activeDirectUrl}
-                        poster={activeVideo.poster || undefined}
-                        playsInline
-                        preload="auto"
-                        muted={muted}
-                        onPlay={() => {
-                          setPlaying(true);
-                          setIsBuffering(false);
-                        }}
-                        onPlaying={() => {
-                          setPlaying(true);
-                          setIsBuffering(false);
-                        }}
-                        onPause={() => setPlaying(false)}
-                        onWaiting={() => setIsBuffering(true)}
-                        onCanPlay={() => setIsBuffering(false)}
-                        onEnded={handleVideoEnded}
-                        onTimeUpdate={(e) => {
-                          const el = e.currentTarget;
-                          syncTimeDom(el.currentTime || 0, el.duration || durationSec);
-                        }}
-                        onLoadedMetadata={(e) => {
-                          const el = e.currentTarget;
-                          el.playbackRate = playbackRate;
-                          const dur = el.duration;
-                          if (Number.isFinite(dur) && dur > 0) {
-                            setDurationSec(dur);
-                            syncTimeDom(el.currentTime || 0, dur);
-                            const d = formatDuration(dur);
-                            if (d) recordDuration(safeActiveIdx, d);
-                          }
-                        }}
-                        className="w-full h-full object-cover bg-[#0A192F]"
-                        data-testid="education-active-video"
-                      />
+                  onMouseDown={onPointerDownStage}
+                  onMouseMove={onPointerMoveStage}
+                  onMouseUp={onPointerUpStage}
+                  onMouseLeave={() => {
+                    pointerStartRef.current = null;
+                    if (playerSlideRef.current) {
+                      playerSlideRef.current.style.transform = "translate3d(0, 0, 0)";
+                    }
+                  }}
+                  onTouchStart={onPointerDownStage}
+                  onTouchMove={onPointerMoveStage}
+                  onTouchEnd={onPointerUpStage}
+                  data-testid="education-shorts-gesture-layer"
+                  className="absolute inset-0 z-10 cursor-pointer touch-none"
+                />
 
-                      {/* Interactive YouTube Shorts Gesture Surface (touch-none prevents page scroll during vertical swipe) */}
-                      <div
-                        onMouseDown={onPointerDownStage}
-                        onMouseMove={onPointerMoveStage}
-                        onMouseUp={onPointerUpStage}
-                        onMouseLeave={() => {
-                          pointerStartRef.current = null;
-                          if (playerSlideRef.current) {
-                            playerSlideRef.current.style.transform = "translate3d(0, 0, 0)";
-                          }
-                        }}
-                        onTouchStart={onPointerDownStage}
-                        onTouchMove={onPointerMoveStage}
-                        onTouchEnd={onPointerUpStage}
-                        data-testid="education-shorts-gesture-layer"
-                        className="absolute inset-0 z-10 cursor-pointer touch-none"
-                      />
-
-                      {/* Unmute Pill if browser started in muted autoplay */}
-                      {muted && playing && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleMute();
-                          }}
-                          data-testid="education-stage-unmute-pill"
-                          className="absolute top-3.5 left-3.5 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 text-[var(--g-navy)] text-[11px] font-semibold shadow-lg hover:bg-emerald-600 hover:text-white transition-colors"
-                        >
-                          <VolumeX size={13} />
-                          {lang === "en" ? "Tap to Unmute" : "Ketuk untuk Suara"}
-                        </button>
-                      )}
-
-                      {/* Left / Right -10s / +10s YouTube Ripple Feedback */}
-                      {seekRipple && (
-                        <div
-                          key={seekRipple.id}
-                          className={`absolute top-1/2 -translate-y-1/2 z-20 pointer-events-none px-4 py-3 rounded-2xl bg-[#0A192F]/85 text-white text-xs font-bold tracking-wider flex flex-col items-center gap-1 shadow-xl border border-white/15 animate-fade-in ${
-                            seekRipple.side === "left" ? "left-4" : "right-4"
-                          }`}
-                          data-testid={`education-seek-ripple-${seekRipple.side}`}
-                        >
-                          {seekRipple.side === "left" ? (
-                            <RotateCcw size={18} className="text-emerald-400" />
-                          ) : (
-                            <RotateCw size={18} className="text-emerald-400" />
-                          )}
-                          <span>{seekRipple.label}</span>
-                        </div>
-                      )}
-
-                      {/* Swipe Up / Down Feedback Pill */}
-                      {swipeFeedback && (
-                        <div
-                          key={swipeFeedback.id}
-                          className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none px-3.5 py-1 rounded-full bg-emerald-600/95 text-white text-[11px] font-semibold tracking-wide shadow-lg whitespace-nowrap"
-                        >
-                          {swipeFeedback.label}
-                        </div>
-                      )}
-
-                      {/* Buffering Spinner or Center Play Overlay */}
-                      {isBuffering && playing ? (
-                        <div className="absolute inset-0 z-15 flex items-center justify-center pointer-events-none">
-                          <span className="w-12 h-12 rounded-full border-2 border-white/25 border-t-emerald-400 animate-spin" />
-                        </div>
-                      ) : !playing ? (
-                        <div
-                          className="absolute inset-0 z-15 flex items-center justify-center bg-[#0A192F]/20 pointer-events-none"
-                          data-testid="education-stage-play-overlay"
-                        >
-                          <span className="w-16 h-16 rounded-full bg-white/95 text-[var(--g-navy)] flex items-center justify-center shadow-[0_12px_32px_rgba(10,25,47,0.35)]">
-                            <Play size={26} fill="currentColor" className="ml-1" />
-                          </span>
-                        </div>
-                      ) : null}
-
-                      {/* Bottom YouTube Shorts Overlay Caption + Thin Progress Line */}
-                      <div className="absolute bottom-0 inset-x-0 z-20 pt-10 pb-3 px-4 bg-gradient-to-t from-[#0A192F]/90 via-[#0A192F]/45 to-transparent pointer-events-none">
-                        <p className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider mb-0.5">
-                          Karya GESOI
-                        </p>
-                        <p className="text-white text-sm font-serif-display line-clamp-1">
-                          {activeVideo.title}
-                        </p>
-                        <div className="mt-2.5 h-1 w-full rounded-full bg-white/25 overflow-hidden">
-                          <div
-                            ref={miniProgressRef}
-                            className="h-full bg-emerald-500"
-                            style={{ width: "0%" }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* YouTube Shorts Desktop Vertical Navigation Buttons (Up / Down) */}
-                <div className="hidden sm:flex flex-col items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={goPrev}
-                    data-testid="education-shorts-up-btn"
-                    title={lang === "en" ? "Swipe Up / Previous Video" : "Swipe Atas / Video Sebelumnya"}
-                    className="w-11 h-11 rounded-full bg-white border border-slate-200 text-[var(--g-navy)] hover:bg-[var(--g-navy)] hover:text-white hover:border-[var(--g-navy)] shadow-sm flex items-center justify-center transition-all duration-200"
+                {/* Left / Right -10s / +10s Ripple Feedback */}
+                {seekRipple && (
+                  <div
+                    key={seekRipple.id}
+                    className={`absolute top-1/2 -translate-y-1/2 z-25 pointer-events-none px-4 py-3 rounded-2xl bg-black/80 backdrop-blur-md text-white text-xs font-bold tracking-wider flex flex-col items-center gap-1 shadow-2xl border border-white/20 animate-fade-in ${
+                      seekRipple.side === "left" ? "left-4" : "right-4"
+                    }`}
+                    data-testid={`education-seek-ripple-${seekRipple.side}`}
                   >
-                    <ChevronUp size={20} />
-                  </button>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 tabular-nums">
-                    {String(safeActiveIdx + 1).padStart(2, "0")}/{String(allVideos.length).padStart(2, "0")}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    data-testid="education-shorts-down-btn"
-                    title={lang === "en" ? "Swipe Down / Next Video" : "Swipe Bawah / Video Selanjutnya"}
-                    className="w-11 h-11 rounded-full bg-white border border-slate-200 text-[var(--g-navy)] hover:bg-[var(--g-navy)] hover:text-white hover:border-[var(--g-navy)] shadow-sm flex items-center justify-center transition-all duration-200"
-                  >
-                    <ChevronDown size={20} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Right: Active Shorts Info + YouTube-Style Control Tab */}
-              <div className="lg:col-span-7 flex flex-col justify-center">
-                {/* Category & Counter Header */}
-                <div className="flex flex-wrap items-center gap-2 text-xs text-emerald-700 font-semibold uppercase tracking-[0.18em] mb-3">
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] tabular-nums">
-                    {String(safeActiveIdx + 1).padStart(2, "0")} / {String(allVideos.length).padStart(2, "0")}
-                  </span>
-                  {activeVideo.category && (
-                    <>
-                      <span className="text-slate-300">·</span>
-                      <span className="text-slate-600">{activeVideo.category}</span>
-                    </>
-                  )}
-                </div>
-
-                {/* Title */}
-                <h3
-                  className="font-serif-display text-3xl sm:text-4xl lg:text-5xl text-[var(--g-navy)] leading-tight mb-3"
-                  data-testid="education-active-title"
-                >
-                  {activeVideo.title}
-                </h3>
-
-                {/* Unified Creator Attribution Chip: Karya GESOI */}
-                <div className="mb-4 inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white border border-slate-200/80 shadow-sm w-fit">
-                  <span className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 font-semibold text-xs shrink-0">
-                    <User size={15} />
-                  </span>
-                  <div>
-                    <p className="text-xs font-semibold text-[var(--g-navy)]" data-testid="education-active-speaker">
-                      {activeVideo.speaker || "Karya GESOI"}
-                    </p>
+                    {seekRipple.side === "left" ? (
+                      <RotateCcw size={20} className="text-emerald-400" />
+                    ) : (
+                      <RotateCw size={20} className="text-emerald-400" />
+                    )}
+                    <span>{seekRipple.label}</span>
                   </div>
-                </div>
-
-                {/* Description */}
-                {activeVideo.desc && (
-                  <p
-                    className="text-slate-600 text-sm sm:text-base font-light leading-relaxed mb-6"
-                    data-testid="education-active-desc"
-                  >
-                    {activeVideo.desc}
-                  </p>
                 )}
 
-                {/* YouTube-Style Control Tab (Ctrl tab) */}
-                <div
-                  className="rounded-2xl bg-[#0F172A] text-white p-4 sm:p-5 shadow-[0_14px_34px_rgba(10,25,47,0.18)] border border-slate-800"
-                  data-testid="education-youtube-control-tab"
-                >
-                  {/* 1. Interactive YouTube Scrubber Timeline Bar (Driven via DOM Refs for 0 Re-renders) */}
-                  {!activeYtEmbed && (
-                    <div className="mb-3.5">
-                      <div className="flex items-center justify-between text-[11px] text-slate-300 font-mono tabular-nums mb-1.5">
-                        <span ref={currentTimeLabelRef}>00:00</span>
-                        <span className="text-emerald-400 font-sans text-[10px] uppercase tracking-wider font-semibold">
-                          {playing
-                            ? t.nowPlayingLabel || (lang === "en" ? "Now Playing" : "Sedang Diputar")
-                            : lang === "en"
-                            ? "Paused"
-                            : "Dijeda"}
-                        </span>
-                        <span>{formattedTotal}</span>
+                {/* Swipe Up / Down Feedback Badge */}
+                {swipeFeedback && (
+                  <div
+                    key={swipeFeedback.id}
+                    className="absolute top-4 left-1/2 -translate-x-1/2 z-25 pointer-events-none px-4 py-1.5 rounded-full bg-emerald-600/95 text-white text-xs font-semibold tracking-wide shadow-xl whitespace-nowrap animate-fade-in"
+                  >
+                    {swipeFeedback.label}
+                  </div>
+                )}
+
+                {/* Buffering Spinner */}
+                {isBuffering && playing && (
+                  <div className="absolute inset-0 z-15 flex items-center justify-center pointer-events-none">
+                    <span className="w-12 h-12 rounded-full border-3 border-white/20 border-t-emerald-400 animate-spin" />
+                  </div>
+                )}
+
+                {/* Big Center Play Icon when Paused */}
+                {!playing && (
+                  <div
+                    className="absolute inset-0 z-15 flex items-center justify-center bg-black/25 pointer-events-none"
+                    data-testid="education-stage-play-overlay"
+                  >
+                    <span className="w-16 h-16 rounded-full bg-white/95 text-[var(--g-navy)] flex items-center justify-center shadow-2xl">
+                      <Play size={26} fill="currentColor" className="ml-1" />
+                    </span>
+                  </div>
+                )}
+
+                {/* In-Video Settings Modal (YouTube Style) */}
+                {showSettingsModal && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute inset-x-3 bottom-14 z-30 p-4 rounded-2xl bg-[#0B1528]/95 backdrop-blur-md border border-white/15 text-white shadow-2xl animate-fade-in"
+                    data-testid="education-settings-modal"
+                  >
+                    <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                        {lang === "en" ? "Playback Settings" : "Pengaturan Video"}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowSettingsModal(false)}
+                        className="text-white/70 hover:text-white p-1 rounded-full"
+                        aria-label="Tutup Pengaturan"
+                      >
+                        <X size={15} />
+                      </button>
+                    </div>
+
+                    {/* Speed options */}
+                    <div className="mb-3">
+                      <p className="text-[11px] text-white/70 font-medium mb-1.5">
+                        {lang === "en" ? "Playback Speed" : "Kecepatan Putar"}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {[0.75, 1, 1.25, 1.5, 2].map((rate) => (
+                          <button
+                            key={rate}
+                            type="button"
+                            onClick={() => changeSpeed(rate)}
+                            className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
+                              playbackRate === rate
+                                ? "bg-emerald-600 text-white"
+                                : "bg-white/10 text-white/80 hover:bg-white/20"
+                            }`}
+                          >
+                            {rate}x
+                          </button>
+                        ))}
                       </div>
-                      <input
-                        ref={scrubberRef}
-                        type="range"
-                        min={0}
-                        max={durationSec > 0 ? durationSec : 100}
-                        step={0.1}
-                        defaultValue={0}
-                        onChange={handleTimelineScrub}
-                        aria-label="Video progress timeline"
-                        data-testid="education-timeline-scrubber"
-                        className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-600 hover:h-2 transition-all"
-                      />
-                    </div>
-                  )}
-
-                  {/* 2. YouTube Primary Transport & Right Controls Row */}
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                      {!activeYtEmbed && (
-                        <button
-                          type="button"
-                          onClick={togglePlay}
-                          data-testid="education-play-toggle-btn"
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 hover:bg-red-500 text-white text-xs font-semibold tracking-wide transition-colors shadow-sm"
-                        >
-                          {playing ? <Pause size={14} /> : <Play size={14} fill="currentColor" />}
-                          <span>
-                            {playing
-                              ? lang === "en"
-                                ? "Pause"
-                                : "Jeda"
-                              : t.watchNowLabel || (lang === "en" ? "Play" : "Putar")}
-                          </span>
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={goPrev}
-                        data-testid="education-prev-btn"
-                        title={lang === "en" ? "Previous Video (Swipe Up)" : "Video Sebelumnya (Swipe Atas)"}
-                        className="w-9 h-9 rounded-full bg-slate-800/90 hover:bg-slate-700 text-white flex items-center justify-center transition-colors"
-                      >
-                        <SkipBack size={15} />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={goNext}
-                        data-testid="education-next-btn"
-                        title={lang === "en" ? "Next Video (Swipe Down)" : "Video Selanjutnya (Swipe Bawah)"}
-                        className="w-9 h-9 rounded-full bg-slate-800/90 hover:bg-slate-700 text-white flex items-center justify-center transition-colors"
-                      >
-                        <SkipForward size={15} />
-                      </button>
-
-                      {!activeYtEmbed && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => seekBy(-10)}
-                            data-testid="education-rewind-10-btn"
-                            title={lang === "en" ? "Rewind 10 seconds (Left Click)" : "Mundur 10 detik (Klik Kiri)"}
-                            className="inline-flex items-center gap-1 px-2.5 h-9 rounded-full bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-[11px] font-medium transition-colors"
-                          >
-                            <RotateCcw size={13} />
-                            <span>-10s</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => seekBy(10)}
-                            data-testid="education-forward-10-btn"
-                            title={lang === "en" ? "Forward 10 seconds (Double-Click Right)" : "Maju 10 detik (2x Klik Kanan)"}
-                            className="inline-flex items-center gap-1 px-2.5 h-9 rounded-full bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-[11px] font-medium transition-colors"
-                          >
-                            <span>+10s</span>
-                            <RotateCw size={13} />
-                          </button>
-
-                          <div className="inline-flex items-center gap-1.5 bg-slate-800/90 rounded-full px-2.5 h-9">
-                            <button
-                              type="button"
-                              onClick={toggleMute}
-                              data-testid="education-mute-btn"
-                              title={muted ? "Unmute" : "Mute"}
-                              className="text-slate-200 hover:text-white flex items-center justify-center"
-                            >
-                              {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-                            </button>
-                            <input
-                              type="range"
-                              min={0}
-                              max={1}
-                              step={0.05}
-                              value={muted ? 0 : volume}
-                              onChange={handleVolumeChange}
-                              aria-label="Volume"
-                              className="hidden sm:block w-14 h-1 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-white"
-                            />
-                          </div>
-                        </>
-                      )}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
-                      {/* YouTube-style Autoplay Toggle Switch */}
+                    {/* Autoplay Next toggle */}
+                    <div className="flex items-center justify-between py-2 border-t border-white/10 text-xs">
+                      <span className="text-white/80">
+                        {lang === "en" ? "Auto-Play Next Short" : "Putar Otomatis Berikutnya"}
+                      </span>
                       <button
                         type="button"
                         onClick={() => setAutoPlayNext(!autoPlayNext)}
-                        data-testid="education-autoplay-toggle"
-                        title={t.autoPlayLabel || "Lanjut Otomatis"}
-                        className="inline-flex items-center gap-2 px-3 h-9 rounded-full bg-slate-800/90 hover:bg-slate-700 text-xs text-slate-200 transition-colors"
+                        className={`w-9 h-5 rounded-full transition-colors relative ${
+                          autoPlayNext ? "bg-emerald-600" : "bg-white/20"
+                        }`}
                       >
                         <span
-                          className={`relative w-7 h-4 rounded-full transition-colors ${
-                            autoPlayNext ? "bg-emerald-500" : "bg-slate-600"
+                          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                            autoPlayNext ? "translate-x-4" : "translate-x-0.5"
                           }`}
-                        >
-                          <span
-                            className={`absolute top-0.5 w-3 h-3 rounded-full bg-white flex items-center justify-center transition-transform ${
-                              autoPlayNext ? "translate-x-3.5" : "translate-x-0.5"
-                            }`}
-                          >
-                            <Play size={6} fill="#0F172A" className="text-[#0F172A]" />
-                          </span>
-                        </span>
-                        <span className="text-[11px] font-medium">
-                          {t.autoPlayLabel || "Lanjut Otomatis"}
-                        </span>
+                        />
                       </button>
+                    </div>
 
-                      {/* Playback Speed Pills */}
-                      {!activeYtEmbed && (
-                        <div
-                          className="inline-flex items-center rounded-full bg-slate-800/90 p-0.5 text-[11px]"
-                          data-testid="education-speed-controls"
-                        >
-                          {[1, 1.25, 1.5].map((rate) => (
-                            <button
-                              key={rate}
-                              type="button"
-                              onClick={() => changeSpeed(rate)}
-                              data-testid={`education-speed-${rate}`}
-                              className={`px-2 py-1 rounded-full font-medium transition-colors ${
-                                playbackRate === rate
-                                  ? "bg-white text-[#0F172A]"
-                                  : "text-slate-300 hover:text-white"
-                              }`}
-                            >
-                              {rate}x
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Share to WhatsApp */}
-                      <a
-                        href={`https://wa.me/?text=${encodeURIComponent(
-                          `${activeVideo.title} - Karya GESOI\n\n${shareUrl}`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => trackEvent("edu_share_whatsapp")}
-                        data-testid="education-share-whatsapp"
-                        className="inline-flex items-center gap-1.5 px-3 h-9 rounded-full bg-[#25D366]/20 border border-[#25D366]/40 text-emerald-300 hover:bg-[#25D366] hover:text-white text-xs font-medium transition-colors"
+                    {/* Loop video toggle */}
+                    <div className="flex items-center justify-between py-2 border-t border-white/10 text-xs">
+                      <span className="text-white/80">
+                        {lang === "en" ? "Loop Current Video" : "Ulangi Video Ini"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setLoopVideo(!loopVideo)}
+                        className={`w-9 h-5 rounded-full transition-colors relative ${
+                          loopVideo ? "bg-emerald-600" : "bg-white/20"
+                        }`}
                       >
-                        <WhatsAppIcon size={13} />
-                        <span className="hidden sm:inline">{t.shareLabel || "Bagikan"}</span>
-                      </a>
+                        <span
+                          className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                            loopVideo ? "translate-x-4" : "translate-x-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
 
-                      {/* Fullscreen Button */}
-                      {!activeYtEmbed && (
-                        <button
-                          type="button"
-                          onClick={toggleFullscreen}
-                          data-testid="education-fullscreen-btn"
-                          title="Fullscreen"
-                          className="w-9 h-9 rounded-full bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center transition-colors"
-                        >
-                          <Maximize2 size={14} />
-                        </button>
-                      )}
+                    {/* Volume slider */}
+                    <div className="pt-2 border-t border-white/10">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="text-white/80">{lang === "en" ? "Volume" : "Volume"}</span>
+                        <span className="text-[11px] text-emerald-400 font-mono">
+                          {Math.round(volume * 100)}%
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        value={muted ? 0 : volume}
+                        onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                        aria-label="Volume slider"
+                        className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Right Floating Action Column (Fading 5s after play) */}
+                <div
+                  className={`absolute right-3 bottom-16 z-20 flex flex-col items-center gap-3 transition-opacity duration-500 ${
+                    showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                  data-testid="education-right-actions"
+                >
+                  {/* Permanent Mute / Unmute Toggle */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleMute();
+                    }}
+                    data-testid="education-mute-btn"
+                    title={muted ? (lang === "en" ? "Unmute" : "Nyalakan Suara") : (lang === "en" ? "Mute" : "Matikan Suara")}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 ${
+                      muted ? "bg-red-600 text-white" : "bg-black/50 backdrop-blur-md text-white border border-white/15"
+                    }`}
+                  >
+                    {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                  </button>
+
+                  {/* WhatsApp Share Button */}
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(
+                      `${activeVideo.title} - Karya GESOI\n\n${shareUrl}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      trackEvent("edu_share_whatsapp");
+                    }}
+                    data-testid="education-share-whatsapp"
+                    title={lang === "en" ? "Share to WhatsApp" : "Bagikan ke WhatsApp"}
+                    className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md text-white border border-white/15 flex items-center justify-center shadow-lg transition-transform hover:scale-110 hover:bg-[#25D366]"
+                  >
+                    <WhatsAppIcon size={18} />
+                  </a>
+
+                  {/* Settings Gear Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowSettingsModal((prev) => !prev);
+                      resetFadeTimer();
+                    }}
+                    data-testid="education-settings-btn"
+                    title={lang === "en" ? "Settings" : "Pengaturan"}
+                    className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md text-white border border-white/15 flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+                  >
+                    <Settings size={18} />
+                  </button>
+
+                  {/* Fullscreen Button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFullscreen();
+                    }}
+                    data-testid="education-fullscreen-btn"
+                    title={lang === "en" ? "Fullscreen" : "Layar Penuh"}
+                    className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md text-white border border-white/15 flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+                  >
+                    <Maximize2 size={18} />
+                  </button>
+                </div>
+
+                {/* In-Video Bottom Control Bar (Scrubber timeline, transport, time) - Fading 5s after play */}
+                <div
+                  className={`absolute inset-x-0 bottom-0 z-20 pt-10 pb-3 px-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent transition-opacity duration-500 ${
+                    showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                  data-testid="education-bottom-controls"
+                >
+                  {/* Title & Attribution info */}
+                  <div className="mb-2 max-w-[calc(100%-3.5rem)]">
+                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5">
+                      Karya GESOI
+                    </p>
+                    <p className="text-white text-sm font-serif-display line-clamp-1">
+                      {activeVideo.title}
+                    </p>
+                  </div>
+
+                  {/* Interactive Scrubber Timeline */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      ref={scrubberRef}
+                      type="range"
+                      min={0}
+                      max={durationSec > 0 ? durationSec : 100}
+                      step={0.1}
+                      defaultValue={0}
+                      onChange={handleTimelineScrub}
+                      aria-label="Video scrubber timeline"
+                      data-testid="education-timeline-scrubber"
+                      className="flex-1 h-1.5 bg-white/25 rounded-lg appearance-none cursor-pointer accent-red-600 hover:h-2 transition-all pointer-events-auto"
+                    />
+                    <div className="text-[11px] text-white/90 font-mono tabular-nums whitespace-nowrap shrink-0">
+                      <span ref={currentTimeLabelRef}>00:00</span>
+                      <span className="text-white/50 mx-1">/</span>
+                      <span>{formattedTotal}</span>
                     </div>
                   </div>
 
-                  {/* 3. YouTube Shorts Gesture Guide Bar */}
-                  <div className="mt-3.5 pt-3 border-t border-slate-800/90 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-400">
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      {lang === "en"
-                        ? "Swipe Down: Next · Swipe Up: Previous"
-                        : "Swipe Bawah: Lanjut · Swipe Atas: Sebelumnya"}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      {lang === "en" ? "Click Left: -10s" : "Klik Kiri Video: Mundur 10 dtk"}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      {lang === "en" ? "Double-Click Right: +10s" : "2x Klik Kanan Video: Maju 10 dtk"}
+                  {/* Transport Buttons: Play/Pause, -10s, +10s */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePlay();
+                        }}
+                        data-testid="education-play-btn"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-semibold hover:bg-red-500 shadow-md transition-colors pointer-events-auto"
+                      >
+                        {playing ? <Pause size={13} /> : <Play size={13} fill="currentColor" />}
+                        <span>{playing ? (lang === "en" ? "Pause" : "Jeda") : (lang === "en" ? "Play" : "Putar")}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          seekBy(-10);
+                        }}
+                        data-testid="education-rewind-btn"
+                        title="-10 detik"
+                        className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors pointer-events-auto"
+                      >
+                        <RotateCcw size={14} />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          seekBy(10);
+                        }}
+                        data-testid="education-forward-btn"
+                        title="+10 detik"
+                        className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors pointer-events-auto"
+                      >
+                        <RotateCw size={14} />
+                      </button>
+                    </div>
+
+                    <span className="text-[10px] text-white/60 font-semibold tracking-wider uppercase">
+                      {String(safeActiveIdx + 1).padStart(2, "0")} / {String(allVideos.length).padStart(2, "0")}
                     </span>
                   </div>
                 </div>
+
+                {/* Subtle Persistent Progress Line when controls are faded */}
+                {!showControls && (
+                  <div className="absolute bottom-0 inset-x-0 h-1 bg-white/15 pointer-events-none">
+                    <div
+                      ref={miniProgressRef}
+                      className="h-full bg-red-600 transition-all duration-100"
+                      style={{ width: "0%" }}
+                    />
+                  </div>
+                )}
               </div>
+            )}
+          </div>
+
+          {/* Small Downward Icon Button: "Ke-bawah" to view details and full video list */}
+          <div className="mt-3 flex flex-col items-center justify-center">
+            <button
+              type="button"
+              onClick={scrollToDetails}
+              data-testid="education-scroll-down-btn"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-medium backdrop-blur-md shadow-lg transition-all hover:scale-105 active:scale-95"
+              aria-label={lang === "en" ? "Scroll down to video details" : "Scroll ke detail dan daftar video"}
+            >
+              <span className="text-[11px] text-emerald-400 font-semibold tracking-wide">
+                {activeVideo.category || (lang === "en" ? "Brain Health" : "Kesehatan Otak")} · #{String(safeActiveIdx + 1).padStart(2, "0")}/{String(allVideos.length).padStart(2, "0")}
+              </span>
+              <ChevronDown size={14} className="text-white group-hover:translate-y-0.5 transition-transform animate-bounce" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Frame Berikutnya: Video Details & Full Video List */}
+      <div
+        id="education-details-section"
+        className="max-w-7xl mx-auto px-6 lg:px-10 pt-12"
+      >
+        {/* Active Video Metadata Details Card */}
+        {activeVideo && (
+          <div
+            className="mb-12 p-6 sm:p-8 rounded-3xl bg-[#FAFAFA] border border-slate-200/90 shadow-sm"
+            data-testid="education-active-details"
+          >
+            <div className="flex flex-wrap items-center gap-2 text-xs text-emerald-700 font-semibold uppercase tracking-[0.18em] mb-2.5">
+              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] tabular-nums">
+                #{String(safeActiveIdx + 1).padStart(2, "0")} / {String(allVideos.length).padStart(2, "0")}
+              </span>
+              {activeVideo.category && (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <span className="text-slate-600">{activeVideo.category}</span>
+                </>
+              )}
             </div>
+
+            <h3
+              className="font-serif-display text-2xl sm:text-3xl lg:text-4xl text-[var(--g-navy)] leading-tight mb-3"
+              data-testid="education-active-title"
+            >
+              {activeVideo.title}
+            </h3>
+
+            <div className="mb-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/80 shadow-xs text-xs font-semibold text-[var(--g-navy)]">
+              <User size={13} className="text-emerald-600" />
+              <span>{activeVideo.speaker || "Karya GESOI"}</span>
+            </div>
+
+            {activeVideo.desc && (
+              <p
+                className="text-slate-600 text-sm sm:text-base font-light leading-relaxed max-w-3xl"
+                data-testid="education-active-desc"
+              >
+                {activeVideo.desc}
+              </p>
+            )}
           </div>
         )}
 
-        {/* Semua Video Section Header + Fuzzy Search + Collapse/Expand Toggle */}
+        {/* Semua Video Header, Filter Pills & Fuzzy Search */}
         <div
           className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
           data-testid="education-filters"
@@ -1162,7 +1253,7 @@ export const Education = ({
               )}
             </div>
 
-            {/* Quick Expand / Collapse Pill in Filter Row */}
+            {/* Quick Expand / Collapse Pill */}
             {filteredVideos.length > 5 && (
               <button
                 type="button"
@@ -1181,7 +1272,7 @@ export const Education = ({
           </div>
         </div>
 
-        {/* 9:16 Video Cards Grid (Showing up to 5 videos by default, expandable, 0 idle <video> decoders) */}
+        {/* 9:16 Video Cards Grid (Up to 5 videos by default, expandable) */}
         {filteredVideos.length === 0 ? (
           <div
             className="rounded-2xl bg-[#FAFAFA] border border-slate-200/80 p-12 text-center text-slate-500 text-sm font-light"
@@ -1228,7 +1319,7 @@ export const Education = ({
                       )}
                     </div>
 
-                    {/* Floating Bottom Bar: Title, Karya GESOI, Action (No Shorts #XX inside card) */}
+                    {/* Floating Bottom Bar: Title & Karya GESOI */}
                     <div className="relative z-10 mt-auto pt-16 pb-3.5 px-3.5 bg-gradient-to-t from-[#0A192F] via-[#0A192F]/80 to-transparent flex flex-col pointer-events-none">
                       {isCurrent && (
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/90 text-white text-[10px] font-semibold tracking-wide mb-1 w-fit shadow-sm">
@@ -1290,13 +1381,13 @@ export const Education = ({
                 </div>
               )}
 
-              {/* Back to Home Button at the Bottom (when on /edukasi) */}
+              {/* Back to Home Button at the bottom (when on /edukasi) */}
               {isFullPage && (
-                <div className="pt-4">
+                <div className="pt-6">
                   <Link
                     to="/"
                     data-testid="education-back-home"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 bg-white hover:border-[var(--g-navy)] text-xs font-medium text-slate-600 hover:text-[var(--g-navy)] transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-slate-300 bg-white hover:border-[var(--g-navy)] text-xs font-semibold text-slate-700 hover:text-[var(--g-navy)] transition-colors shadow-sm"
                   >
                     <ArrowLeft size={14} />
                     {t.backHomeLabel || (lang === "en" ? "Back to Home" : "Kembali ke Beranda")}

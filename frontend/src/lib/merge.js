@@ -2,7 +2,7 @@ import {
   isSampleVideoUrl,
   normalizeEducationItem,
   sortEducationVideos,
-} from "./educationVideos";
+} from "./educationVideos.js";
 
 const DELETED_EDU_URLS = new Set([
   "/api/files/gesoi/uploads/3c0139a3-663a-471c-a64d-d91c8729509b.mp4",
@@ -76,7 +76,9 @@ export const deepMerge = (base, override) => {
           mergedEdu.items = normalizeEducationItems(override.education?.items, base.education?.items);
         }
         if (typeof mergedEdu.body === "string" && /turag|andrew\s*tani/i.test(mergedEdu.body)) {
-          mergedEdu.body = base.education.body;
+          mergedEdu.body = typeof base.education.body === "string" && !/turag|andrew\s*tani/i.test(base.education.body)
+            ? base.education.body
+            : "Koleksi video edukasi ringkas berformat vertikal (Shorts 9:16) Karya GESOI, dirancang praktis untuk ditonton di ponsel maupun desktop demi membangun kesadaran sehat otak dan mental setiap hari.";
         }
         out[k] = mergedEdu;
       } else {

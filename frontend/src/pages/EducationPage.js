@@ -6,7 +6,6 @@ import { Brain, Heart, Sparkles, ArrowRight } from "lucide-react";
 import { content, sharedDefaults } from "../i18n";
 import { deepMerge } from "../lib/merge";
 import { trackPageview, trackEvent } from "../lib/analytics";
-import { Navbar } from "../components/gesoi/Navbar";
 import { Education } from "../components/gesoi/Education";
 import { Footer } from "../components/gesoi/Footer";
 import { CookieConsent } from "../components/gesoi/CookieConsent";
@@ -114,8 +113,6 @@ export default function EducationPage() {
 
   return (
     <div className="min-h-screen bg-[#FFFFFF] flex flex-col" data-testid="education-page">
-      <Navbar t={t} lang={lang} setLang={changeLang} logo={shared.logo} activePage="education" />
-
       <main className="flex-1">
         {/* Immersive YouTube Shorts Education Hub */}
         <Education
