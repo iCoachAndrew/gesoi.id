@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import Lenis from "lenis";
 import { Toaster } from "sonner";
-import { Brain, Heart, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
+import { Brain, Heart, Sparkles, ArrowRight } from "lucide-react";
 import { content, sharedDefaults } from "../i18n";
 import { deepMerge } from "../lib/merge";
 import { trackPageview, trackEvent } from "../lib/analytics";
@@ -132,24 +132,7 @@ export default function EducationPage() {
       <Navbar t={t} lang={lang} setLang={changeLang} logo={shared.logo} activePage="education" />
 
       <main className="flex-1">
-        {/* Top Breadcrumb / Quick Back Bar */}
-        <div className="pt-20 bg-[#FAFAFA] border-b border-slate-100">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10 py-3.5 flex items-center justify-between text-xs text-slate-500">
-            <Link
-              to="/"
-              data-testid="education-back-home"
-              className="inline-flex items-center gap-2 hover:text-[var(--g-navy)] transition-colors duration-200 font-medium"
-            >
-              <ArrowLeft size={13} />
-              {t.education?.backHomeLabel || "Kembali ke Beranda"}
-            </Link>
-            <span className="uppercase tracking-[0.2em] text-[10px] text-emerald-700 font-semibold">
-              {t.nav?.programs} · {t.nav?.education} · {t.nav?.roadmap}
-            </span>
-          </div>
-        </div>
-
-        {/* Interactive Video Education Hub */}
+        {/* Immersive YouTube Shorts Education Hub */}
         <Education
           t={{ ...t.education, kicker: t.education?.kicker || "Edukasi Publik · Akses Gratis" }}
           lang={lang}

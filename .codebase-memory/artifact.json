@@ -1,11 +1,11 @@
 {
     "schema_version": 2,
     "commit": "",
-    "indexed_at": "2026-11-14T14:11:57Z",
+    "indexed_at": "2026-11-15T10:32:12Z",
     "project": "C-Users-Ariel-Abraham-My-Drive-noreply.kopinergi-gmail.com-Gesoi.id-gesoi.id",
-    "nodes": 1303,
-    "edges": 2446,
-    "original_size": 5636096,
-    "compressed_size": 813487,
+    "nodes": 1319,
+    "edges": 2487,
+    "original_size": 5701632,
+    "compressed_size": 846279,
     "compression_level": 9
 }

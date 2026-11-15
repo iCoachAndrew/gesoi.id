@@ -1,3 +1,48 @@
+import {
+  isSampleVideoUrl,
+  normalizeEducationItem,
+  sortEducationVideos,
+} from "./educationVideos";
+
+const DELETED_EDU_URLS = new Set([
+  "/api/files/gesoi/uploads/3c0139a3-663a-471c-a64d-d91c8729509b.mp4",
+]);
+
+const normalizeUrlKey = (u = "") =>
+  String(u || "")
+    .trim()
+    .replace(/^https?:\/\/[^/]+/i, "");
+
+export const normalizeEducationItems = (savedItems = [], defaultItems = []) => {
+  const safeSaved = Array.isArray(savedItems) ? savedItems : [];
+  const safeDefaults = Array.isArray(defaultItems) ? defaultItems : [];
+
+  const cleanedSaved = safeSaved
+    .filter((it) => {
+      if (!it || !it.url) return false;
+      if (isSampleVideoUrl(it.url)) return false;
+      const key = normalizeUrlKey(it.url);
+      if (DELETED_EDU_URLS.has(key)) return false;
+      return true;
+    })
+    .map((it) => normalizeEducationItem(it));
+
+  const seenUrls = new Set(cleanedSaved.map((it) => normalizeUrlKey(it.url)));
+  const hasIntro = cleanedSaved.some((it) => /intro/i.test(it.title || ""));
+
+  const missingDefaults = safeDefaults
+    .filter((def) => {
+      if (!def || !def.url) return false;
+      const key = normalizeUrlKey(def.url);
+      if (!key || seenUrls.has(key)) return false;
+      if (hasIntro && /intro/i.test(def.title || "")) return false;
+      return true;
+    })
+    .map((def) => normalizeEducationItem(def));
+
+  return sortEducationVideos([...cleanedSaved, ...missingDefaults]);
+};
+
 export const normalizeSections = (savedSections, defaultSections = []) => {
   if (!Array.isArray(savedSections) || !savedSections.length) return defaultSections;
   const existingKeys = new Set(savedSections.map((s) => s?.key).filter(Boolean));
@@ -25,6 +70,15 @@ export const deepMerge = (base, override) => {
     for (const k of Object.keys(override)) {
       if (k === "sections" && Array.isArray(base?.sections) && Array.isArray(override?.sections)) {
         out[k] = normalizeSections(override.sections, base.sections);
+      } else if (k === "education" && typeof base?.education === "object" && typeof override?.education === "object") {
+        const mergedEdu = deepMerge(base.education, override.education);
+        if (Array.isArray(base.education?.items) || Array.isArray(override.education?.items)) {
+          mergedEdu.items = normalizeEducationItems(override.education?.items, base.education?.items);
+        }
+        if (typeof mergedEdu.body === "string" && /turag|andrew\s*tani/i.test(mergedEdu.body)) {
+          mergedEdu.body = base.education.body;
+        }
+        out[k] = mergedEdu;
       } else {
         out[k] = deepMerge(base?.[k], override[k]);
       }

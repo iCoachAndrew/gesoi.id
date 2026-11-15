@@ -1,7 +1,7 @@
 import { useState, createElement } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Upload, Plus, Trash2, Eye, EyeOff, ArrowUp, ArrowDown, Film } from "lucide-react";
+import { Upload, Plus, Trash2, Eye, EyeOff, ArrowUp, ArrowDown, Film, ChevronDown, ChevronUp } from "lucide-react";
 import { ICONS, parseIcon, SectionIcon } from "./icons";
 import { CropModal } from "./CropUpload";
 
@@ -41,6 +41,7 @@ export const LABELS = {
   nowPlayingLabel: "Label Sedang Diputar", upNextLabel: "Judul Daftar Putar",
   autoPlayLabel: "Label Lanjut Otomatis", watchNowLabel: "Label Putar Video",
   backHomeLabel: "Label Kembali ke Beranda", emptyFilterText: "Teks Saat Filter Kosong",
+  viewAllLabel: "Label Tombol Lihat Semua Video", collapseLabel: "Label Tombol Tutup Daftar Video",
   watchLabel: "Label Tombol Tonton", buyLabel: "Label Tombol Beli",
   priceNote: "Keterangan Harga", modalTitle: "Judul Checkout",
   payLabel: "Label Tombol Bayar", cancelLabel: "Label Tombol Batal",
@@ -318,6 +319,10 @@ function ObjectField({ value, onChange, path }) {
 }
 
 function ArrayField({ value, onChange, path }) {
+  const isCollapsible = value.length > 8 && typeof value[0] === "object" && value[0] !== null;
+  const [openIdx, setOpenIdx] = useState(0);
+  const [filterText, setFilterText] = useState("");
+
   const withInjected = (item) => {
     if (typeof item !== "object" || item === null) return item;
     let out = item;
@@ -334,45 +339,141 @@ function ArrayField({ value, onChange, path }) {
       ? (typeof value[0] === "string" ? "" : Object.fromEntries(Object.keys(value[0]).map((key) => [key, ""])))
       : "";
     template = withInjected(template);
-    onChange([...value, template]);
+    const next = [...value, template];
+    onChange(next);
+    setOpenIdx(next.length - 1);
+  };
+
+  const moveItem = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= value.length) return;
+    const arr = [...value];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    onChange(arr);
+    if (openIdx === i) setOpenIdx(j);
   };
 
   return (
     <div className="space-y-3">
-      {value.map((item, i) => (
-        <div key={i} className="rounded-xl border border-[#0B1F3A]/10 bg-[#F9F9F7] p-4 relative">
-          <button
-            type="button"
-            onClick={() => onChange(value.filter((_, j) => j !== i))}
-            className="absolute top-3 right-3 text-red-400 hover:text-red-600"
-            title="Hapus item"
-            data-testid={`remove-${path}-${i}`}
-          >
-            <Trash2 size={14} />
-          </button>
-          {typeof item === "string" ? (
-            <input
-              value={item}
-              onChange={(e) => onChange(value.map((v, j) => (j === i ? e.target.value : v)))}
-              className={`${inputCls} pr-8`}
-            />
-          ) : (
-            <div className="space-y-3 pr-6">
-              {Object.entries(withInjected(item)).map(([ck, cv]) => (
-                <div key={ck}>
-                  <p className="text-[11px] uppercase tracking-wider text-[#6B7280] mb-1">{label(ck)}</p>
-                  {subField({
-                    k: ck,
-                    value: cv,
-                    path: `${path}-${i}-${ck}`,
-                    onChange: (nv) => onChange(value.map((v, j) => (j === i ? { ...v, [ck]: nv } : v))),
-                  })}
-                </div>
-              ))}
-            </div>
-          )}
+      {isCollapsible && (
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
+          <span className="text-xs text-[#4B5563]">
+            Total <strong className="font-semibold text-[#0B1F3A]">{value.length}</strong> item terdaftar (klik baris untuk membuka/menutup editor item)
+          </span>
+          <input
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            placeholder="Cari judul / nomor..."
+            className="rounded-full border border-[#0B1F3A]/15 bg-white px-3.5 py-1.5 text-xs focus:outline-none focus:border-emerald-500 w-52"
+          />
         </div>
-      ))}
+      )}
+      {value.map((item, i) => {
+        if (isCollapsible && filterText.trim()) {
+          const q = filterText.trim().toLowerCase();
+          const hay = `${i + 1} ${item?.title || ""} ${item?.speaker || ""} ${item?.category || ""}`.toLowerCase();
+          if (!hay.includes(q)) return null;
+        }
+        const isOpen = !isCollapsible || openIdx === i;
+        return (
+          <div key={i} className="rounded-xl border border-[#0B1F3A]/10 bg-[#F9F9F7] p-4 relative">
+            {typeof item === "string" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onChange(value.filter((_, j) => j !== i))}
+                  className="absolute top-3 right-3 text-red-400 hover:text-red-600"
+                  title="Hapus item"
+                  data-testid={`remove-${path}-${i}`}
+                >
+                  <Trash2 size={14} />
+                </button>
+                <input
+                  value={item}
+                  onChange={(e) => onChange(value.map((v, j) => (j === i ? e.target.value : v)))}
+                  className={`${inputCls} pr-8`}
+                />
+              </>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => isCollapsible && setOpenIdx(openIdx === i ? -1 : i)}
+                    className="flex-1 text-left flex items-center gap-2.5 min-w-0"
+                  >
+                    <span className="px-2 py-0.5 rounded-md bg-[#0B1F3A] text-white text-[10px] font-semibold shrink-0">
+                      #{String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-xs font-semibold text-[#0B1F3A] truncate">
+                      {item.title || item.name || `Item ${i + 1}`}
+                    </span>
+                    {item.speaker && (
+                      <span className="text-[11px] text-[#6B7280] truncate hidden sm:inline">
+                        · {item.speaker}
+                      </span>
+                    )}
+                  </button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => moveItem(i, -1)}
+                      disabled={i === 0}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-[#4B5563] hover:text-[#0B1F3A] disabled:opacity-25"
+                      title="Geser ke atas"
+                    >
+                      <ArrowUp size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveItem(i, 1)}
+                      disabled={i === value.length - 1}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-[#4B5563] hover:text-[#0B1F3A] disabled:opacity-25"
+                      title="Geser ke bawah"
+                    >
+                      <ArrowDown size={13} />
+                    </button>
+                    {isCollapsible && (
+                      <button
+                        type="button"
+                        onClick={() => setOpenIdx(openIdx === i ? -1 : i)}
+                        className="w-6 h-6 rounded-full flex items-center justify-center text-[#4B5563] hover:text-[#0B1F3A]"
+                        title={isOpen ? "Tutup" : "Buka"}
+                      >
+                        {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onChange(value.filter((_, j) => j !== i))}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-red-400 hover:text-red-600"
+                      title="Hapus item"
+                      data-testid={`remove-${path}-${i}`}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+                {isOpen && (
+                  <div className="space-y-3 pt-3 mt-3 border-t border-[#0B1F3A]/10">
+                    {Object.entries(withInjected(item)).map(([ck, cv]) => (
+                      <div key={ck}>
+                        <p className="text-[11px] uppercase tracking-wider text-[#6B7280] mb-1">{label(ck)}</p>
+                        {subField({
+                          k: ck,
+                          value: cv,
+                          path: `${path}-${i}-${ck}`,
+                          onChange: (nv) => onChange(value.map((v, j) => (j === i ? { ...v, [ck]: nv } : v))),
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
       <button type="button" onClick={addItem} className="flex items-center gap-2 text-xs text-emerald-700 hover:text-emerald-900 font-medium" data-testid={`add-${path}`}>
         <Plus size={14} /> Tambah Item
       </button>

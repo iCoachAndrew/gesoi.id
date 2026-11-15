@@ -100,7 +100,7 @@ export default function AdminHelp() {
         <p className="font-semibold text-[#0B1F3A] pt-2">Edukasi Publik (04B Edukasi):</p>
         <ul className="space-y-2">
           <Li>Mengatur halaman khusus <Code>/edukasi</Code> (di navigasi antara Program dan Peta Jalan) serta section Edukasi di beranda.</Li>
-          <Li label="Sinkronisasi Otomatis">video yang diunggah lewat tab Galeri Media otomatis tampil di halaman Edukasi. Anda juga bisa menekan tombol "Muat Video dari Galeri Media" di section 04B Edukasi untuk mengatur judul, kategori, pembicara (mis. Andrew Tani atau Karya Turag), serta deskripsi tiap video.</Li>
+          <Li label="Sinkronisasi Otomatis">video yang diunggah lewat tab Galeri Media otomatis masuk ke daftar item section 04B Edukasi (diurutkan mulai dari Introduction lalu nomor 1 hingga 59) dan tampil di halaman Edukasi dengan atribusi Karya GESOI.</Li>
         </ul>
         <p className="font-semibold text-[#0B1F3A] pt-2">Berita (07 Kabar/News):</p>
         <ul className="space-y-2">

@@ -5,10 +5,22 @@ import { Save, RotateCcw, Film, ExternalLink } from "lucide-react";
 import { content as defaultContent, sharedDefaults } from "../i18n";
 import { deepMerge } from "../lib/merge";
 import { Field, label, authConfig } from "../lib/editorFields";
-import { autoClassifyGalleryVideo } from "../lib/educationVideos";
+import { buildEducationVideoList } from "../lib/educationVideos";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
+
+const toCleanEditorEducationItems = (cmsItems, galleryVideos, lang) => {
+  return buildEducationVideoList(cmsItems || [], galleryVideos || [], lang).map((it) => ({
+    title: it.title || "",
+    category: it.category || "",
+    speaker: it.speaker || "Karya GESOI",
+    duration: it.duration || "",
+    url: it.url || "",
+    poster: it.poster || "",
+    desc: it.desc || "",
+  }));
+};
 
 const SECTIONS = [
   { key: "shared", label: "Pengaturan Situs & Tokoh (Global)" },
@@ -43,42 +55,35 @@ export default function AdminEditor() {
     try {
       const { data: res } = await axios.get(`${API}/admin/files`, authConfig());
       const list = Array.isArray(res) ? res : res.files || [];
-      const vids = list.filter(
-        (f) => (f.content_type || "").startsWith("video/") || /\.(mp4|webm|mov)$/i.test(f.storage_path || "")
-      );
+      const vids = list
+        .filter(
+          (f) => (f.content_type || "").startsWith("video/") || /\.(mp4|webm|mov)$/i.test(f.storage_path || "")
+        )
+        .map((f) => ({ ...f, url: `${BACKEND_URL}${f.url || `/api/files/${f.storage_path}`}` }));
       if (vids.length === 0) {
         toast.info("Belum ada file video di Galeri Media.");
         return;
       }
-      const currentItems = Array.isArray(scope?.items) ? scope.items : [];
-      const existingUrls = new Set(currentItems.map((it) => (it.url || "").trim()));
-      const newItems = [];
-      for (const f of vids) {
-        const relUrl = f.url || `/api/files/${f.storage_path}`;
-        const fullUrl = `${BACKEND_URL}${relUrl}`;
-        if (!existingUrls.has(fullUrl) && !existingUrls.has(relUrl)) {
-          const classified = autoClassifyGalleryVideo({ ...f, url: fullUrl }, langTab);
-          newItems.push({
-            title: classified.title,
-            category: classified.category,
-            speaker: classified.speaker,
-            duration: classified.duration || "",
-            url: fullUrl,
-            poster: "",
-            desc: classified.desc,
-          });
-        }
-      }
-      const nonSampleExisting = currentItems.filter(
-        (it) => !/pexels\.com/i.test(it.url || "")
+      setData((prev) => ({
+        ...prev,
+        id: {
+          ...prev.id,
+          education: {
+            ...prev.id.education,
+            items: toCleanEditorEducationItems(prev.id?.education?.items, vids, "id"),
+          },
+        },
+        en: {
+          ...prev.en,
+          education: {
+            ...prev.en.education,
+            items: toCleanEditorEducationItems(prev.en?.education?.items, vids, "en"),
+          },
+        },
+      }));
+      toast.success(
+        `${vids.length} video telah disinkronkan & diurutkan (Introduction, 1-59). Klik Simpan Perubahan untuk menyimpan.`
       );
-      if (newItems.length === 0 && nonSampleExisting.length === currentItems.length) {
-        toast.info("Semua video dari Galeri Media sudah ada di daftar Edukasi.");
-        return;
-      }
-      const merged = [...newItems, ...(newItems.length > 0 ? nonSampleExisting : currentItems)];
-      setScope({ ...scope, items: merged });
-      toast.success(`${newItems.length} video dari Galeri Media berhasil dimuat ke daftar Edukasi. Klik Simpan Perubahan untuk menyimpan.`);
     } catch {
       toast.error("Gagal memuat video dari Galeri Media.");
     } finally {
@@ -87,10 +92,26 @@ export default function AdminEditor() {
   };
 
   useEffect(() => {
-    axios
-      .get(`${API}/content`)
-      .then((r) => setData(deepMerge({ ...defaultContent, shared: sharedDefaults }, r.data || {})))
-      .catch(() => setData({ ...defaultContent, shared: sharedDefaults }));
+    Promise.all([
+      axios.get(`${API}/content`).catch(() => ({ data: {} })),
+      axios.get(`${API}/videos`).catch(() => ({ data: [] })),
+    ]).then(([contentRes, videosRes]) => {
+      const merged = deepMerge({ ...defaultContent, shared: sharedDefaults }, contentRes.data || {});
+      const vids = Array.isArray(videosRes.data) ? videosRes.data : [];
+      const idItems = toCleanEditorEducationItems(merged.id?.education?.items, vids, "id");
+      const enItems = toCleanEditorEducationItems(merged.en?.education?.items, vids, "en");
+      const nextData = {
+        ...merged,
+        id: { ...merged.id, education: { ...merged.id.education, items: idItems } },
+        en: { ...merged.en, education: { ...merged.en.education, items: enItems } },
+      };
+      setData(nextData);
+      // Otomatis simpan ke database CMS jika jumlah/urutan item di DB belum tersinkron dengan Galeri Media
+      const rawIdItems = contentRes.data?.id?.education?.items || [];
+      if (vids.length > 0 && JSON.stringify(rawIdItems) !== JSON.stringify(idItems)) {
+        axios.put(`${API}/admin/content`, nextData, authConfig()).catch(() => {});
+      }
+    });
   }, []);
 
   if (!data) return <div className="p-10 text-[#4B5563]" data-testid="editor-loading">Memuat editor...</div>;
@@ -207,9 +228,8 @@ export default function AdminEditor() {
 
           {section === "education" && (
             <div className="mb-5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 px-4 py-3 text-xs text-[#0B1F3A] leading-relaxed">
-              <strong className="font-semibold text-emerald-800">Tips Halaman Edukasi (Shorts 9:16):</strong> Format video didesain khusus vertikal 9:16 (Shorts/Reels) agar pas di layar ponsel maupun desktop tanpa terpotong. Semua video yang diunggah ke{" "}
-              <strong className="font-semibold">Galeri Media</strong> akan otomatis tampil di halaman <code className="px-1.5 py-0.5 rounded bg-white border border-emerald-200">/edukasi</code> dan bagian <strong className="font-semibold">Edukasi</strong> di beranda. Gunakan tombol{" "}
-              <strong className="font-semibold">&ldquo;Muat Video dari Galeri Media&rdquo;</strong> di atas untuk menarik daftar video ke bawah ini agar Anda bisa menyesuaikan judul, nama pembicara (mis. Andrew Tani / Karya Turag), kategori topik, dan deskripsinya.
+              <strong className="font-semibold text-emerald-800">Tips Halaman Edukasi (Shorts 9:16):</strong> Semua video yang diunggah ke{" "}
+              <strong className="font-semibold">Galeri Media</strong> otomatis masuk ke daftar di bawah ini dengan urutan <strong className="font-semibold">GESOI Introduction</strong> diikuti nomor <strong className="font-semibold">1 hingga 59</strong> (Karya GESOI). Anda dapat langsung mengubah judul, kategori, atau deskripsi pada setiap item lalu menekan <strong className="font-semibold">Simpan Perubahan</strong>.
             </div>
           )}
 
