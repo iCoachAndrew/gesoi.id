@@ -853,15 +853,15 @@ export const Education = ({
     let igHref = "https://instagram.com/direct/inbox/";
 
     if (isAndroid) {
-      waHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=com.whatsapp;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=${encodeURIComponent(`https://wa.me/?text=${encodedPayload}`)};end`;
-      tgHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=org.telegram.messenger;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=${encodeURIComponent(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`)};end`;
-      fbHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=com.facebook.orca;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=${encodeURIComponent(`https://www.facebook.com/dialog/send?link=${encodedUrl}&app_id=291494419107518&redirect_uri=${encodedUrl}`)};end`;
-      igHref = `intent:#Intent;action=android.intent.action.SEND;type=text/plain;package=com.instagram.android;S.android.intent.extra.TEXT=${encodedPayload};S.browser_fallback_url=https%3A%2F%2Finstagram.com%2Fdirect%2Finbox%2F;end`;
+      waHref = `intent://send?text=${encodedPayload}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=${encodeURIComponent(`https://wa.me/?text=${encodedPayload}`)};end`;
+      tgHref = `intent://msg_url?url=${encodedUrl}&text=${encodedText}#Intent;scheme=tg;package=org.telegram.messenger;S.browser_fallback_url=${encodeURIComponent(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`)};end`;
+      fbHref = `intent://share?link=${encodedUrl}#Intent;scheme=fb-messenger;package=com.facebook.orca;S.browser_fallback_url=${encodeURIComponent(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`)};end`;
+      igHref = `intent://sharesheet?text=${encodedPayload}#Intent;scheme=instagram;package=com.instagram.android;S.browser_fallback_url=https%3A%2F%2Fwww.instagram.com%2Fdirect%2Finbox%2F;end`;
     } else if (isMobile) {
       waHref = `whatsapp://send?text=${encodedPayload}`;
       tgHref = `tg://msg_url?url=${encodedUrl}&text=${encodedText}`;
-      fbHref = `fb-messenger://share/?link=${encodedUrl}`;
-      igHref = "instagram://direct-inbox";
+      fbHref = `fb-messenger://share?link=${encodedUrl}`;
+      igHref = `instagram://sharesheet?text=${encodedPayload}`;
     }
 
     return { waHref, tgHref, fbHref, igHref, isMobile };
