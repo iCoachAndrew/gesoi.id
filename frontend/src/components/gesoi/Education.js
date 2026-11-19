@@ -1560,12 +1560,9 @@ export const Education = ({
                   }`}
                   data-testid="education-bottom-controls"
                 >
-                  {/* Title & Attribution info */}
+                  {/* Video Title info */}
                   <div className="mb-2 pr-12">
-                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5">
-                      Karya GESOI
-                    </p>
-                    <p className="text-white text-sm font-serif-display line-clamp-1">
+                    <p className="text-white text-sm sm:text-base font-serif-display line-clamp-2 leading-snug drop-shadow-md">
                       {activeVideo.title}
                     </p>
                   </div>

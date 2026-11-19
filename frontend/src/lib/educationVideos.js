@@ -1,3 +1,5 @@
+import { getShortsMetadata } from "../data/educationCatalog.js";
+
 const SAMPLE_URLS = new Set([
   "https://videos.pexels.com/video-files/3191572/3191572-hd_1280_720_25fps.mp4",
   "https://videos.pexels.com/video-files/5377684/5377684-hd_1280_720_25fps.mp4",
@@ -32,6 +34,11 @@ export const getYoutubeEmbedUrl = (url = "") => {
 };
 
 export const humanizeFilename = (filename = "", lang = "id") => {
+  const meta = getShortsMetadata(filename);
+  if (meta) {
+    return lang === "en" && meta.titleEn ? meta.titleEn : meta.title;
+  }
+
   const withoutExt = String(filename || "")
     .replace(/\.[a-z0-9]{2,5}$/i, "")
     .replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[-_]?/i, "")
@@ -75,20 +82,40 @@ export const normalizeEducationItem = (item = {}, lang = "id") => {
   const role = LEGACY_ROLE_RE.test(rawRole) ? "" : rawRole;
 
   let title = String(item.title || "").trim();
+  const rawName = String(item._rawFilename || "").trim();
+  const meta = getShortsMetadata(title) || getShortsMetadata(rawName) || getShortsMetadata(item.url);
+
   if (/^gesoi\s*[-–]?\s*introduction(\s*video)?$/i.test(title)) {
-    title = "GESOI Introduction";
+    title = meta ? (lang === "en" && meta.titleEn ? meta.titleEn : meta.title) : "GESOI Introduction";
+  } else if ((!title || /^\d+$/.test(title)) && meta) {
+    title = lang === "en" && meta.titleEn ? meta.titleEn : meta.title;
+  }
+
+  const rawDesc = String(item.desc || "").trim();
+  let desc = rawDesc;
+  const isDefaultDesc =
+    !rawDesc ||
+    /Video edukasi gratis persembahan Yayasan Gerakan Sehat Otak|Free public educational video presented by Yayasan/i.test(
+      rawDesc
+    );
+  if (isDefaultDesc && meta && meta.desc) {
+    desc = lang === "en" && meta.descEn ? meta.descEn : meta.desc;
   }
 
   const rawCat = String(item.category || "").trim();
   let category = rawCat;
   if (!category || /^(pesan\s*tokoh|leadership\s*message)$/i.test(category)) {
-    category = /intro/i.test(title)
-      ? lang === "en"
-        ? "Introduction"
-        : "Pengantar"
-      : lang === "en"
-      ? "Brain Health"
-      : "Kesehatan Otak";
+    if (meta && meta.category) {
+      category = lang === "en" && meta.categoryEn ? meta.categoryEn : meta.category;
+    } else {
+      category = /intro/i.test(title)
+        ? lang === "en"
+          ? "Introduction"
+          : "Pengantar"
+        : lang === "en"
+        ? "Brain Health"
+        : "Kesehatan Otak";
+    }
   }
 
   return {
@@ -98,16 +125,26 @@ export const normalizeEducationItem = (item = {}, lang = "id") => {
     category,
     speaker,
     role,
+    desc,
   };
 };
 
 export const getEducationSortKey = (item = {}) => {
   const title = String(item.title || "").trim();
   const rawName = String(item._rawFilename || "").trim();
-  const combined = `${title} ${rawName}`.trim();
+  const url = String(item.url || "").trim();
+  const combined = `${title} ${rawName} ${url}`.trim();
 
   if (/intro/i.test(combined)) {
     return { bucket: 0, num: 0, label: title };
+  }
+
+  const meta = getShortsMetadata(title) || getShortsMetadata(rawName) || getShortsMetadata(url);
+  if (meta && typeof meta.num === "number") {
+    if (meta.num === 0) {
+      return { bucket: 0, num: 0, label: meta.title || title };
+    }
+    return { bucket: 1, num: meta.num, label: meta.title || title };
   }
 
   // Exact number title like "1", "2", ..., "59"
@@ -136,6 +173,8 @@ export const sortEducationVideos = (items = []) => {
 
 export const videoItemFromGalleryFile = (file, lang = "id") => {
   const rawName = file?.original_filename || file?.storage_path || "";
+  const meta = getShortsMetadata(rawName);
+
   const lower = rawName.toLowerCase();
   const isIntro = /intro/i.test(lower);
   const isMental = /mental|stres|stress|emosi|burnout|depresi|cemas|anxiety/i.test(lower);
@@ -143,16 +182,22 @@ export const videoItemFromGalleryFile = (file, lang = "id") => {
   const isChild = /anak|remaja|sekolah|bayi|ibu|keluarga|stunting/i.test(lower);
 
   let category = lang === "en" ? "Brain Health" : "Kesehatan Otak";
-  if (isIntro) category = lang === "en" ? "Introduction" : "Pengantar";
+  if (meta && meta.category) {
+    category = lang === "en" && meta.categoryEn ? meta.categoryEn : meta.category;
+  } else if (isIntro) category = lang === "en" ? "Introduction" : "Pengantar";
   else if (isMental) category = lang === "en" ? "Mental Health" : "Kesehatan Mental";
   else if (isSleep) category = lang === "en" ? "Lifestyle & Focus" : "Gaya Hidup & Fokus";
   else if (isChild) category = lang === "en" ? "Children & Family" : "Anak & Keluarga";
 
-  const title = humanizeFilename(rawName, lang);
-  const desc =
-    lang === "en"
-      ? "Free public educational video presented by Yayasan Gerakan Sehat Otak Indonesia (GESOI) to build daily awareness of brain and mental health."
-      : "Video edukasi gratis persembahan Yayasan Gerakan Sehat Otak Indonesia (GESOI) untuk meningkatkan kesadaran masyarakat akan pentingnya kesehatan otak dan mental.";
+  const title = meta
+    ? (lang === "en" && meta.titleEn ? meta.titleEn : meta.title)
+    : humanizeFilename(rawName, lang);
+
+  const desc = meta && meta.desc
+    ? (lang === "en" && meta.descEn ? meta.descEn : meta.desc)
+    : (lang === "en"
+        ? "Free public educational video presented by Yayasan Gerakan Sehat Otak Indonesia (GESOI) to build daily awareness of brain and mental health."
+        : "Video edukasi gratis persembahan Yayasan Gerakan Sehat Otak Indonesia (GESOI) untuk meningkatkan kesadaran masyarakat akan pentingnya kesehatan otak dan mental.");
 
   return {
     title,
